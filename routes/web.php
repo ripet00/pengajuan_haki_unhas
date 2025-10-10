@@ -22,7 +22,7 @@ Route::prefix('/')->group(function () {
     
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', function () {
-            return view('user.dashboard');
+            return view('user.dashboard_modern');
         })->name('user.dashboard');
         
         Route::post('/logout', [UserAuthController::class, 'logout'])->name('user.logout');
@@ -41,8 +41,10 @@ Route::prefix('admin')->group(function () {
     
     // User management routes
     Route::patch('/users/{user}/status', [AdminController::class, 'updateUserStatus'])->name('admin.users.update-status');
+    Route::get('/users', [AdminController::class, 'userIndex'])->name('admin.users.index');
     
-    // Admin creation routes
+    // Admin management routes
+    Route::get('/admins', [AdminController::class, 'adminIndex'])->name('admin.admins.index');
     Route::get('/create-admin', [AdminController::class, 'createAdmin'])->name('admin.create');
     Route::post('/create-admin', [AdminController::class, 'storeAdmin'])->name('admin.store');
     
