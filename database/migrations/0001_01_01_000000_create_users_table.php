@@ -16,7 +16,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamp('verified_at')->nullable();
             $table->string('password');
-            $table->foreignId('verified_by_admin_id')->nullable()->constrained('admins');
+            $table->unsignedBigInteger('verified_by_admin_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
