@@ -9,8 +9,19 @@ class Admin extends Model
 {
     protected $fillable = [
         'name',
-        'nip_nidn',
-        "phone_number",
+        'nip_nidn_nidk_nim',
+        'phone_number',
         'password',
     ];
+
+    protected $hidden = [
+        'password',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
+    }
 }

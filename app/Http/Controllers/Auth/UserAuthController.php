@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+
+class UserAuthController extends Controller
+{
+    public function showLoginForm()
+    {
+        return view('auth.user.login');
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'phone_number' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $user = User::where('phone_number', $request->phone_number)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'phone_number' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        // Check user status
+        if ($user->status === 'pending') {
+            throw ValidationException::withMessages([
+                'phone_number' => ['Your account is still pending approval. Please wait for admin confirmation.'],
+            ]);
+        }
+
+        if ($user->status === 'denied') {
+            throw ValidationException::withMessages([
+                'phone_number' => ['Your account has been denied. Please contact administrator.'],
+            ]);
+        }
+
+        // Only allow active users to login
+        if ($user->status !== 'active') {
+            throw ValidationException::withMessages([
+                'phone_number' => ['Your account is not active. Please contact administrator.'],
+            ]);
+        }
+
+        Auth::login($user);
+
+        return redirect()->intended('/dashboard');
+    }
+
+    public function showRegisterForm()
+    {
+        return view('auth.user.register');
+    }
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone_number' => 'required|string|unique:users',
+            'faculty' => 'required|string|max:255',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'phone_number' => $request->phone_number,
+            'faculty' => $request->faculty,
+            'password' => Hash::make($request->password),
+            'status' => 'pending', // Default status
+        ]);
+
+        // Don't auto-login since user is pending approval
+        return redirect('/login')->with('success', 'Account created successfully! Please wait for admin approval before you can login.');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login');
+    }
+}
