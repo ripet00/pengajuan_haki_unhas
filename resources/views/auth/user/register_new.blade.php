@@ -96,22 +96,24 @@
                         required
                     >
                         <option value="">Pilih Fakultas</option>
-                        <option value="Fakultas Kedokteran" {{ old('faculty') == 'Fakultas Kedokteran' ? 'selected' : '' }}>Fakultas Kedokteran</option>
-                        <option value="Fakultas Kedokteran Gigi" {{ old('faculty') == 'Fakultas Kedokteran Gigi' ? 'selected' : '' }}>Fakultas Kedokteran Gigi</option>
-                        <option value="Fakultas Kesehatan Masyarakat" {{ old('faculty') == 'Fakultas Kesehatan Masyarakat' ? 'selected' : '' }}>Fakultas Kesehatan Masyarakat</option>
-                        <option value="Fakultas Farmasi" {{ old('faculty') == 'Fakultas Farmasi' ? 'selected' : '' }}>Fakultas Farmasi</option>
-                        <option value="Fakultas Keperawatan" {{ old('faculty') == 'Fakultas Keperawatan' ? 'selected' : '' }}>Fakultas Keperawatan</option>
-                        <option value="Fakultas Teknik" {{ old('faculty') == 'Fakultas Teknik' ? 'selected' : '' }}>Fakultas Teknik</option>
-                        <option value="Fakultas Matematika dan Ilmu Pengetahuan Alam" {{ old('faculty') == 'Fakultas Matematika dan Ilmu Pengetahuan Alam' ? 'selected' : '' }}>Fakultas MIPA</option>
-                        <option value="Fakultas Pertanian" {{ old('faculty') == 'Fakultas Pertanian' ? 'selected' : '' }}>Fakultas Pertanian</option>
-                        <option value="Fakultas Peternakan" {{ old('faculty') == 'Fakultas Peternakan' ? 'selected' : '' }}>Fakultas Peternakan</option>
-                        <option value="Fakultas Kehutanan" {{ old('faculty') == 'Fakultas Kehutanan' ? 'selected' : '' }}>Fakultas Kehutanan</option>
-                        <option value="Fakultas Ilmu Kelautan dan Perikanan" {{ old('faculty') == 'Fakultas Ilmu Kelautan dan Perikanan' ? 'selected' : '' }}>Fakultas Ilmu Kelautan dan Perikanan</option>
                         <option value="Fakultas Ekonomi dan Bisnis" {{ old('faculty') == 'Fakultas Ekonomi dan Bisnis' ? 'selected' : '' }}>Fakultas Ekonomi dan Bisnis</option>
                         <option value="Fakultas Hukum" {{ old('faculty') == 'Fakultas Hukum' ? 'selected' : '' }}>Fakultas Hukum</option>
+                        <option value="Fakultas Kedokteran" {{ old('faculty') == 'Fakultas Kedokteran' ? 'selected' : '' }}>Fakultas Kedokteran</option>
+                        <option value="Fakultas Teknik" {{ old('faculty') == 'Fakultas Teknik' ? 'selected' : '' }}>Fakultas Teknik</option>
                         <option value="Fakultas Ilmu Sosial dan Ilmu Politik" {{ old('faculty') == 'Fakultas Ilmu Sosial dan Ilmu Politik' ? 'selected' : '' }}>Fakultas Ilmu Sosial dan Ilmu Politik</option>
                         <option value="Fakultas Ilmu Budaya" {{ old('faculty') == 'Fakultas Ilmu Budaya' ? 'selected' : '' }}>Fakultas Ilmu Budaya</option>
-                        <option value="Fakultas Psikologi" {{ old('faculty') == 'Fakultas Psikologi' ? 'selected' : '' }}>Fakultas Psikologi</option>
+                        <option value="Fakultas Pertanian" {{ old('faculty') == 'Fakultas Pertanian' ? 'selected' : '' }}>Fakultas Pertanian</option>
+                        <option value="Fakultas Matematika dan Ilmu Pengetahuan Alam" {{ old('faculty') == 'Fakultas Matematika dan Ilmu Pengetahuan Alam' ? 'selected' : '' }}>Fakultas Matematika dan Ilmu Pengetahuan Alam</option>
+                        <option value="Fakultas Peternakan" {{ old('faculty') == 'Fakultas Peternakan' ? 'selected' : '' }}>Fakultas Peternakan</option>
+                        <option value="Fakultas Kedokteran Gigi" {{ old('faculty') == 'Fakultas Kedokteran Gigi' ? 'selected' : '' }}>Fakultas Kedokteran Gigi</option>
+                        <option value="Fakultas Kesehatan Masyarakat" {{ old('faculty') == 'Fakultas Kesehatan Masyarakat' ? 'selected' : '' }}>Fakultas Kesehatan Masyarakat</option>
+                        <option value="Fakultas Ilmu Kelautan dan Perikanan" {{ old('faculty') == 'Fakultas Ilmu Kelautan dan Perikanan' ? 'selected' : '' }}>Fakultas Ilmu Kelautan dan Perikanan</option>
+                        <option value="Fakultas Kehutanan" {{ old('faculty') == 'Fakultas Kehutanan' ? 'selected' : '' }}>Fakultas Kehutanan</option>
+                        <option value="Fakultas Farmasi" {{ old('faculty') == 'Fakultas Farmasi' ? 'selected' : '' }}>Fakultas Farmasi</option>
+                        <option value="Fakultas Keperawatan" {{ old('faculty') == 'Fakultas Keperawatan' ? 'selected' : '' }}>Fakultas Keperawatan</option>
+                        <option value="Fakultas Vokasi" {{ old('faculty') == 'Fakultas Vokasi' ? 'selected' : '' }}>Fakultas Vokasi</option>
+                        <option value="Fakultas Teknologi Pertanian" {{ old('faculty') == 'Fakultas Teknologi Pertanian' ? 'selected' : '' }}>Fakultas Teknologi Pertanian</option>
+                        <option value="Sekolah Pascasarjana" {{ old('faculty') == 'Sekolah Pascasarjana' ? 'selected' : '' }}>Sekolah Pascasarjana</option>
                     </select>
                 </div>
 
