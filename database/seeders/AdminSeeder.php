@@ -16,7 +16,7 @@ class AdminSeeder extends Seeder
         Admin::create([
             'name' => 'Super Admin',
             'nip_nidn_nidk_nim' => 'admin123',
-            'phone_number' => '',
+            'phone_number' => '089876543210',
             'password' => Hash::make('password123'),
         ]);
 
