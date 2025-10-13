@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Pengajuan HAKI</title>
+    <title>Register - Pengajuan HKI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
         }
         .glass-effect {
             background: rgba(255, 255, 255, 0.95);
@@ -17,8 +17,8 @@
         }
         .input-focus:focus {
             outline: none;
-            border-color: #059669;
-            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
     </style>
 </head>
@@ -26,11 +26,14 @@
     <div class="w-full max-w-md">
         <!-- Logo/Header Section -->
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
-                <i class="fas fa-user-plus text-2xl text-emerald-600"></i>
+            <div class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-lg mb-4">
+                <img src="{{ asset('images/logo-unhas-kecil.png') }}" alt="Logo Unhas" class="w-16 h-16">
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2">Daftar Akun</h1>
-            <p class="text-emerald-100">Bergabung dengan Sistem Pengajuan HAKI</p>
+            <h1 class="text-2xl font-bold text-white mb-2">Registrasi User</h1>
+            <div class="text-red-100">
+                <p class="font-semibold">Direktorat Inovasi dan Kekayaan Intelektual</p>
+                <p class="text-sm">Universitas Hasanuddin</p>
+            </div>
         </div>
 
         <!-- Register Form -->
@@ -147,7 +150,7 @@
 
                 <button 
                     type="submit"
-                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg"
+                    class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg"
                 >
                     <i class="fas fa-user-plus mr-2"></i>Daftar Akun
                 </button>

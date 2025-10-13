@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Pengajuan HAKI</title>
+    <title>Admin Login - Pengajuan HKI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
         }
         .glass-effect {
             background: rgba(255, 255, 255, 0.95);
@@ -17,8 +17,14 @@
         }
         .input-focus:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #991b1b;
+            box-shadow: 0 0 0 3px rgba(153, 27, 27, 0.1);
+        }
+        .btn-admin {
+            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+        }
+        .btn-admin:hover {
+            background: linear-gradient(135deg, #7f1d1d 0%, #6b1c1c 100%);
         }
     </style>
 </head>
@@ -26,11 +32,14 @@
     <div class="w-full max-w-md">
         <!-- Logo/Header Section -->
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
-                <i class="fas fa-shield-alt text-2xl text-indigo-600"></i>
+            <div class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-lg mb-4">
+                <img src="{{ asset('images/logo-unhas-kecil.png') }}" alt="Logo Unhas" class="w-16 h-16">
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2">Admin Portal</h1>
-            <p class="text-indigo-100">Sistem Pengajuan HAKI</p>
+            <h1 class="text-2xl font-bold text-white mb-2">Portal Admin</h1>
+            <div class="text-red-100">
+                <p class="font-semibold">Direktorat Inovasi dan Kekayaan Intelektual</p>
+                <p class="text-sm">Universitas Hasanuddin</p>
+            </div>
         </div>
 
         <!-- Login Form -->
@@ -99,7 +108,7 @@
 
                 <button 
                     type="submit"
-                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg"
+                    class="w-full btn-admin text-white font-semibold py-3 px-4 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg"
                 >
                     <i class="fas fa-sign-in-alt mr-2"></i>Masuk
                 </button>

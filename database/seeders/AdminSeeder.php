@@ -16,15 +16,15 @@ class AdminSeeder extends Seeder
         Admin::create([
             'name' => 'Super Admin',
             'nip_nidn_nidk_nim' => 'admin123',
-            'phone_number' => '081234567890',
+            'phone_number' => '089876543210',
             'password' => Hash::make('password123'),
         ]);
 
         Admin::create([
-            'name' => 'Admin HAKI UNHAS',
-            'nip_nidn_nidk_nim' => 'haki001',
-            'phone_number' => '081987654321',
-            'password' => Hash::make('hakiunhas123'),
+            'name' => 'Admin HKI UNHAS',
+            'nip_nidn_nidk_nim' => 'hki001',
+            'phone_number' => '081234567890',
+            'password' => Hash::make('hkiunhas123'),
         ]);
     }
 }
