@@ -13,7 +13,7 @@ Route::get('/', function () {
 // User Authentication Routes
 Route::prefix('/')->group(function () {
     Route::middleware('guest')->group(function () {
-        Route::get('/login', [UserAuthController::class, 'showLoginForm'])->name('user.login');
+        Route::get('/login', [UserAuthController::class, 'showLoginForm'])->name('login'); // Laravel default name
         Route::post('/login', [UserAuthController::class, 'login']);
         
         Route::get('/register', [UserAuthController::class, 'showRegisterForm'])->name('user.register');
@@ -22,7 +22,7 @@ Route::prefix('/')->group(function () {
     
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', function () {
-            return view('user.dashboard');
+            return view('user.dashboard_modern');
         })->name('user.dashboard');
         
         Route::post('/logout', [UserAuthController::class, 'logout'])->name('user.logout');
@@ -31,20 +31,24 @@ Route::prefix('/')->group(function () {
 
 // Admin Authentication Routes
 Route::prefix('admin')->group(function () {
-    Route::middleware('guest')->group(function () {
+    Route::middleware('admin.guest')->group(function () {
         Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
         Route::post('/login', [AdminAuthController::class, 'login']);
     });
     
-    // Admin dashboard routes (protected by custom middleware later)
-    Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    
-    // User management routes
-    Route::patch('/users/{user}/status', [AdminController::class, 'updateUserStatus'])->name('admin.users.update-status');
-    
-    // Admin creation routes
-    Route::get('/create-admin', [AdminController::class, 'createAdmin'])->name('admin.create');
-    Route::post('/create-admin', [AdminController::class, 'storeAdmin'])->name('admin.store');
-    
-    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+    // Admin protected routes
+    Route::middleware('admin.auth')->group(function () {
+        Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+        
+        // User management routes
+        Route::patch('/users/{user}/status', [AdminController::class, 'updateUserStatus'])->name('admin.users.update-status');
+        Route::get('/users', [AdminController::class, 'userIndex'])->name('admin.users.index');
+        
+        // Admin management routes
+        Route::get('/admins', [AdminController::class, 'adminIndex'])->name('admin.admins.index');
+        Route::get('/create-admin', [AdminController::class, 'createAdmin'])->name('admin.create');
+        Route::post('/create-admin', [AdminController::class, 'storeAdmin'])->name('admin.store');
+        
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+    });
 });

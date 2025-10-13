@@ -11,9 +11,17 @@ use Illuminate\Validation\ValidationException;
 
 class UserAuthController extends Controller
 {
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
-        return view('auth.user.login');
+        // Check if user was redirected from a protected page
+        $intended = $request->session()->get('url.intended');
+        $message = null;
+        
+        if ($intended && str_contains($intended, '/dashboard')) {
+            $message = 'Silakan login terlebih dahulu untuk mengakses dashboard.';
+        }
+        
+        return view('auth.user.login_new', compact('message'));
     }
 
     public function login(Request $request)
@@ -58,7 +66,7 @@ class UserAuthController extends Controller
 
     public function showRegisterForm()
     {
-        return view('auth.user.register');
+        return view('auth.user.register_new');
     }
 
     public function register(Request $request)
