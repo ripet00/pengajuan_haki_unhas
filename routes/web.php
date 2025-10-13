@@ -10,11 +10,6 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-// Test route for authentication status
-Route::get('/test-auth', function () {
-    return view('test_auth');
-})->name('test.auth');
-
 // User Authentication Routes
 Route::prefix('/')->group(function () {
     Route::middleware('guest')->group(function () {
