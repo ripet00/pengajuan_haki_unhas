@@ -35,6 +35,19 @@
 
         <!-- Login Form -->
         <div class="glass-effect rounded-2xl shadow-xl p-8">
+            @if(isset($message))
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-info-circle text-yellow-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">{{ $message }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             @if(session('success'))
                 <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6 rounded">
                     <div class="flex">

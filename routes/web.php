@@ -13,7 +13,7 @@ Route::get('/', function () {
 // User Authentication Routes
 Route::prefix('/')->group(function () {
     Route::middleware('guest')->group(function () {
-        Route::get('/login', [UserAuthController::class, 'showLoginForm'])->name('user.login');
+        Route::get('/login', [UserAuthController::class, 'showLoginForm'])->name('login'); // Laravel default name
         Route::post('/login', [UserAuthController::class, 'login']);
         
         Route::get('/register', [UserAuthController::class, 'showRegisterForm'])->name('user.register');
