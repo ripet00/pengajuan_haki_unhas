@@ -16,7 +16,19 @@ class AdminController extends Controller
         $deniedUsers = User::where('status', 'denied')->count();
         $totalUsers = User::count();
 
-        return view('admin.dashboard_new', compact('pendingUsers', 'activeUsers', 'deniedUsers', 'totalUsers'));
+        return view('admin.dashboard_modern', compact('pendingUsers', 'activeUsers', 'deniedUsers', 'totalUsers'));
+    }
+
+    public function userIndex()
+    {
+        $users = User::orderBy('created_at', 'desc')->paginate(15);
+        return view('admin.users.index', compact('users'));
+    }
+
+    public function adminIndex()
+    {
+        $admins = Admin::orderBy('created_at', 'desc')->paginate(15);
+        return view('admin.admins.index', compact('admins'));
     }
 
     public function updateUserStatus(Request $request, User $user)
