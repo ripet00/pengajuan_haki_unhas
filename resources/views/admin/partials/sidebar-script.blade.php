@@ -14,8 +14,12 @@
         if (window.innerWidth >= 768 && isCollapsed) {
             sidebar.classList.remove('sidebar-expanded');
             sidebar.classList.add('sidebar-collapsed');
-            logoText.style.opacity = '0';
+            if (logoText) logoText.style.opacity = '0';
             sidebarTexts.forEach(text => text.style.opacity = '0');
+            if (sidebarToggleDesktop) {
+                sidebarToggleDesktop.classList.remove('expanded');
+                sidebarToggleDesktop.classList.add('collapsed');
+            }
         }
 
         // Mobile sidebar toggle
@@ -43,13 +47,17 @@
                 if (isCollapsed) {
                     sidebar.classList.remove('sidebar-expanded');
                     sidebar.classList.add('sidebar-collapsed');
-                    logoText.style.opacity = '0';
+                    if (logoText) logoText.style.opacity = '0';
                     sidebarTexts.forEach(text => text.style.opacity = '0');
+                    sidebarToggleDesktop.classList.remove('expanded');
+                    sidebarToggleDesktop.classList.add('collapsed');
                 } else {
                     sidebar.classList.remove('sidebar-collapsed');
                     sidebar.classList.add('sidebar-expanded');
-                    logoText.style.opacity = '1';
+                    if (logoText) logoText.style.opacity = '1';
                     sidebarTexts.forEach(text => text.style.opacity = '1');
+                    sidebarToggleDesktop.classList.remove('collapsed');
+                    sidebarToggleDesktop.classList.add('expanded');
                 }
             });
         }

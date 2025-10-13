@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Admin - Pengajuan HAKI</title>
+    <title>Tambah Admin - Pengajuan HKI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -35,7 +35,7 @@
                                 </div>
                                 <div class="ml-3">
                                     <h3 class="text-base md:text-lg font-medium text-gray-900">Tambah Admin Baru</h3>
-                                    <p class="text-sm text-gray-500">Buat akun administrator untuk sistem HAKI</p>
+                                    <p class="text-sm text-gray-500">Buat akun administrator untuk sistem HKI</p>
                                 </div>
                             </div>
                         </div>
