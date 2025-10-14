@@ -124,28 +124,47 @@
                     <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-lock mr-2 text-gray-400"></i>Password
                     </label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition duration-200"
-                        placeholder="••••••••"
-                        required
-                    >
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg input-focus transition duration-200"
+                            placeholder="••••••••"
+                            required
+                        >
+                        <button 
+                            type="button" 
+                            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 transition duration-200"
+                            onclick="togglePasswordVisibility('password', 'eyeIconPassword')"
+                        >
+                            <i id="eyeIconPassword" class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div>
                     <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-lock mr-2 text-gray-400"></i>Konfirmasi Password
                     </label>
-                    <input 
-                        type="password" 
-                        id="password_confirmation" 
-                        name="password_confirmation"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition duration-200"
-                        placeholder="••••••••"
-                        required
-                    >
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="password_confirmation" 
+                            name="password_confirmation"
+                            class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg input-focus transition duration-200"
+                            placeholder="••••••••"
+                            required
+                        >
+                        <button 
+                            type="button" 
+                            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 transition duration-200"
+                            onclick="togglePasswordVisibility('password_confirmation', 'eyeIconPasswordConfirm')"
+                        >
+                            <i id="eyeIconPasswordConfirm" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
                 </div>
 
                 <button 
@@ -168,5 +187,22 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function togglePasswordVisibility(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const eyeIcon = document.getElementById(iconId);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>
