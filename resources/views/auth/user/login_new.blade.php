@@ -11,9 +11,10 @@
             background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
         }
         .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
         .input-focus:focus {
             outline: none;
@@ -37,7 +38,7 @@
         </div>
 
         <!-- Login Form -->
-        <div class="glass-effect rounded-2xl shadow-xl p-8">
+        <div class="glass-effect rounded-2xl shadow-xl p-6 sm:p-8">
             @if(isset($message))
                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded">
                     <div class="flex">
@@ -131,7 +132,7 @@
                 </button>
             </form>
 
-            <div class="mt-4 pt-4 border-t border-gray-200">
+            <div class="mt-6 pt-6 border-t border-gray-300">
                 <div class="text-center space-y-3">
                     <a href="/register" class="block w-full bg-white hover:bg-gray-50 text-red-600 font-semibold py-3 px-4 rounded-lg border border-red-600 transition duration-200">
                         <i class="fas fa-user-plus mr-2"></i>Buat Akun Baru

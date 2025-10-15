@@ -11,9 +11,10 @@
             background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
         }
         .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         .input-focus:focus {
             outline: none;
@@ -23,7 +24,7 @@
     </style>
 </head>
 <body class="gradient-bg min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
+    <div class="w-full max-w-lg">
         <!-- Logo/Header Section -->
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-lg mb-4">
@@ -37,7 +38,7 @@
         </div>
 
         <!-- Register Form -->
-        <div class="glass-effect rounded-2xl shadow-xl p-8">
+        <div class="glass-effect rounded-2xl shadow-xl p-6 sm:p-8">
             @if ($errors->any())
                 <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded">
                     <div class="flex">
@@ -99,6 +100,7 @@
                         required
                     >
                         <option value="">Pilih Fakultas</option>
+                        <option value="Umum" {{ old('faculty') == 'Umum' ? 'selected' : '' }}>Umum</option>
                         <option value="Fakultas Ekonomi dan Bisnis" {{ old('faculty') == 'Fakultas Ekonomi dan Bisnis' ? 'selected' : '' }}>Fakultas Ekonomi dan Bisnis</option>
                         <option value="Fakultas Hukum" {{ old('faculty') == 'Fakultas Hukum' ? 'selected' : '' }}>Fakultas Hukum</option>
                         <option value="Fakultas Kedokteran" {{ old('faculty') == 'Fakultas Kedokteran' ? 'selected' : '' }}>Fakultas Kedokteran</option>
@@ -165,7 +167,6 @@
                         </button>
                     </div>
                 </div>
-                </div>
 
                 <button 
                     type="submit"
@@ -175,14 +176,15 @@
                 </button>
             </form>
 
-            <div class="mt-6 pt-6 border-t border-gray-200">
-                <div class="text-center">
-                    <p class="text-sm text-gray-600 mb-2">
-                        Sudah punya akun?
-                    </p>
-                    <a href="/login" class="text-emerald-600 hover:text-emerald-800 text-sm font-medium">
-                        <i class="fas fa-sign-in-alt mr-1"></i>Login di sini
+            <!-- Spacing yang lebih baik antara form dan footer -->
+            <div class="mt-6 pt-6 border-t border-gray-300">
+                <div class="text-center space-y-3">
+                    <a href="/login" class="block w-full bg-white hover:bg-gray-50 text-red-600 font-semibold py-3 px-4 rounded-lg border border-red-600 transition duration-200">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login di sini
                     </a>
+                    <p class="text-sm text-gray-600">
+                        Sudah punya akun? Silakan login untuk melanjutkan.
+                    </p>
                 </div>
             </div>
         </div>
