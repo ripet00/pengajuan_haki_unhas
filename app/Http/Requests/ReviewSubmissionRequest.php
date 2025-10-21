@@ -8,14 +8,14 @@ class ReviewSubmissionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // pastikan admin auth guard digunakan pada route middleware
-        return auth('admin')->check();
+        // Check if admin is logged in via session
+        return session('admin_id') !== null;
     }
 
     public function rules(): array
     {
         return [
-            'status' => ['required', 'in:approved,denied'],
+            'status' => ['required', 'in:approved,rejected'],
             'rejection_reason' => ['nullable', 'string'],
         ];
     }

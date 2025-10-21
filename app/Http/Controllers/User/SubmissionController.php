@@ -8,19 +8,17 @@ use App\Models\Submission;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * SubmissionController (User)
- *
- * NOTE: docblock @method membantu static analyser (Intelephense)
- * agar tidak menandai $this->middleware sebagai undefined.
- *
- * @method void middleware($middleware, array $options = [])
- */
-
 class SubmissionController extends Controller
 {
-    public function __construct() {
-        $this->middleware('auth');
+    // List user's submissions
+    public function index() {
+        $user = Auth::user();
+        $submissions = Submission::where('user_id', $user->id)
+                                ->with('reviewedByAdmin')
+                                ->orderBy('created_at', 'desc')
+                                ->paginate(10);
+        
+        return view('user.submissions.index', compact('submissions'));
     }
 
     // Show create form
@@ -43,6 +41,8 @@ class SubmissionController extends Controller
         $path = $file->store('submissions', 'public');
         $submission = Submission::create([
             'user_id' => $user->id,
+            'title' => $request->title,
+            'categories' => $request->categories,
             'file_path' => $path,
             'file_name' => $file->getClientOriginalName(),
             'file_size' => $file->getSize(),
@@ -69,8 +69,8 @@ class SubmissionController extends Controller
     public function resubmit(StoreSubmissionRequest $request, Submission $submission) {
         $this->authorizeOwnership($submission);
 
-        if ($submission->status !== 'denied') {
-            return back()->withErrors(['document' => 'Hanya submission yang berstatus denied yang boleh direvisi.']);
+        if ($submission->status !== 'rejected') {
+            return back()->withErrors(['document' => 'Hanya submission yang berstatus rejected yang boleh direvisi.']);
         }
 
         // Delete old file
@@ -83,6 +83,8 @@ class SubmissionController extends Controller
         $path = $file->store('submissions', 'public');
 
         $submission->update([
+            'title' => $request->title,
+            'categories' => $request->categories,
             'file_path' => $path,
             'file_name' => $file->getClientOriginalName(),
             'file_size' => $file->getSize(),

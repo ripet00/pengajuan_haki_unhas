@@ -7,8 +7,14 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\SubmissionController as AdminSubmissionController;
 use App\Http\Controllers\User\SubmissionController as UserSubmissionController;
 
-// Default route redirects to login
+// Default route redirects based on authentication status
 Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect('/users/dashboard');
+    }
+    if (session('admin_id')) {
+        return redirect('/admin');
+    }
     return redirect('/login');
 });
 
@@ -21,14 +27,22 @@ Route::prefix('/')->group(function () {
         Route::get('/register', [UserAuthController::class, 'showRegisterForm'])->name('user.register');
         Route::post('/register', [UserAuthController::class, 'register']);
     });
+});
+
+// User protected routes with /users prefix
+Route::prefix('users')->middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('user.dashboard_modern');
+    })->name('user.dashboard');
     
-    Route::middleware('auth')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('user.dashboard_modern');
-        })->name('user.dashboard');
-        
-        Route::post('/logout', [UserAuthController::class, 'logout'])->name('user.logout');
-    });
+    Route::post('/logout', [UserAuthController::class, 'logout'])->name('user.logout');
+    
+    // User submission routes
+    Route::get('submissions', [UserSubmissionController::class, 'index'])->name('user.submissions.index');
+    Route::get('submissions/create', [UserSubmissionController::class, 'create'])->name('user.submissions.create');
+    Route::post('submissions', [UserSubmissionController::class, 'store'])->name('user.submissions.store');
+    Route::get('submissions/{submission}', [UserSubmissionController::class, 'show'])->name('user.submissions.show');
+    Route::post('submissions/{submission}/resubmit', [UserSubmissionController::class, 'resubmit'])->name('user.submissions.resubmit');
 });
 
 // Admin Authentication Routes
@@ -51,21 +65,11 @@ Route::prefix('admin')->group(function () {
         Route::get('/create-admin', [AdminController::class, 'createAdmin'])->name('admin.create');
         Route::post('/create-admin', [AdminController::class, 'storeAdmin'])->name('admin.store');
         
+        // Admin submission routes
+        Route::get('submissions', [AdminSubmissionController::class, 'index'])->name('admin.submissions.index');
+        Route::get('submissions/{submission}', [AdminSubmissionController::class, 'show'])->name('admin.submissions.show');
+        Route::post('submissions/{submission}/review', [AdminSubmissionController::class, 'review'])->name('admin.submissions.review');
+        
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
     });
-});
-
-// User submission routes (prefix /User)
-Route::prefix('User')->middleware('auth')->group(function () {
-    Route::get('submissions/create', [UserSubmissionController::class, 'create'])->name('user.submissions.create');
-    Route::post('submissions', [UserSubmissionController::class, 'store'])->name('user.submissions.store');
-    Route::get('submissions/{submission}', [UserSubmissionController::class, 'show'])->name('user.submissions.show');
-    Route::post('submissions/{submission}/resubmit', [UserSubmissionController::class, 'resubmit'])->name('user.submissions.resubmit');
-});
-
-// Admin submission routes (prefix /Admin)
-Route::prefix('Admin')->middleware('auth:admin')->group(function () {
-    Route::get('submissions', [AdminSubmissionController::class, 'index'])->name('admin.submissions.index');
-    Route::get('submissions/{submission}', [AdminSubmissionController::class, 'show'])->name('admin.submissions.show');
-    Route::post('submissions/{submission}/review', [AdminSubmissionController::class, 'review'])->name('admin.submissions.review');
 });

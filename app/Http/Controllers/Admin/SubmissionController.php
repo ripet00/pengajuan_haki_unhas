@@ -8,16 +8,11 @@ use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * Admin SubmissionController
- *
- * @method void middleware($middleware, array $options = [])
- */
 class SubmissionController extends Controller
 {
-    public function __construct()
+    protected function getCurrentAdmin()
     {
-        $this->middleware('auth:admin'); // admin guard
+        return \App\Models\Admin::find(session('admin_id'));
     }
 
     // list submissions (filter optional)
@@ -36,6 +31,11 @@ class SubmissionController extends Controller
     // view one submission (and download/open file)
     public function show(Submission $submission)
     {
+        // Load the admin relationship manually if needed
+        if ($submission->reviewed_by_admin_id) {
+            $submission->load('reviewedByAdmin');
+        }
+        
         return view('admin.submissions.show', compact('submission'));
     }
 
@@ -50,7 +50,7 @@ class SubmissionController extends Controller
         $validatedData = $request->validated();
         $submission->status = $validatedData['status'];
         $submission->reviewed_at = now();
-        $submission->reviewed_by_admin_id = Auth::id();
+        $submission->reviewed_by_admin_id = session('admin_id'); // Use session admin_id
         $submission->rejection_reason = $validatedData['rejection_reason'] ?? null;
         $submission->revisi = false; // after admin review, reset revisi flag
         $submission->save();

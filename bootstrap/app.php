@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.auth' => \App\Http\Middleware\AdminAuthMiddleware::class,
             'admin.guest' => \App\Http\Middleware\AdminGuestMiddleware::class,
         ]);
+        
+        // Set default redirect for unauthenticated users
+        $middleware->redirectGuestsTo('/login');
+        
+        // Set default redirect for authenticated users
+        $middleware->redirectUsersTo('/users/dashboard');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
