@@ -64,6 +64,7 @@ class SubmissionController extends Controller
      * Store initial submission
      *
      * @param \App\Http\Requests\StoreSubmissionRequest|\Illuminate\Http\Request $request
+     * @param \App\Models\Submission $submission
      */
     public function resubmit(StoreSubmissionRequest $request, Submission $submission) {
         $this->authorizeOwnership($submission);
