@@ -29,8 +29,15 @@ class SubmissionController extends Controller
     }
 
     // Store initial submission
+        /**
+     * Store initial submission
+     *
+     * @param \App\Http\Requests\StoreSubmissionRequest|\Illuminate\Http\Request $request
+     */
+
     public function store(StoreSubmissionRequest $request) {
         $user = Auth::user();
+        /** @var \Illuminate\Http\UploadedFile $file */
         $file = $request->file('document');
 
         $path = $file->store('submissions', 'public');
@@ -51,6 +58,13 @@ class SubmissionController extends Controller
         return view('user.submissions.show', compact('submission'));
     }
 
+
+    // Store initial submission
+        /**
+     * Store initial submission
+     *
+     * @param \App\Http\Requests\StoreSubmissionRequest|\Illuminate\Http\Request $request
+     */
     public function resubmit(StoreSubmissionRequest $request, Submission $submission) {
         $this->authorizeOwnership($submission);
 
@@ -63,6 +77,7 @@ class SubmissionController extends Controller
             Storage::disk('public')->delete($submission->file_path);
         }
 
+        /** @var \Illuminate\Http\UploadedFile $file */
         $file = $request->file('document');
         $path = $file->store('submissions', 'public');
 
