@@ -47,10 +47,11 @@ class SubmissionController extends Controller
             return back()->withErrors(['status' => 'Submission sudah direview sebelumnya.']);
         }
 
-        $submission->status = $request->status;
+        $validatedData = $request->validated();
+        $submission->status = $validatedData['status'];
         $submission->reviewed_at = now();
         $submission->reviewed_by_admin_id = Auth::id();
-        $submission->rejection_reason = $request->input('rejection_reason');
+        $submission->rejection_reason = $validatedData['rejection_reason'] ?? null;
         $submission->revisi = false; // after admin review, reset revisi flag
         $submission->save();
 
