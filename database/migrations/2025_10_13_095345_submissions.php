@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('submissions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
+            $table->enum('categories', ['Public', 'University'])->default('University');
             $table->string('file_path');
             $table->string('file_name');
             $table->unsignedBigInteger('file_size'); // in bytes
