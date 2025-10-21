@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin.auth' => \App\Http\Middleware\AdminAuthMiddleware::class,
             'admin.guest' => \App\Http\Middleware\AdminGuestMiddleware::class,
+            'file.upload' => \App\Http\Middleware\HandleFileUploadErrors::class,
         ]);
         
         // Set default redirect for unauthenticated users

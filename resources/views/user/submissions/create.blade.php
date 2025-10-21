@@ -150,10 +150,13 @@
     </div>
 
     <script>
+        let isFileSizeValid = false;
+        
         function updateFileName(input) {
             const fileInfo = document.getElementById('file-info');
             const fileName = document.getElementById('file-name');
             const fileSize = document.getElementById('file-size');
+            const submitButton = document.querySelector('button[type="submit"]');
             
             if (input.files && input.files[0]) {
                 const file = input.files[0];
@@ -165,18 +168,101 @@
                 
                 fileInfo.classList.remove('hidden');
                 
-                // Check file size limit
-                if (file.size > 20 * 1024 * 1024) { // 20MB in bytes
+                // Reset classes
+                fileSize.classList.remove('text-red-500', 'text-green-500');
+                
+                // Check file size limit (20MB)
+                if (file.size > 20 * 1024 * 1024) {
                     fileSize.classList.add('text-red-500');
-                    fileSize.textContent += ' - Ukuran terlalu besar!';
+                    fileSize.textContent += ' - Ukuran terlalu besar! Maksimal 20MB';
+                    isFileSizeValid = false;
+                    
+                    // Disable submit button
+                    submitButton.disabled = true;
+                    submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+                    submitButton.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>File Terlalu Besar';
+                    
+                    // Show error notification
+                    showNotification('error', 'File PDF yang Anda pilih terlalu besar. Maksimal ukuran file adalah 20MB.');
                 } else {
-                    fileSize.classList.remove('text-red-500');
                     fileSize.classList.add('text-green-500');
+                    fileSize.textContent += ' ✓';
+                    isFileSizeValid = true;
+                    
+                    // Enable submit button
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    submitButton.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Ajukan Sekarang';
+                    
+                    // Show success notification
+                    showNotification('success', `File "${file.name}" siap untuk diupload (${sizeInMB} MB)`);
+                }
+                
+                // Check file type
+                if (!file.type.includes('pdf')) {
+                    showNotification('error', 'Hanya file PDF yang diperbolehkan.');
+                    input.value = '';
+                    fileInfo.classList.add('hidden');
+                    isFileSizeValid = false;
+                    submitButton.disabled = true;
+                    submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+                    submitButton.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>File Tidak Valid';
                 }
             } else {
                 fileInfo.classList.add('hidden');
+                isFileSizeValid = false;
             }
         }
+        
+        function showNotification(type, message) {
+            // Remove existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => notification.remove());
+            
+            const notification = document.createElement('div');
+            notification.className = `notification fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                type === 'error' ? 'bg-red-100 border-l-4 border-red-500' : 'bg-green-100 border-l-4 border-green-500'
+            }`;
+            
+            notification.innerHTML = `
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-${type === 'error' ? 'exclamation-circle text-red-400' : 'check-circle text-green-400'}"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium ${type === 'error' ? 'text-red-800' : 'text-green-800'}">${message}</p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-${type === 'error' ? 'red' : 'green'}-400 hover:text-${type === 'error' ? 'red' : 'green'}-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+        
+        // Form submission validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (!isFileSizeValid) {
+                e.preventDefault();
+                showNotification('error', 'Pastikan file PDF yang dipilih tidak melebihi 20MB.');
+                return false;
+            }
+            
+            // Show loading state
+            const submitButton = document.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Mengupload...';
+            
+            showNotification('success', 'Sedang mengupload file, mohon tunggu...');
+        });
     </script>
 </body>
 </html>

@@ -40,9 +40,9 @@ Route::prefix('users')->middleware('auth')->group(function () {
     // User submission routes
     Route::get('submissions', [UserSubmissionController::class, 'index'])->name('user.submissions.index');
     Route::get('submissions/create', [UserSubmissionController::class, 'create'])->name('user.submissions.create');
-    Route::post('submissions', [UserSubmissionController::class, 'store'])->name('user.submissions.store');
+    Route::post('submissions', [UserSubmissionController::class, 'store'])->middleware('file.upload')->name('user.submissions.store');
     Route::get('submissions/{submission}', [UserSubmissionController::class, 'show'])->name('user.submissions.show');
-    Route::post('submissions/{submission}/resubmit', [UserSubmissionController::class, 'resubmit'])->name('user.submissions.resubmit');
+    Route::post('submissions/{submission}/resubmit', [UserSubmissionController::class, 'resubmit'])->middleware('file.upload')->name('user.submissions.resubmit');
 });
 
 // Admin Authentication Routes
