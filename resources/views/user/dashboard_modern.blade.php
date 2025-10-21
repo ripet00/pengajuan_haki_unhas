@@ -93,7 +93,9 @@
                 </div>
                 <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Pengajuan Baru</h3>
                 <p class="text-gray-600 text-xs sm:text-sm mb-4">Ajukan permohonan HKI baru untuk karya Anda</p>
-                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
+                <button 
+                    onclick="window.location.href='{{ route('user.submissions.create') }}'"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
                     <i class="fas fa-plus mr-2"></i>Buat Pengajuan
                 </button>
             </div>
@@ -103,11 +105,13 @@
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center">
                         <i class="fas fa-list text-lg sm:text-xl text-green-600"></i>
                     </div>
-                    <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">0</span>
+                    <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{{ Auth::user()->submissions()->count() ?? 0 }}</span>
                 </div>
                 <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Riwayat Pengajuan</h3>
                 <p class="text-gray-600 text-xs sm:text-sm mb-4">Lihat semua pengajuan HKI yang pernah Anda buat</p>
-                <button class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
+                <button 
+                    onclick="window.location.href='{{ route('user.submissions.index') }}'"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
                     <i class="fas fa-history mr-2"></i>Lihat Riwayat
                 </button>
             </div>
@@ -121,7 +125,9 @@
                 </div>
                 <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Status Pengajuan</h3>
                 <p class="text-gray-600 text-xs sm:text-sm mb-4">Pantau progress pengajuan HKI Anda</p>
-                <button class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
+                <button 
+                    onclick="window.location.href='{{ route('user.submissions.index') }}'"
+                    class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
                     <i class="fas fa-eye mr-2"></i>Cek Status
                 </button>
             </div>
@@ -143,8 +149,8 @@
                             <span class="text-blue-600 text-xs font-semibold">1</span>
                         </div>
                         <div>
-                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Persiapan Dokumen</h4>
-                            <p class="text-xs sm:text-sm text-gray-600">Siapkan dokumen pendukung yang diperlukan</p>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Upload Dokumen HKI</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Upload file PDF dokumen pendukung HKI</p>
                         </div>
                     </div>
                     <div class="flex items-start">
@@ -152,17 +158,26 @@
                             <span class="text-blue-600 text-xs font-semibold">2</span>
                         </div>
                         <div>
-                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Pengajuan Online</h4>
-                            <p class="text-xs sm:text-sm text-gray-600">Lengkapi formulir pengajuan melalui sistem</p>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Review Dokumen</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Admin review dan approval dokumen HKI</p>
                         </div>
                     </div>
                     <div class="flex items-start">
-                        <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
-                            <span class="text-blue-600 text-xs font-semibold">3</span>
+                        <div class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                            <span class="text-orange-600 text-xs font-semibold">3</span>
                         </div>
                         <div>
-                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Review & Approval</h4>
-                            <p class="text-xs sm:text-sm text-gray-600">Tunggu proses review dari tim HKI</p>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Upload Biodata</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Upload biodata lengkap setelah dokumen disetujui</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                            <span class="text-green-600 text-xs font-semibold">4</span>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Finalisasi</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Review biodata dan penyelesaian proses HKI</p>
                         </div>
                     </div>
                 </div>
@@ -178,19 +193,19 @@
                 </div>
                 <div class="grid grid-cols-2 gap-3 sm:gap-4">
                     <div class="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
-                        <div class="text-xl sm:text-2xl font-bold text-gray-400">0</div>
+                        <div class="text-xl sm:text-2xl font-bold text-gray-900">{{ Auth::user()->submissions()->count() }}</div>
                         <div class="text-xs sm:text-sm text-gray-600">Total Pengajuan</div>
                     </div>
                     <div class="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
-                        <div class="text-xl sm:text-2xl font-bold text-gray-400">0</div>
+                        <div class="text-xl sm:text-2xl font-bold text-green-600">{{ Auth::user()->submissions()->where('status', 'approved')->count() }}</div>
                         <div class="text-xs sm:text-sm text-gray-600">Disetujui</div>
                     </div>
                     <div class="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
-                        <div class="text-xl sm:text-2xl font-bold text-gray-400">0</div>
+                        <div class="text-xl sm:text-2xl font-bold text-yellow-600">{{ Auth::user()->submissions()->where('status', 'pending')->count() }}</div>
                         <div class="text-xs sm:text-sm text-gray-600">Dalam Proses</div>
                     </div>
                     <div class="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
-                        <div class="text-xl sm:text-2xl font-bold text-gray-400">0</div>
+                        <div class="text-xl sm:text-2xl font-bold text-red-600">{{ Auth::user()->submissions()->where('status', 'rejected')->count() }}</div>
                         <div class="text-xs sm:text-sm text-gray-600">Ditolak</div>
                     </div>
                 </div>

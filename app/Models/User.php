@@ -38,4 +38,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Admin::class, 'verified_by_admin_id');
     }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
+    }
 }

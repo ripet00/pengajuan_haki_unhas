@@ -11,6 +11,13 @@ use Illuminate\Validation\ValidationException;
 
 class UserAuthController extends Controller
 {
+    /**
+     * Where to redirect users after login.
+     *
+     * @var string
+     */
+    public const HOME = '/users/dashboard';
+
     public function showLoginForm(Request $request)
     {
         // Check if user was redirected from a protected page
@@ -61,7 +68,7 @@ class UserAuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->intended('/dashboard');
+        return redirect()->intended('/users/dashboard');
     }
 
     public function showRegisterForm()
