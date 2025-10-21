@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\SubmissionController as AdminSubmissionController;
+use App\Http\Controllers\User\SubmissionController as UserSubmissionController;
 
 // Default route redirects to login
 Route::get('/', function () {
@@ -51,4 +53,19 @@ Route::prefix('admin')->group(function () {
         
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
     });
+});
+
+// User submission routes (prefix /User)
+Route::prefix('User')->middleware('auth')->group(function () {
+    Route::get('submissions/create', [UserSubmissionController::class, 'create'])->name('user.submissions.create');
+    Route::post('submissions', [UserSubmissionController::class, 'store'])->name('user.submissions.store');
+    Route::get('submissions/{submission}', [UserSubmissionController::class, 'show'])->name('user.submissions.show');
+    Route::post('submissions/{submission}/resubmit', [UserSubmissionController::class, 'resubmit'])->name('user.submissions.resubmit');
+});
+
+// Admin submission routes (prefix /Admin)
+Route::prefix('Admin')->middleware('auth:admin')->group(function () {
+    Route::get('submissions', [AdminSubmissionController::class, 'index'])->name('admin.submissions.index');
+    Route::get('submissions/{submission}', [AdminSubmissionController::class, 'show'])->name('admin.submissions.show');
+    Route::post('submissions/{submission}/review', [AdminSubmissionController::class, 'review'])->name('admin.submissions.review');
 });

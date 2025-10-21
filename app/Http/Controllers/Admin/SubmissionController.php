@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\ReviewSubmissionRequest;
+use App\Models\Submission;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+/**
+ * Admin SubmissionController
+ *
+ * @method void middleware($middleware, array $options = [])
+ */
+class SubmissionController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth:admin'); // admin guard
+    }
+
+    // list submissions (filter optional)
+    public function index(Request $request)
+    {
+        $q = Submission::with('user', 'reviewedByAdmin')->latest();
+
+        if ($request->filled('status')) {
+            $q->where('status', $request->status);
+        }
+
+        $submissions = $q->paginate(20);
+        return view('admin.submissions.index', compact('submissions'));
+    }
+
+    // view one submission (and download/open file)
+    public function show(Submission $submission)
+    {
+        return view('admin.submissions.show', compact('submission'));
+    }
+
+    // review action: set approved or denied with a comment
+    public function review(ReviewSubmissionRequest $request, Submission $submission)
+    {
+        // only allow review if current status is pending
+        if ($submission->status !== 'pending') {
+            return back()->withErrors(['status' => 'Submission sudah direview sebelumnya.']);
+        }
+
+        $validatedData = $request->validated();
+        $submission->status = $validatedData['status'];
+        $submission->reviewed_at = now();
+        $submission->reviewed_by_admin_id = Auth::id();
+        $submission->rejection_reason = $validatedData['rejection_reason'] ?? null;
+        $submission->revisi = false; // after admin review, reset revisi flag
+        $submission->save();
+
+        return redirect()->route('admin.submissions.show', $submission)->with('success', 'Review tersimpan.');
+    }
+}
