@@ -18,6 +18,7 @@ class Submission extends Model
         'rejection_reason',
         'revisi',
         'reviewed_by_admin_id',
+        'categories',
     ];
 
     protected $casts = [
