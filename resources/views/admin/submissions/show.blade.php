@@ -111,10 +111,54 @@ use Illuminate\Support\Facades\Storage;
                         </div>
                     </div>
 
+                    <!-- Creator Information -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">Informasi Pencipta Pertama</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="font-medium text-gray-700">Nama Pencipta:</div>
+                                <div class="sm:col-span-2 text-gray-900">{{ $submission->creator_name ?? 'Tidak ada informasi' }}</div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="font-medium text-gray-700">No. WhatsApp Pencipta:</div>
+                                <div class="sm:col-span-2 text-gray-900">{{ $submission->creator_whatsapp ?? 'Tidak ada informasi' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">Informasi File</h3>
                         
                         <div class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="font-medium text-gray-700">Jenis File:</div>
+                                <div class="sm:col-span-2 text-gray-900">
+                                    @if($submission->file_type === 'video')
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            <i class="fas fa-video mr-1"></i>Video MP4
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-file-pdf mr-1"></i>PDF Document
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            @if($submission->file_type === 'video' && $submission->youtube_link)
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="font-medium text-gray-700">Link YouTube:</div>
+                                <div class="sm:col-span-2">
+                                    <a href="{{ $submission->youtube_link }}" target="_blank" 
+                                       class="text-blue-600 hover:text-blue-800 underline">
+                                        <i class="fab fa-youtube mr-1"></i>{{ $submission->youtube_link }}
+                                    </a>
+                                </div>
+                            </div>
+                            @endif
+
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="font-medium text-gray-700">Nama File:</div>
                                 <div class="sm:col-span-2 text-gray-900">{{ $submission->file_name }}</div>
@@ -132,10 +176,13 @@ use Illuminate\Support\Facades\Storage;
                                         <a href="{{ Storage::disk('public')->url($submission->file_path) }}" 
                                            target="_blank"
                                            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                            <i class="fas fa-eye mr-2"></i>Lihat PDF
+                                            @if($submission->file_type === 'video')
+                                                <i class="fas fa-play mr-2"></i>Lihat Video
+                                            @else
+                                                <i class="fas fa-eye mr-2"></i>Lihat PDF
+                                            @endif
                                         </a>
-                                        <a href="{{ Storage::disk('public')->url($submission->file_path) }}" 
-                                           download="{{ $submission->file_name }}"
+                                        <a href="{{ route('admin.submissions.download', $submission) }}" 
                                            class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                             <i class="fas fa-download mr-2"></i>Download
                                         </a>
@@ -306,8 +353,16 @@ use Illuminate\Support\Facades\Storage;
                             <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $submission->user->phone_number) }}?text=Halo%20{{ urlencode($submission->user->name) }}%2C%20terkait%20pengajuan%20HKI%20%23{{ $submission->id }}" 
                                target="_blank"
                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                <i class="fab fa-whatsapp mr-2"></i>Hubungi WhatsApp
+                                <i class="fab fa-whatsapp mr-2"></i>Hubungi Pengaju
                             </a>
+                            
+                            @if($submission->creator_whatsapp)
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $submission->creator_whatsapp) }}?text=Halo%20{{ urlencode($submission->creator_name ?? 'Pencipta') }}%2C%20terkait%20pengajuan%20HKI%20%23{{ $submission->id }}" 
+                               target="_blank"
+                               class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                <i class="fab fa-whatsapp mr-2"></i>Hubungi Pencipta
+                            </a>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -68,6 +68,10 @@ class SubmissionController extends Controller
                 'user_id' => $user->id,
                 'title' => $request->title,
                 'categories' => $request->categories,
+                'file_type' => $request->file_type,
+                'youtube_link' => $request->youtube_link,
+                'creator_name' => $request->creator_name,
+                'creator_whatsapp' => $request->creator_whatsapp,
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
                 'file_size' => $file->getSize(),
@@ -150,6 +154,10 @@ class SubmissionController extends Controller
             $submission->update([
                 'title' => $request->title,
                 'categories' => $request->categories,
+                'file_type' => $request->file_type,
+                'youtube_link' => $request->youtube_link,
+                'creator_name' => $request->creator_name,
+                'creator_whatsapp' => $request->creator_whatsapp,
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
                 'file_size' => $file->getSize(),
@@ -182,5 +190,20 @@ class SubmissionController extends Controller
         if ($submission->user_id !== Auth::id()) {
             abort(403);
         }
+    }
+
+    // download file - force download instead of opening in browser
+    public function download(Submission $submission)
+    {
+        // Ensure user can only download their own submissions
+        $this->authorizeOwnership($submission);
+        
+        $filePath = storage_path('app/public/' . $submission->file_path);
+        
+        if (!file_exists($filePath)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return response()->download($filePath, $submission->file_name);
     }
 }

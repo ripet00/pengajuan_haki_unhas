@@ -121,7 +121,11 @@ use Illuminate\Support\Facades\Storage;
                                 <div>
                                     <div class="text-sm font-medium text-gray-900">{{ Str::limit($submission->title, 40) }}</div>
                                     <div class="text-sm text-gray-500">
-                                        <i class="fas fa-file-pdf text-red-500 mr-1"></i>
+                                        @if($submission->file_type === 'video')
+                                            <i class="fas fa-video text-purple-500 mr-1"></i>
+                                        @else
+                                            <i class="fas fa-file-pdf text-red-500 mr-1"></i>
+                                        @endif
                                         {{ $submission->file_name }}
                                     </div>
                                 </div>
@@ -199,9 +203,14 @@ use Illuminate\Support\Facades\Storage;
                                     
                                     <a href="{{ Storage::disk('public')->url($submission->file_path) }}" 
                                        target="_blank" 
-                                       class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                        <i class="fas fa-file-pdf mr-1"></i>
-                                        PDF
+                                       class="inline-flex items-center px-3 py-2 {{ $submission->file_type === 'video' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-red-600 hover:bg-red-700' }} text-white text-sm font-medium rounded-lg transition duration-200">
+                                        @if($submission->file_type === 'video')
+                                            <i class="fas fa-video mr-1"></i>
+                                            Video
+                                        @else
+                                            <i class="fas fa-file-pdf mr-1"></i>
+                                            PDF
+                                        @endif
                                     </a>
                                     
                                     @if($submission->status != 'pending')

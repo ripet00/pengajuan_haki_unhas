@@ -57,4 +57,16 @@ class SubmissionController extends Controller
 
         return redirect()->route('admin.submissions.show', $submission)->with('success', 'Review tersimpan.');
     }
+
+    // download file - force download instead of opening in browser
+    public function download(Submission $submission)
+    {
+        $filePath = storage_path('app/public/' . $submission->file_path);
+        
+        if (!file_exists($filePath)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return response()->download($filePath, $submission->file_name);
+    }
 }

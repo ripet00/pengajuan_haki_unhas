@@ -250,6 +250,36 @@
                             <p class="text-gray-900">{{ $submission->reviewedByAdmin->name }}</p>
                         </div>
                         @endif
+
+                        <!-- Creator Information -->
+                        @if($submission->creator_name || $submission->creator_whatsapp)
+                        <div class="pt-4 border-t border-gray-200">
+                            <h4 class="text-sm font-semibold text-gray-700 mb-3">
+                                <i class="fas fa-user-edit mr-1"></i>Informasi Pencipta Pertama
+                            </h4>
+                            
+                            @if($submission->creator_name)
+                            <div class="mb-2">
+                                <label class="block text-sm font-medium text-gray-500 mb-1">Nama Pencipta</label>
+                                <p class="text-gray-900">{{ $submission->creator_name }}</p>
+                            </div>
+                            @endif
+
+                            @if($submission->creator_whatsapp)
+                            <div class="mb-2">
+                                <label class="block text-sm font-medium text-gray-500 mb-1">WhatsApp Pencipta</label>
+                                <div class="flex items-center space-x-2">
+                                    <p class="text-gray-900">{{ $submission->creator_whatsapp }}</p>
+                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $submission->creator_whatsapp) }}" 
+                                       target="_blank"
+                                       class="inline-flex items-center px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition duration-200">
+                                        <i class="fab fa-whatsapp mr-1"></i>Hubungi
+                                    </a>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                        @endif
                     </div>
 
                     <!-- File Info -->
@@ -265,12 +295,40 @@
                         </div>
 
                         <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-1">Jenis File</label>
+                            @if($submission->file_type === 'video')
+                                <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                                    <i class="fas fa-video mr-1"></i>Video MP4
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
+                                    <i class="fas fa-file-pdf mr-1"></i>PDF
+                                </span>
+                            @endif
+                        </div>
+
+                        @if($submission->file_type === 'video' && $submission->youtube_link)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-1">Link YouTube</label>
+                            <a href="{{ $submission->youtube_link }}" 
+                               target="_blank" 
+                               class="text-blue-600 hover:text-blue-800 underline text-sm break-all">
+                                {{ $submission->youtube_link }}
+                            </a>
+                        </div>
+                        @endif
+
+                        <div>
                             <label class="block text-sm font-medium text-gray-500 mb-3">Aksi File</label>
                                 <div class="space-y-2">
                                 <a href="{{ asset('storage/' . $submission->file_path) }}" 
                                    target="_blank"
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                    <i class="fas fa-eye mr-2"></i>Lihat File PDF
+                                    @if($submission->file_type === 'video')
+                                        <i class="fas fa-play mr-2"></i>Lihat Video
+                                    @else
+                                        <i class="fas fa-eye mr-2"></i>Lihat File PDF
+                                    @endif
                                 </a>
                                 <a href="{{ asset('storage/' . $submission->file_path) }}" 
                                    download="{{ $submission->file_name }}"

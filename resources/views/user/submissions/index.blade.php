@@ -225,8 +225,12 @@
                                         <a href="{{ asset('storage/' . $submission->file_path) }}" 
                                            target="_blank" 
                                            class="text-red-600 hover:text-red-800 transition duration-200" 
-                                           title="Lihat PDF">
-                                            <i class="fas fa-file-pdf"></i>
+                                           title="@if($submission->file_type === 'video')Lihat Video @else Lihat PDF @endif">
+                                            @if($submission->file_type === 'video')
+                                                <i class="fas fa-video"></i>
+                                            @else
+                                                <i class="fas fa-file-pdf"></i>
+                                            @endif
                                         </a>
                                     </div>
                                 </td>
