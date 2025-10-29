@@ -56,4 +56,32 @@ class Submission extends Model
     {
         return $this->belongsTo(Admin::class, 'biodata_reviewed_by');
     }
+
+    /**
+     * Find submissions with similar titles (case-insensitive)
+     * @param string $title
+     * @param int|null $excludeId - ID submission yang akan dikecualikan dari pencarian
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function findSimilarTitles($title, $excludeId = null)
+    {
+        $query = self::with(['user'])
+            ->whereRaw('LOWER(title) = ?', [strtolower($title)])
+            ->orderBy('created_at', 'asc'); // Urutkan berdasarkan tanggal pengajuan
+        
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+        
+        return $query->get();
+    }
+
+    /**
+     * Check if current submission has similar titles with previous submissions
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getSimilarTitles()
+    {
+        return self::findSimilarTitles($this->title, $this->id);
+    }
 }
