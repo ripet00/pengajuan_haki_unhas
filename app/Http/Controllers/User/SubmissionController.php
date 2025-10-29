@@ -7,6 +7,7 @@ use App\Http\Requests\StoreSubmissionRequest;
 use App\Models\Submission;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SubmissionController extends Controller
 {
@@ -66,12 +67,12 @@ class SubmissionController extends Controller
             $path = $file->store('submissions', 'public');
             $submission = Submission::create([
                 'user_id' => $user->id,
-                'title' => $request->title,
-                'categories' => $request->categories,
-                'file_type' => $request->file_type,
-                'youtube_link' => $request->youtube_link,
-                'creator_name' => $request->creator_name,
-                'creator_whatsapp' => $request->creator_whatsapp,
+                'title' => $request->input('title'),
+                'categories' => $request->input('categories'),
+                'file_type' => $request->input('file_type'),
+                'youtube_link' => $request->input('youtube_link'),
+                'creator_name' => $request->input('creator_name'),
+                'creator_whatsapp' => $request->input('creator_whatsapp'),
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
                 'file_size' => $file->getSize(),
@@ -83,8 +84,8 @@ class SubmissionController extends Controller
             
         } catch (\Exception $e) {
             // Log the error for debugging
-            \Log::error('File upload error: ' . $e->getMessage(), [
-                'user_id' => auth()->id(),
+            Log::error('File upload error: ' . $e->getMessage(), [
+                'user_id' => Auth::id(),
                 'file_size' => $request->hasFile('document') ? $request->file('document')->getSize() : 'unknown',
                 'error_trace' => $e->getTraceAsString()
             ]);
@@ -152,12 +153,12 @@ class SubmissionController extends Controller
             $path = $file->store('submissions', 'public');
 
             $submission->update([
-                'title' => $request->title,
-                'categories' => $request->categories,
-                'file_type' => $request->file_type,
-                'youtube_link' => $request->youtube_link,
-                'creator_name' => $request->creator_name,
-                'creator_whatsapp' => $request->creator_whatsapp,
+                'title' => $request->input('title'),
+                'categories' => $request->input('categories'),
+                'file_type' => $request->input('file_type'),
+                'youtube_link' => $request->input('youtube_link'),
+                'creator_name' => $request->input('creator_name'),
+                'creator_whatsapp' => $request->input('creator_whatsapp'),
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
                 'file_size' => $file->getSize(),
@@ -172,8 +173,8 @@ class SubmissionController extends Controller
             
         } catch (\Exception $e) {
             // Log the error for debugging
-            \Log::error('File resubmit error: ' . $e->getMessage(), [
-                'user_id' => auth()->id(),
+            Log::error('File resubmit error: ' . $e->getMessage(), [
+                'user_id' => Auth::id(),
                 'submission_id' => $submission->id,
                 'file_size' => $request->hasFile('document') ? $request->file('document')->getSize() : 'unknown',
                 'error_trace' => $e->getTraceAsString()
