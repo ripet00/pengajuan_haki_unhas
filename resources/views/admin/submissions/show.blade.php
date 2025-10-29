@@ -91,7 +91,7 @@ use Illuminate\Support\Facades\Storage;
                     </div>
 
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">Informasi Pengaju</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">Informasi Pengusul</h3>
                         
                         <div class="space-y-4">
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -353,7 +353,7 @@ use Illuminate\Support\Facades\Storage;
                             <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $submission->user->phone_number) }}?text=Halo%20{{ urlencode($submission->user->name) }}%2C%20terkait%20pengajuan%20HKI%20%23{{ $submission->id }}" 
                                target="_blank"
                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                <i class="fab fa-whatsapp mr-2"></i>Hubungi Pengaju
+                                <i class="fab fa-whatsapp mr-2"></i>Hubungi Pengusul
                             </a>
                             
                             @if($submission->creator_whatsapp)

@@ -387,12 +387,67 @@
                         </div>
 
                         <div>
-                            <label for="document" class="block text-sm font-medium text-gray-700 mb-1">Dokumen PDF Baru</label>
+                            <label for="file_type" class="block text-sm font-medium text-gray-700 mb-1">Jenis File</label>
+                            <select 
+                                id="file_type" 
+                                name="file_type"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                required
+                                onchange="toggleFileFields()"
+                            >
+                                <option value="pdf" {{ old('file_type', $submission->file_type) == 'pdf' ? 'selected' : '' }}>PDF</option>
+                                <option value="video" {{ old('file_type', $submission->file_type) == 'video' ? 'selected' : '' }}>Video (MP4)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="creator_name" class="block text-sm font-medium text-gray-700 mb-1">Nama Pencipta Pertama</label>
+                            <input 
+                                type="text" 
+                                id="creator_name" 
+                                name="creator_name" 
+                                value="{{ old('creator_name', $submission->creator_name) }}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                required
+                            >
+                        </div>
+
+                        <div>
+                            <label for="creator_whatsapp" class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp Pencipta Pertama</label>
+                            <input 
+                                type="text" 
+                                id="creator_whatsapp" 
+                                name="creator_whatsapp" 
+                                value="{{ old('creator_whatsapp', $submission->creator_whatsapp) }}"
+                                placeholder="Contoh: 081234567890 atau +6281234567890"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                required
+                            >
+                        </div>
+
+                        <div id="youtube-field" style="display: {{ old('file_type', $submission->file_type) == 'video' ? 'block' : 'none' }};">
+                            <label for="youtube_link" class="block text-sm font-medium text-gray-700 mb-1">Link YouTube (opsional)</label>
+                            <input 
+                                type="url" 
+                                id="youtube_link" 
+                                name="youtube_link" 
+                                value="{{ old('youtube_link', $submission->youtube_link) }}"
+                                placeholder="https://www.youtube.com/watch?v=..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="document" class="block text-sm font-medium text-gray-700 mb-1">
+                                <span id="file-label">
+                                    {{ old('file_type', $submission->file_type) == 'video' ? 'File Video MP4 Baru' : 'Dokumen PDF Baru' }}
+                                </span>
+                            </label>
                             <input 
                                 type="file" 
                                 id="document" 
                                 name="document" 
-                                accept=".pdf"
+                                accept="{{ old('file_type', $submission->file_type) == 'video' ? '.mp4' : '.pdf' }}"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                                 required
                             >
@@ -406,6 +461,25 @@
                         </button>
                     </form>
                 </div>
+
+                <script>
+                function toggleFileFields() {
+                    const fileType = document.getElementById('file_type').value;
+                    const youtubeField = document.getElementById('youtube-field');
+                    const documentInput = document.getElementById('document');
+                    const fileLabel = document.getElementById('file-label');
+                    
+                    if (fileType === 'video') {
+                        youtubeField.style.display = 'block';
+                        documentInput.accept = '.mp4';
+                        fileLabel.textContent = 'File Video MP4 Baru';
+                    } else {
+                        youtubeField.style.display = 'none';
+                        documentInput.accept = '.pdf';
+                        fileLabel.textContent = 'Dokumen PDF Baru';
+                    }
+                }
+                </script>
                 @endif
             </div>
         </div>
