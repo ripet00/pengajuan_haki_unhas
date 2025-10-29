@@ -3,13 +3,14 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreSubmissionRequest extends FormRequest
 {
     public function authorize(): bool
     {
         // request ini untuk user yang submit, bukan admin
-        return auth()->check();
+        return Auth::check();
     }
 
     public function rules(): array
