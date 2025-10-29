@@ -3,13 +3,14 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreSubmissionRequest extends FormRequest
 {
     public function authorize(): bool
     {
         // request ini untuk user yang submit, bukan admin
-        return auth()->check();
+        return Auth::check();
     }
 
     public function rules(): array
@@ -23,9 +24,11 @@ class StoreSubmissionRequest extends FormRequest
         ];
 
         // Conditional validation based on file type
-        if ($this->input('file_type') === 'pdf') {
+        /** @var string|null $fileType */
+        $fileType = request('file_type');
+        if ($fileType === 'pdf') {
             $rules['document'] = ['required', 'file', 'mimes:pdf', 'max:20480']; // 20MB
-        } elseif ($this->input('file_type') === 'video') {
+        } elseif ($fileType === 'video') {
             $rules['document'] = ['required', 'file', 'mimes:mp4', 'max:20480']; // 20MB for video
             $rules['youtube_link'] = ['nullable', 'url', 'regex:/^(https?\:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/'];
         }
@@ -35,7 +38,8 @@ class StoreSubmissionRequest extends FormRequest
 
     public function messages(): array
     {
-        $fileType = $this->input('file_type');
+        /** @var string|null $fileType */
+        $fileType = request('file_type');
         $expectedFormat = $fileType === 'video' ? 'MP4' : 'PDF';
         
         return [
