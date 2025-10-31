@@ -14,6 +14,7 @@ class Admin extends Authenticatable
         'nip_nidn_nidk_nim',
         'phone_number',
         'password',
+        'remember_token',
     ];
 
     protected $hidden = [

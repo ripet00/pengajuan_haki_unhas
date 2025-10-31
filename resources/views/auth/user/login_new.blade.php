@@ -124,6 +124,19 @@
                     </div>
                 </div>
 
+                <div class="flex items-center">
+                    <input 
+                        type="checkbox" 
+                        id="remember" 
+                        name="remember" 
+                        value="1"
+                        class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                    >
+                    <label for="remember" class="ml-2 block text-sm text-gray-900">
+                    Ingat Saya
+                    </label>
+                </div>
+
                 <button 
                     type="submit"
                     class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg"
