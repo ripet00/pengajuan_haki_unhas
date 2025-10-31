@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSubmissionRequest;
+use App\Http\Requests\ResubmitSubmissionRequest;
 use App\Models\Submission;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -115,7 +116,7 @@ class SubmissionController extends Controller
      * @param \App\Http\Requests\StoreSubmissionRequest|\Illuminate\Http\Request $request
      * @param \App\Models\Submission $submission
      */
-    public function resubmit(StoreSubmissionRequest $request, Submission $submission) {
+    public function resubmit(ResubmitSubmissionRequest $request, Submission $submission) {
         $this->authorizeOwnership($submission);
 
         if ($submission->status !== 'rejected') {

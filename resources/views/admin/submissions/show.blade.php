@@ -1,12 +1,56 @@
-@extends('admin.layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Pengajuan HKI - Pengajuan HKI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        @include('admin.partials.sidebar')
 
-@section('title', 'Detail Pengajuan HKI')
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            @include('admin.partials.header', ['title' => 'Detail Pengajuan HKI'])
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+                <div class="px-4 sm:px-6 lg:px-8 py-6">
+                    @if(session('success'))
+                        <div class="mb-6 bg-green-50 border-l-4 border-green-400 p-4 rounded">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check-circle text-green-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-green-700">{{ session('success') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="mb-6 bg-red-50 border-l-4 border-red-400 p-4 rounded">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <ul class="text-sm text-red-700">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
 @php
 use Illuminate\Support\Facades\Storage;
 @endphp
-
-@section('content')
 <div class="space-y-6">
     <!-- Back Button -->
     <div>
@@ -436,45 +480,46 @@ use Illuminate\Support\Facades\Storage;
                         </div>
                     </div>
                 </div>
-            </div>
+                </div>
+            </main>
         </div>
     </div>
-</div>
 
-@push('scripts')
-<script>
-// Auto-require rejection reason when reject is selected
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle both forms - pending review and edit review
-    function setupFormValidation(formSelector) {
-        const form = document.querySelector(formSelector);
-        if (!form) return;
-        
-        const rejectedRadio = form.querySelector('input[value="rejected"]');
-        const approvedRadio = form.querySelector('input[value="approved"]');
-        const rejectionReasonTextarea = form.querySelector('textarea[name="rejection_reason"]');
-        
-        if (rejectedRadio && rejectionReasonTextarea) {
-            rejectedRadio.addEventListener('change', function() {
-                if (this.checked) {
-                    rejectionReasonTextarea.required = true;
-                    rejectionReasonTextarea.focus();
-                }
-            });
+    @include('admin.partials.sidebar-script')
+    
+    <script>
+    // Auto-require rejection reason when reject is selected
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle both forms - pending review and edit review
+        function setupFormValidation(formSelector) {
+            const form = document.querySelector(formSelector);
+            if (!form) return;
             
-            if (approvedRadio) {
-                approvedRadio.addEventListener('change', function() {
+            const rejectedRadio = form.querySelector('input[value="rejected"]');
+            const approvedRadio = form.querySelector('input[value="approved"]');
+            const rejectionReasonTextarea = form.querySelector('textarea[name="rejection_reason"]');
+            
+            if (rejectedRadio && rejectionReasonTextarea) {
+                rejectedRadio.addEventListener('change', function() {
                     if (this.checked) {
-                        rejectionReasonTextarea.required = false;
+                        rejectionReasonTextarea.required = true;
+                        rejectionReasonTextarea.focus();
                     }
                 });
+                
+                if (approvedRadio) {
+                    approvedRadio.addEventListener('change', function() {
+                        if (this.checked) {
+                            rejectionReasonTextarea.required = false;
+                        }
+                    });
+                }
             }
         }
-    }
-    
-    // Setup validation for both forms
-    setupFormValidation('form'); // This will handle all forms on the page
-});
-</script>
-@endpush
-@endsection
+        
+        // Setup validation for both forms
+        setupFormValidation('form'); // This will handle all forms on the page
+    });
+    </script>
+</body>
+</html>

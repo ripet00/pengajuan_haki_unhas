@@ -1,12 +1,56 @@
-@extends('admin.layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pengajuan HKI - Pengajuan HKI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        @include('admin.partials.sidebar')
 
-@section('title', 'Daftar Pengajuan HKI')
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            @include('admin.partials.header', ['title' => 'Pengajuan HKI'])
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+                <div class="px-4 sm:px-6 lg:px-8 py-6">
+                    @if(session('success'))
+                        <div class="mb-6 bg-green-50 border-l-4 border-green-400 p-4 rounded">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check-circle text-green-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-green-700">{{ session('success') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="mb-6 bg-red-50 border-l-4 border-red-400 p-4 rounded">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <ul class="text-sm text-red-700">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
 @php
 use Illuminate\Support\Facades\Storage;
 @endphp
-
-@section('content')
 <div class="space-y-6">
     <!-- Header Section -->
     <div class="bg-white rounded-lg shadow p-6">
@@ -246,5 +290,11 @@ use Illuminate\Support\Facades\Storage;
             <p class="text-gray-600">Pengajuan HKI akan muncul di sini setelah user melakukan submission.</p>
         </div>
     @endif
-</div>
-@endsection
+                </div>
+            </main>
+        </div>
+    </div>
+
+    @include('admin.partials.sidebar-script')
+</body>
+</html>
