@@ -74,19 +74,41 @@
                     >
                 </div>
 
-                <div>
-                    <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-phone mr-2 text-gray-400"></i>Nomor WhatsApp
-                    </label>
-                    <input 
-                        type="text" 
-                        id="phone_number" 
-                        name="phone_number" 
-                        value="{{ old('phone_number') }}"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition duration-200"
-                        placeholder="08123456789"
-                        required
-                    >
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="sm:col-span-1">
+                        <label for="country_code" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-globe mr-2 text-gray-400"></i>Kode Negara
+                        </label>
+                        <select 
+                            id="country_code" 
+                            name="country_code"
+                            class="w-full px-3 py-3 border border-gray-300 rounded-lg input-focus transition duration-200 text-sm"
+                            required
+                        >
+                            @foreach(getCountryCodes() as $code => $label)
+                                <option value="{{ $code }}" {{ old('country_code', '+62') == $code ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-phone mr-2 text-gray-400"></i>Nomor WhatsApp
+                        </label>
+                        <input 
+                            type="text" 
+                            id="phone_number" 
+                            name="phone_number" 
+                            value="{{ old('phone_number') }}"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition duration-200"
+                            placeholder="08123456789"
+                            pattern="^0[0-9]{8,13}$"
+                            title="Nomor harus dimulai dengan 0 dan berisi 9-14 digit"
+                            required
+                        >
+                        <p class="text-xs text-gray-500 mt-1">Masukkan nomor dengan format 0xxxxxxxx</p>
+                    </div>
                 </div>
 
                 <div>

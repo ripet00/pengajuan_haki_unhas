@@ -16,6 +16,7 @@ class Submission extends Model
         'youtube_link',
         'creator_name',
         'creator_whatsapp',
+        'creator_country_code',
         'file_path',
         'file_name',
         'file_size',

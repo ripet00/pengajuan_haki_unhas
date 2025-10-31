@@ -10,6 +10,43 @@
         .gradient-bg {
             background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
         }
+        
+        /* Ensure text is always visible with high contrast */
+        .header-text {
+            color: #ffffff !important;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .user-avatar {
+            background: rgba(255, 255, 255, 0.25) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            backdrop-filter: blur(10px);
+            color: #ffffff !important;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.35) !important;
+            border-color: rgba(255, 255, 255, 0.6) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .logout-btn i, .logout-btn span {
+            color: #ffffff !important;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        }
+        
+        /* Additional visibility fixes */
+        .header-icon {
+            color: #ffffff !important;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -20,26 +57,26 @@
                 <div class="flex items-center">
                     <img src="{{ asset('images/logo-unhas-kecil.png') }}" alt="Logo Unhas" class="w-10 h-10 sm:w-12 sm:h-12 mr-3">
                     <div>
-                        <h1 class="text-sm sm:text-lg font-bold text-white leading-tight">Direktorat Inovasi dan Kekayaan Intelektual</h1>
+                        <h1 class="text-sm sm:text-lg font-bold header-text leading-tight">Direktorat Inovasi dan Kekayaan Intelektual</h1>
                         <p class="text-red-100 text-xs sm:text-sm">Universitas Hasanuddin</p>
                     </div>
                 </div>
                 
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <div class="flex items-center text-white min-w-0 flex-1 sm:flex-initial">
-                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-2 flex-shrink-0">
-                            <span class="text-white font-medium text-sm">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                    <div class="flex items-center header-text min-w-0 flex-1 sm:flex-initial">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 user-avatar rounded-full flex items-center justify-center mr-2 flex-shrink-0">
+                            <span class="header-text font-medium text-sm">{{ substr(Auth::user()->name, 0, 1) }}</span>
                         </div>
                         <div class="min-w-0 flex-1 sm:flex-initial">
-                            <span class="font-medium text-sm sm:text-base hidden sm:block">{{ Auth::user()->name }}</span>
-                            <span class="font-medium text-sm block sm:hidden truncate">{{ explode(' ', Auth::user()->name)[0] }}</span>
+                            <span class="font-medium text-sm sm:text-base header-text hidden sm:block">{{ Auth::user()->name }}</span>
+                            <span class="font-medium text-sm header-text block sm:hidden truncate">{{ explode(' ', Auth::user()->name)[0] }}</span>
                         </div>
                     </div>
                     
                     <form method="POST" action="{{ route('user.logout') }}">
                         @csrf
-                        <button type="submit" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
-                            <i class="fas fa-sign-out-alt mr-1 sm:mr-2"></i><span class="hidden sm:inline">Logout</span>
+                        <button type="submit" class="logout-btn px-3 sm:px-4 py-2 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
+                            <i class="fas fa-sign-out-alt mr-1 sm:mr-2 header-icon"></i><span class="hidden sm:inline header-text">Logout</span>
                         </button>
                     </form>
                 </div>

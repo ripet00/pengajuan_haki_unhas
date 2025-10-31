@@ -464,14 +464,14 @@ use Illuminate\Support\Facades\Storage;
                                 <i class="fas fa-external-link-alt mr-2"></i>Buka PDF di Tab Baru
                             </a>
                             
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $submission->user->phone_number) }}?text=Halo%20{{ urlencode($submission->user->name) }}%2C%20terkait%20pengajuan%20HKI%20%23{{ $submission->id }}" 
+                            <a href="{{ generateWhatsAppUrl($submission->user->phone_number, $submission->user->country_code ?? '+62', 'Halo ' . $submission->user->name . ', terkait pengajuan HKI #' . $submission->id) }}" 
                                target="_blank"
                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                 <i class="fab fa-whatsapp mr-2"></i>Hubungi Pengusul
                             </a>
                             
                             @if($submission->creator_whatsapp)
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $submission->creator_whatsapp) }}?text=Halo%20{{ urlencode($submission->creator_name ?? 'Pencipta') }}%2C%20terkait%20pengajuan%20HKI%20%23{{ $submission->id }}" 
+                            <a href="{{ generateWhatsAppUrl($submission->creator_whatsapp, $submission->creator_country_code ?? '+62', 'Halo ' . ($submission->creator_name ?? 'Pencipta') . ', terkait pengajuan HKI #' . $submission->id) }}" 
                                target="_blank"
                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                 <i class="fab fa-whatsapp mr-2"></i>Hubungi Pencipta

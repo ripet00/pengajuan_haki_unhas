@@ -20,7 +20,8 @@ class StoreSubmissionRequest extends FormRequest
             'categories' => ['required', 'in:Universitas,Umum'],
             'file_type' => ['required', 'in:pdf,video'],
             'creator_name' => ['required', 'string', 'max:255'],
-            'creator_whatsapp' => ['required', 'string', 'regex:/^(\+62|62|0)[0-9]{9,13}$/'],
+            'creator_whatsapp' => ['required', 'string', 'regex:/^0[0-9]{8,13}$/'],
+            'creator_country_code' => ['required', 'string', 'max:5'],
         ];
 
         // Conditional validation based on file type
@@ -54,7 +55,9 @@ class StoreSubmissionRequest extends FormRequest
             'creator_name.required' => 'Nama pencipta pertama wajib diisi.',
             'creator_name.max' => 'Nama pencipta pertama maksimal 255 karakter.',
             'creator_whatsapp.required' => 'Nomor WhatsApp pencipta pertama wajib diisi.',
-            'creator_whatsapp.regex' => 'Format nomor WhatsApp tidak valid. Gunakan format: 081234567890 atau +6281234567890.',
+            'creator_whatsapp.regex' => 'Format nomor WhatsApp tidak valid. Gunakan format: 0xxxxxxxx.',
+            'creator_country_code.required' => 'Kode negara wajib dipilih.',
+            'creator_country_code.max' => 'Kode negara tidak valid.',
             'document.required' => 'File wajib diunggah.',
             'document.file' => 'Pastikan Anda mengunggah file yang valid.',
             'document.mimes' => "Hanya file {$expectedFormat} yang diperbolehkan untuk jenis file yang dipilih.",

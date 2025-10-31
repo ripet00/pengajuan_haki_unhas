@@ -87,6 +87,7 @@ class UserAuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'phone_number' => 'required|string|unique:users',
+            'country_code' => 'required|string|max:5',
             'faculty' => 'required|string|max:255',
             'password' => 'required|string|min:8|confirmed',
         ]);
@@ -94,6 +95,7 @@ class UserAuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'phone_number' => $request->phone_number,
+            'country_code' => $request->country_code,
             'faculty' => $request->faculty,
             'password' => Hash::make($request->password),
             'status' => 'pending', // Default status

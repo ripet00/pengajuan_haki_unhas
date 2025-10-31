@@ -13,6 +13,7 @@ class Admin extends Authenticatable
         'name',
         'nip_nidn_nidk_nim',
         'phone_number',
+        'country_code',
         'password',
         'remember_token',
     ];

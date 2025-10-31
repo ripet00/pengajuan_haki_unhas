@@ -269,8 +269,8 @@
                             <div class="mb-2">
                                 <label class="block text-sm font-medium text-gray-500 mb-1">WhatsApp Pencipta</label>
                                 <div class="flex items-center space-x-2">
-                                    <p class="text-gray-900">{{ $submission->creator_whatsapp }}</p>
-                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $submission->creator_whatsapp) }}" 
+                                    <p class="text-gray-900">{{ ($submission->creator_country_code ?? '+62') . ' ' . $submission->creator_whatsapp }}</p>
+                                    <a href="{{ generateWhatsAppUrl($submission->creator_whatsapp, $submission->creator_country_code ?? '+62') }}" 
                                        target="_blank"
                                        class="inline-flex items-center px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition duration-200">
                                         <i class="fab fa-whatsapp mr-1"></i>Hubungi
@@ -414,15 +414,36 @@
 
                         <div>
                             <label for="creator_whatsapp" class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp Pencipta Pertama</label>
-                            <input 
-                                type="text" 
-                                id="creator_whatsapp" 
-                                name="creator_whatsapp" 
-                                value="{{ old('creator_whatsapp', $submission->creator_whatsapp) }}"
-                                placeholder="Contoh: 081234567890 atau +6281234567890"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                required
-                            >
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="col-span-1">
+                                    <select 
+                                        id="creator_country_code" 
+                                        name="creator_country_code"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
+                                        required
+                                    >
+                                        @foreach(getCountryCodes() as $code => $label)
+                                            <option value="{{ $code }}" {{ old('creator_country_code', $submission->creator_country_code ?? '+62') == $code ? 'selected' : '' }}>
+                                                {{ $label }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-span-2">
+                                    <input 
+                                        type="text" 
+                                        id="creator_whatsapp" 
+                                        name="creator_whatsapp" 
+                                        value="{{ old('creator_whatsapp', $submission->creator_whatsapp) }}"
+                                        placeholder="081234567890"
+                                        pattern="^0[0-9]{8,13}$"
+                                        title="Nomor harus dimulai dengan 0 dan berisi 9-14 digit"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        required
+                                    >
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Masukkan nomor dengan format 0xxxxxxxx</p>
                         </div>
 
                         <div id="youtube-field" style="display: {{ old('file_type', $submission->file_type) == 'video' ? 'block' : 'none' }};">
