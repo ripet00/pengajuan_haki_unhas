@@ -28,7 +28,10 @@ class UserAuthController extends Controller
             $message = 'Silakan login terlebih dahulu untuk mengakses dashboard.';
         }
         
-        return view('auth.user.login_new', compact('message'));
+        // Get remembered phone number from old input or Auth remember me
+        $rememberedPhone = old('phone_number');
+        
+        return view('auth.user.login_new', compact('message', 'rememberedPhone'));
     }
 
     public function login(Request $request)
@@ -36,6 +39,7 @@ class UserAuthController extends Controller
         $request->validate([
             'phone_number' => 'required|string',
             'password' => 'required|string',
+            'remember' => 'boolean',
         ]);
 
         $user = User::where('phone_number', $request->phone_number)->first();
@@ -66,7 +70,9 @@ class UserAuthController extends Controller
             ]);
         }
 
-        Auth::login($user);
+        // Login with remember me functionality
+        $remember = $request->boolean('remember');
+        Auth::login($user, $remember);
 
         return redirect()->intended('/users/dashboard');
     }
@@ -81,6 +87,7 @@ class UserAuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'phone_number' => 'required|string|unique:users',
+            'country_code' => 'required|string|max:5',
             'faculty' => 'required|string|max:255',
             'password' => 'required|string|min:8|confirmed',
         ]);
@@ -88,6 +95,7 @@ class UserAuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'phone_number' => $request->phone_number,
+            'country_code' => $request->country_code,
             'faculty' => $request->faculty,
             'password' => Hash::make($request->password),
             'status' => 'pending', // Default status

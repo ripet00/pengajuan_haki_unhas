@@ -1,12 +1,56 @@
-@extends('admin.layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Pengajuan HKI - Pengajuan HKI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        @include('admin.partials.sidebar')
 
-@section('title', 'Detail Pengajuan HKI')
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            @include('admin.partials.header', ['title' => 'Detail Pengajuan HKI'])
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+                <div class="px-4 sm:px-6 lg:px-8 py-6">
+                    @if(session('success'))
+                        <div class="mb-6 bg-green-50 border-l-4 border-green-400 p-4 rounded">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check-circle text-green-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-green-700">{{ session('success') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="mb-6 bg-red-50 border-l-4 border-red-400 p-4 rounded">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <ul class="text-sm text-red-700">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
 @php
 use Illuminate\Support\Facades\Storage;
 @endphp
-
-@section('content')
 <div class="space-y-6">
     <!-- Back Button -->
     <div>
@@ -27,6 +71,76 @@ use Illuminate\Support\Facades\Storage;
                 @endif
             </h2>
         </div>
+        
+        <!-- Similar Titles Warning -->
+        @if($similarTitles && $similarTitles->count() > 0)
+        <div class="mx-6 mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg shadow-sm">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 text-lg"></i>
+                </div>
+                <div class="ml-3 flex-1">
+                    <h3 class="text-sm font-semibold text-yellow-800 mb-2">
+                        ⚠️ Peringatan: Judul Serupa Ditemukan
+                    </h3>
+                    <p class="text-sm text-yellow-700 mb-3">
+                        Terdapat <strong>{{ $similarTitles->count() }}</strong> pengajuan dengan judul yang sama atau serupa. Harap periksa untuk memastikan tidak ada duplikasi karya:
+                    </p>
+                    <div class="space-y-3 max-h-60 overflow-y-auto">
+                        @foreach($similarTitles as $similar)
+                        <div class="bg-white p-3 rounded-lg border border-yellow-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-start flex-wrap gap-2 mb-2">
+                                        <h4 class="text-sm font-medium text-gray-900 flex-1 min-w-0">
+                                            "{{ $similar->title }}"
+                                        </h4>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0
+                                            {{ $similar->status == 'approved' ? 'bg-green-100 text-green-800' : 
+                                               ($similar->status == 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
+                                            <i class="fas fa-{{ $similar->status == 'approved' ? 'check' : ($similar->status == 'rejected' ? 'times' : 'clock') }} mr-1"></i>
+                                            {{ $similar->status == 'approved' ? 'Disetujui' : 
+                                               ($similar->status == 'rejected' ? 'Ditolak' : 'Pending') }}
+                                        </span>
+                                    </div>
+                                    <div class="text-xs text-gray-600 space-y-1">
+                                        <div class="flex items-center space-x-4">
+                                            <span><i class="fas fa-user text-gray-400 mr-1"></i><strong>Pengusul:</strong> {{ $similar->user->name }}</span>
+                                            <span><i class="fas fa-calendar text-gray-400 mr-1"></i><strong>Tanggal:</strong> {{ $similar->created_at->format('d M Y, H:i') }} WITA</span>
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <span><i class="fas fa-hashtag text-gray-400 mr-1"></i><strong>ID Pengajuan:</strong> #{{ $similar->id }}</span>
+                                            <span><i class="fas fa-tag text-gray-400 mr-1"></i><strong>Kategori:</strong> {{ $similar->categories }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex-shrink-0 ml-3">
+                                    <a href="{{ route('admin.submissions.show', $similar->id) }}" 
+                                       class="inline-flex items-center px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition duration-200 font-medium"
+                                       target="_blank">
+                                        <i class="fas fa-external-link-alt mr-1"></i>Lihat Detail
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    <div class="mt-4 p-3 bg-yellow-100 rounded-lg">
+                        <div class="text-xs text-yellow-800 flex items-start">
+                            <i class="fas fa-lightbulb text-yellow-600 mr-2 mt-0.5 flex-shrink-0"></i>
+                            <div>
+                                <strong>Panduan Review:</strong><br>
+                                • Periksa konten file untuk memastikan tidak ada plagiarisme<br>
+                                • Verifikasi bahwa karya ini adalah hasil karya yang berbeda meskipun judulnya sama<br>
+                                • Hubungi pengusul jika diperlukan klarifikasi lebih lanjut
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+        
         <div class="p-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Submission Details -->
@@ -91,7 +205,7 @@ use Illuminate\Support\Facades\Storage;
                     </div>
 
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">Informasi Pengaju</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">Informasi Pengusul</h3>
                         
                         <div class="space-y-4">
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -111,10 +225,54 @@ use Illuminate\Support\Facades\Storage;
                         </div>
                     </div>
 
+                    <!-- Creator Information -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">Informasi Pencipta Pertama</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="font-medium text-gray-700">Nama Pencipta:</div>
+                                <div class="sm:col-span-2 text-gray-900">{{ $submission->creator_name ?? 'Tidak ada informasi' }}</div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="font-medium text-gray-700">No. WhatsApp Pencipta:</div>
+                                <div class="sm:col-span-2 text-gray-900">{{ $submission->creator_whatsapp ?? 'Tidak ada informasi' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">Informasi File</h3>
                         
                         <div class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="font-medium text-gray-700">Jenis File:</div>
+                                <div class="sm:col-span-2 text-gray-900">
+                                    @if($submission->file_type === 'video')
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            <i class="fas fa-video mr-1"></i>Video MP4
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-file-pdf mr-1"></i>PDF Document
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            @if($submission->file_type === 'video' && $submission->youtube_link)
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="font-medium text-gray-700">Link YouTube:</div>
+                                <div class="sm:col-span-2">
+                                    <a href="{{ $submission->youtube_link }}" target="_blank" 
+                                       class="text-blue-600 hover:text-blue-800 underline">
+                                        <i class="fab fa-youtube mr-1"></i>{{ $submission->youtube_link }}
+                                    </a>
+                                </div>
+                            </div>
+                            @endif
+
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="font-medium text-gray-700">Nama File:</div>
                                 <div class="sm:col-span-2 text-gray-900">{{ $submission->file_name }}</div>
@@ -132,10 +290,13 @@ use Illuminate\Support\Facades\Storage;
                                         <a href="{{ Storage::disk('public')->url($submission->file_path) }}" 
                                            target="_blank"
                                            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                            <i class="fas fa-eye mr-2"></i>Lihat PDF
+                                            @if($submission->file_type === 'video')
+                                                <i class="fas fa-play mr-2"></i>Lihat Video
+                                            @else
+                                                <i class="fas fa-eye mr-2"></i>Lihat PDF
+                                            @endif
                                         </a>
-                                        <a href="{{ Storage::disk('public')->url($submission->file_path) }}" 
-                                           download="{{ $submission->file_name }}"
+                                        <a href="{{ route('admin.submissions.download', $submission) }}" 
                                            class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                             <i class="fas fa-download mr-2"></i>Download
                                         </a>
@@ -303,53 +464,62 @@ use Illuminate\Support\Facades\Storage;
                                 <i class="fas fa-external-link-alt mr-2"></i>Buka PDF di Tab Baru
                             </a>
                             
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $submission->user->phone_number) }}?text=Halo%20{{ urlencode($submission->user->name) }}%2C%20terkait%20pengajuan%20HKI%20%23{{ $submission->id }}" 
+                            <a href="{{ generateWhatsAppUrl($submission->user->phone_number, $submission->user->country_code ?? '+62', 'Halo ' . $submission->user->name . ', terkait pengajuan HKI #' . $submission->id) }}" 
                                target="_blank"
                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                <i class="fab fa-whatsapp mr-2"></i>Hubungi WhatsApp
+                                <i class="fab fa-whatsapp mr-2"></i>Hubungi Pengusul
                             </a>
+                            
+                            @if($submission->creator_whatsapp)
+                            <a href="{{ generateWhatsAppUrl($submission->creator_whatsapp, $submission->creator_country_code ?? '+62', 'Halo ' . ($submission->creator_name ?? 'Pencipta') . ', terkait pengajuan HKI #' . $submission->id) }}" 
+                               target="_blank"
+                               class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                <i class="fab fa-whatsapp mr-2"></i>Hubungi Pencipta
+                            </a>
+                            @endif
                         </div>
                     </div>
                 </div>
-            </div>
+                </div>
+            </main>
         </div>
     </div>
-</div>
 
-@push('scripts')
-<script>
-// Auto-require rejection reason when reject is selected
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle both forms - pending review and edit review
-    function setupFormValidation(formSelector) {
-        const form = document.querySelector(formSelector);
-        if (!form) return;
-        
-        const rejectedRadio = form.querySelector('input[value="rejected"]');
-        const approvedRadio = form.querySelector('input[value="approved"]');
-        const rejectionReasonTextarea = form.querySelector('textarea[name="rejection_reason"]');
-        
-        if (rejectedRadio && rejectionReasonTextarea) {
-            rejectedRadio.addEventListener('change', function() {
-                if (this.checked) {
-                    rejectionReasonTextarea.required = true;
-                    rejectionReasonTextarea.focus();
-                }
-            });
+    @include('admin.partials.sidebar-script')
+    
+    <script>
+    // Auto-require rejection reason when reject is selected
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle both forms - pending review and edit review
+        function setupFormValidation(formSelector) {
+            const form = document.querySelector(formSelector);
+            if (!form) return;
             
-            if (approvedRadio) {
-                approvedRadio.addEventListener('change', function() {
+            const rejectedRadio = form.querySelector('input[value="rejected"]');
+            const approvedRadio = form.querySelector('input[value="approved"]');
+            const rejectionReasonTextarea = form.querySelector('textarea[name="rejection_reason"]');
+            
+            if (rejectedRadio && rejectionReasonTextarea) {
+                rejectedRadio.addEventListener('change', function() {
                     if (this.checked) {
-                        rejectionReasonTextarea.required = false;
+                        rejectionReasonTextarea.required = true;
+                        rejectionReasonTextarea.focus();
                     }
                 });
+                
+                if (approvedRadio) {
+                    approvedRadio.addEventListener('change', function() {
+                        if (this.checked) {
+                            rejectionReasonTextarea.required = false;
+                        }
+                    });
+                }
             }
         }
-    }
-    
-    // Setup validation for both forms
-    setupFormValidation('form'); // This will handle all forms on the page
-});
-</script>
-@endpush
-@endsection
+        
+        // Setup validation for both forms
+        setupFormValidation('form'); // This will handle all forms on the page
+    });
+    </script>
+</body>
+</html>

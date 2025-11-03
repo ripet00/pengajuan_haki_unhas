@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pengajuan Baru - HKI Unhas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .gradient-bg {
@@ -95,38 +95,130 @@
                     </p>
                 </div>
 
+                <!-- File Type Selection -->
+                <div>
+                    <label for="file_type" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-file mr-2 text-gray-400"></i>Jenis File
+                    </label>
+                    <select 
+                        id="file_type" 
+                        name="file_type"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition duration-200"
+                        required
+                        onchange="toggleFileType()"
+                    >
+                        <option value="">Pilih Jenis File</option>
+                        <option value="pdf" {{ old('file_type') == 'pdf' ? 'selected' : '' }}>PDF Document</option>
+                        <option value="video" {{ old('file_type') == 'video' ? 'selected' : '' }}>Video MP4</option>
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">
+                        <strong>PDF:</strong> Untuk karya cipta dalam bentuk dokumen PDF (max. 20MB)<br>
+                        <strong>Video:</strong> Untuk karya cipta dalam bentuk video MP4 (max. 20MB)
+                    </p>
+                </div>
+
+                <!-- Creator Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="creator_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user mr-2 text-gray-400"></i>Nama Pencipta Pertama <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="creator_name" 
+                            name="creator_name" 
+                            value="{{ old('creator_name') }}"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition duration-200"
+                            placeholder="Masukkan nama pencipta pertama"
+                            required
+                        >
+                    </div>
+                    <div>
+                        <label for="creator_whatsapp" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fab fa-whatsapp mr-2 text-gray-400"></i>Nomor WhatsApp Pencipta <span class="text-red-500">*</span>
+                        </label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1">
+                                <select 
+                                    id="creator_country_code" 
+                                    name="creator_country_code"
+                                    class="w-full px-3 py-3 border border-gray-300 rounded-lg input-focus transition duration-200 text-sm"
+                                    required
+                                >
+                                    @foreach(getCountryCodes() as $code => $label)
+                                        <option value="{{ $code }}" {{ old('creator_country_code', '+62') == $code ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-span-2">
+                                <input 
+                                    type="text" 
+                                    id="creator_whatsapp" 
+                                    name="creator_whatsapp" 
+                                    value="{{ old('creator_whatsapp') }}"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition duration-200"
+                                    placeholder="081234567890"
+                                    pattern="^0[0-9]{8,13}$"
+                                    title="Nomor harus dimulai dengan 0 dan berisi 9-14 digit"
+                                    required
+                                >
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Masukkan nomor dengan format 0xxxxxxxx</p>
+                    </div>
+                </div>
+
+                <!-- YouTube Link (conditional) -->
+                <div id="youtube_section" class="hidden">
+                    <label for="youtube_link" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fab fa-youtube mr-2 text-gray-400"></i>Link YouTube (Opsional)
+                    </label>
+                    <input 
+                        type="url" 
+                        id="youtube_link" 
+                        name="youtube_link" 
+                        value="{{ old('youtube_link') }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition duration-200"
+                        placeholder="https://youtube.com/watch?v=..."
+                    >
+                    <p class="text-sm text-gray-500 mt-1">Sertakan link YouTube jika video karya cipta sudah dipublikasikan.</p>
+                </div>
+
                 <div>
                     <label for="document" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-file-pdf mr-2 text-gray-400"></i>Dokumen HKI (PDF)
+                        <i class="fas fa-file mr-2 text-gray-400"></i><span id="file-label">File Dokumen</span>
                     </label>
                     <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-red-400 transition duration-200">
                         <div class="space-y-1 text-center">
                             <div class="flex text-sm text-gray-600">
                                 <label for="document" class="relative cursor-pointer bg-white rounded-md font-medium text-red-600 hover:text-red-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-red-500">
                                     <span class="px-3 py-2 bg-red-50 rounded-lg">
-                                        <i class="fas fa-upload mr-2"></i>Upload dokumen PDF
+                                        <i class="fas fa-upload mr-2"></i><span id="upload-text">Pilih jenis file terlebih dahulu</span>
                                     </span>
                                     <input 
                                         id="document" 
                                         name="document" 
                                         type="file" 
                                         class="sr-only" 
-                                        accept=".pdf"
+                                        accept=""
                                         required
                                         onchange="updateFileName(this)"
+                                        disabled
                                     >
                                 </label>
                             </div>
-                            <p class="text-xs text-gray-500">PDF maksimal 20MB</p>
+                            <p id="file-size-limit" class="text-xs text-gray-500">Pilih jenis file terlebih dahulu</p>
                             <div id="file-info" class="text-sm text-gray-700 hidden">
-                                <i class="fas fa-file-pdf text-red-500 mr-1"></i>
+                                <i id="file-icon" class="fas fa-file mr-1"></i>
                                 <span id="file-name"></span>
                                 <span id="file-size" class="text-gray-500"></span>
                             </div>
                         </div>
                     </div>
                     <p class="text-sm text-gray-500 mt-2">
-                        Pastikan dokumen berisi informasi lengkap tentang karya cipta yang akan didaftarkan.
+                        Pastikan file berisi informasi lengkap tentang karya cipta yang akan didaftarkan.
                     </p>
                 </div>
 
@@ -151,12 +243,59 @@
 
     <script>
         let isFileSizeValid = false;
+        let currentFileType = 'pdf';
+        
+        function toggleFileType() {
+            const fileTypeSelect = document.getElementById('file_type');
+            const youtubeSection = document.getElementById('youtube_section');
+            const documentInput = document.getElementById('document');
+            const fileLabel = document.getElementById('file-label');
+            const uploadText = document.getElementById('upload-text');
+            const fileSizeLimit = document.getElementById('file-size-limit');
+            const fileIcon = document.getElementById('file-icon');
+            
+            currentFileType = fileTypeSelect.value;
+            
+            if (currentFileType === 'pdf') {
+                youtubeSection.classList.add('hidden');
+                documentInput.accept = '.pdf';
+                documentInput.disabled = false;
+                fileLabel.innerHTML = '<i class="fas fa-file-pdf mr-2 text-gray-400"></i>Dokumen PDF';
+                uploadText.textContent = 'Upload dokumen PDF';
+                fileSizeLimit.textContent = 'PDF maksimal 20MB';
+                fileIcon.className = 'fas fa-file-pdf text-red-500 mr-1';
+            } else if (currentFileType === 'video') {
+                youtubeSection.classList.remove('hidden');
+                documentInput.accept = '.mp4';
+                documentInput.disabled = false;
+                fileLabel.innerHTML = '<i class="fas fa-video mr-2 text-gray-400"></i>Video MP4';
+                uploadText.textContent = 'Upload video MP4';
+                fileSizeLimit.textContent = 'Video MP4 maksimal 20MB';
+                fileIcon.className = 'fas fa-video text-blue-500 mr-1';
+            } else {
+                youtubeSection.classList.add('hidden');
+                documentInput.accept = '';
+                documentInput.disabled = true;
+                fileLabel.innerHTML = '<i class="fas fa-file mr-2 text-gray-400"></i>File Dokumen';
+                uploadText.textContent = 'Pilih jenis file terlebih dahulu';
+                fileSizeLimit.textContent = 'Pilih jenis file terlebih dahulu';
+            }
+            
+            // Clear file input when changing type
+            documentInput.value = '';
+            document.getElementById('file-info').classList.add('hidden');
+            isFileSizeValid = false;
+        }
         
         function updateFileName(input) {
             const fileInfo = document.getElementById('file-info');
             const fileName = document.getElementById('file-name');
             const fileSize = document.getElementById('file-size');
             const submitButton = document.querySelector('button[type="submit"]');
+            const fileTypeSelect = document.getElementById('file_type');
+            
+            // Get current file type from select - IMPORTANT!
+            currentFileType = fileTypeSelect.value;
             
             if (input.files && input.files[0]) {
                 const file = input.files[0];
@@ -171,10 +310,25 @@
                 // Reset classes
                 fileSize.classList.remove('text-red-500', 'text-green-500');
                 
+                // Check file type first - IMPORTANT VALIDATION!
+                const allowedTypes = currentFileType === 'pdf' ? ['pdf'] : currentFileType === 'video' ? ['mp4'] : [];
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+                
+                if (!allowedTypes.includes(fileExtension)) {
+                    showNotification('error', `Hanya file ${currentFileType.toUpperCase()} yang diperbolehkan. Anda memilih file ${fileExtension.toUpperCase()}.`);
+                    input.value = '';
+                    fileInfo.classList.add('hidden');
+                    isFileSizeValid = false;
+                    submitButton.disabled = true;
+                    submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+                    submitButton.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>File Tidak Valid';
+                    return;
+                }
+                
                 // Check file size limit (20MB)
                 if (file.size > 20 * 1024 * 1024) {
                     fileSize.classList.add('text-red-500');
-                    fileSize.textContent += ' - Ukuran terlalu besar! Maksimal 20MB';
+                    fileSize.textContent += ` - Ukuran terlalu besar! Maksimal 20MB`;
                     isFileSizeValid = false;
                     
                     // Disable submit button
@@ -183,7 +337,7 @@
                     submitButton.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>File Terlalu Besar';
                     
                     // Show error notification
-                    showNotification('error', 'File PDF yang Anda pilih terlalu besar. Maksimal ukuran file adalah 20MB.');
+                    showNotification('error', `File yang Anda pilih terlalu besar. Maksimal ukuran file adalah 20MB untuk ${currentFileType.toUpperCase()}.`);
                 } else {
                     fileSize.classList.add('text-green-500');
                     fileSize.textContent += ' ✓';
@@ -196,17 +350,6 @@
                     
                     // Show success notification
                     showNotification('success', `File "${file.name}" siap untuk diupload (${sizeInMB} MB)`);
-                }
-                
-                // Check file type
-                if (!file.type.includes('pdf')) {
-                    showNotification('error', 'Hanya file PDF yang diperbolehkan.');
-                    input.value = '';
-                    fileInfo.classList.add('hidden');
-                    isFileSizeValid = false;
-                    submitButton.disabled = true;
-                    submitButton.classList.add('opacity-50', 'cursor-not-allowed');
-                    submitButton.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>File Tidak Valid';
                 }
             } else {
                 fileInfo.classList.add('hidden');
@@ -250,9 +393,33 @@
         
         // Form submission validation
         document.querySelector('form').addEventListener('submit', function(e) {
+            const fileTypeSelect = document.getElementById('file_type');
+            const creatorName = document.getElementById('creator_name');
+            const creatorWhatsapp = document.getElementById('creator_whatsapp');
+            
+            // Check required fields
+            if (!fileTypeSelect.value) {
+                e.preventDefault();
+                showNotification('error', 'Harap pilih jenis file terlebih dahulu.');
+                return false;
+            }
+            
+            if (!creatorName.value.trim()) {
+                e.preventDefault();
+                showNotification('error', 'Nama pencipta pertama wajib diisi.');
+                return false;
+            }
+            
+            if (!creatorWhatsapp.value.trim()) {
+                e.preventDefault();
+                showNotification('error', 'Nomor WhatsApp pencipta wajib diisi.');
+                return false;
+            }
+            
             if (!isFileSizeValid) {
                 e.preventDefault();
-                showNotification('error', 'Pastikan file PDF yang dipilih tidak melebihi 20MB.');
+                const maxSize = '20MB';
+                showNotification('error', `Pastikan file ${currentFileType.toUpperCase()} yang dipilih tidak melebihi ${maxSize}.`);
                 return false;
             }
             
@@ -262,6 +429,14 @@
             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Mengupload...';
             
             showNotification('success', 'Sedang mengupload file, mohon tunggu...');
+        });
+        
+        // Initialize file type on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileTypeSelect = document.getElementById('file_type');
+            if (fileTypeSelect.value) {
+                toggleFileType();
+            }
         });
     </script>
 </body>

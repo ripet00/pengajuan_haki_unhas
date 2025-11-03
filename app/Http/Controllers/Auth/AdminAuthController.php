@@ -6,14 +6,37 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin; // Mengimpor model Admin untuk berinteraksi dengan tabel 'admins'
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash; // Mengimpor Hash untuk memeriksa password
+use Illuminate\Support\Str; // Mengimpor Str untuk generate random token
 use Illuminate\Validation\ValidationException; // Untuk menangani error validasi
 
 class AdminAuthController extends Controller
 {
     // Menampilkan halaman login admin
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
-        return view('auth.admin.login_new'); // Mengembalikan view/tampilan login untuk admin
+        // Check if admin has remember me cookie and auto-login
+        $rememberToken = $request->cookie('admin_remember_token');
+        $phoneNumber = $request->cookie('admin_phone_number');
+        
+        if ($rememberToken && $phoneNumber) {
+            $admin = Admin::where('phone_number', $phoneNumber)
+                         ->where('remember_token', $rememberToken)
+                         ->first();
+            
+            if ($admin) {
+                // Auto login the admin
+                session(['admin_id' => $admin->id]);
+                return redirect('/admin');
+            } else {
+                // Invalid remember token, clear cookies
+                cookie()->queue(cookie()->forget('admin_remember_token'));
+                cookie()->queue(cookie()->forget('admin_phone_number'));
+            }
+        }
+        
+        return view('auth.admin.login_new', [
+            'remembered_phone' => $phoneNumber ?? old('phone_number')
+        ]); // Mengembalikan view/tampilan login untuk admin
     }
 
     // Memproses data login yang dikirim dari form
@@ -23,6 +46,7 @@ class AdminAuthController extends Controller
         $request->validate([
             'phone_number' => 'required|string',
             'password' => 'required|string',
+            'remember' => 'boolean',
         ]);
 
         // 2. Cari Admin: Mencari admin di database berdasarkan nomor telepon.
@@ -41,13 +65,35 @@ class AdminAuthController extends Controller
         // Ini adalah cara sederhana untuk menandai bahwa admin sudah login, tanpa menggunakan guard bawaan Laravel.
         session(['admin_id' => $admin->id]);
 
-        // 5. Redirect ke Dashboard: Arahkan admin ke halaman dashboard admin.
+        // 5. Handle Remember Me: Jika checkbox remember me dicentang
+        if ($request->boolean('remember')) {
+            // Create a remember token that expires in 30 days
+            $rememberToken = Str::random(60);
+            
+            // Save remember token to admin record
+            $admin->update(['remember_token' => $rememberToken]);
+            
+            // Set a long-lived cookie (30 days)
+            cookie()->queue('admin_remember_token', $rememberToken, 60 * 24 * 30); // 30 days
+            cookie()->queue('admin_phone_number', $admin->phone_number, 60 * 24 * 30); // 30 days
+        }
+
+        // 6. Redirect ke Dashboard: Arahkan admin ke halaman dashboard admin.
         return redirect()->intended('/admin');
     }
 
     // Memproses logout admin
     public function logout(Request $request)
     {
+        // Get current admin to clear remember token
+        $adminId = session('admin_id');
+        if ($adminId) {
+            $admin = Admin::find($adminId);
+            if ($admin) {
+                $admin->update(['remember_token' => null]);
+            }
+        }
+        
         // 1. Hapus Sesi: Hapus data 'admin_id' dari session.
         $request->session()->forget('admin_id');
 
@@ -57,7 +103,11 @@ class AdminAuthController extends Controller
         // 3. Regenerate Token: Buat token CSRF baru.
         $request->session()->regenerateToken();
 
-        // 4. Redirect ke Halaman Login: Arahkan kembali ke halaman login admin.
+        // 4. Clear Remember Me Cookies
+        cookie()->queue(cookie()->forget('admin_remember_token'));
+        cookie()->queue(cookie()->forget('admin_phone_number'));
+
+        // 5. Redirect ke Halaman Login: Arahkan kembali ke halaman login admin.
         return redirect('/admin/login');
     }
 }

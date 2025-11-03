@@ -42,6 +42,7 @@ Route::prefix('users')->middleware('auth')->group(function () {
     Route::get('submissions/create', [UserSubmissionController::class, 'create'])->name('user.submissions.create');
     Route::post('submissions', [UserSubmissionController::class, 'store'])->middleware('file.upload')->name('user.submissions.store');
     Route::get('submissions/{submission}', [UserSubmissionController::class, 'show'])->name('user.submissions.show');
+    Route::get('submissions/{submission}/download', [UserSubmissionController::class, 'download'])->name('user.submissions.download');
     Route::post('submissions/{submission}/resubmit', [UserSubmissionController::class, 'resubmit'])->middleware('file.upload')->name('user.submissions.resubmit');
 });
 
@@ -68,6 +69,7 @@ Route::prefix('admin')->group(function () {
         // Admin submission routes
         Route::get('submissions', [AdminSubmissionController::class, 'index'])->name('admin.submissions.index');
         Route::get('submissions/{submission}', [AdminSubmissionController::class, 'show'])->name('admin.submissions.show');
+        Route::get('submissions/{submission}/download', [AdminSubmissionController::class, 'download'])->name('admin.submissions.download');
         Route::post('submissions/{submission}/review', [AdminSubmissionController::class, 'review'])->name('admin.submissions.review');
         
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');

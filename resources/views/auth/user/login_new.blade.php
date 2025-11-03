@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Pengajuan HKI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .gradient-bg {
@@ -122,6 +122,19 @@
                             <i id="eyeIcon" class="fas fa-eye"></i>
                         </button>
                     </div>
+                </div>
+
+                <div class="flex items-center">
+                    <input 
+                        type="checkbox" 
+                        id="remember" 
+                        name="remember" 
+                        value="1"
+                        class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                    >
+                    <label for="remember" class="ml-2 block text-sm text-gray-900">
+                    Ingat Saya
+                    </label>
                 </div>
 
                 <button 

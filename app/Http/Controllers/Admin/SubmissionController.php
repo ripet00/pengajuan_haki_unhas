@@ -20,8 +20,26 @@ class SubmissionController extends Controller
     {
         $q = Submission::with('user', 'reviewedByAdmin')->latest();
 
+        // Filter by status
         if ($request->filled('status')) {
             $q->where('status', $request->status);
+        }
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $q->where(function($query) use ($search) {
+                $query->where('title', 'LIKE', "%{$search}%")
+                      ->orWhere('categories', 'LIKE', "%{$search}%")
+                      ->orWhere('file_name', 'LIKE', "%{$search}%")
+                      ->orWhere('creator_name', 'LIKE', "%{$search}%")
+                      ->orWhere('youtube_link', 'LIKE', "%{$search}%")
+                      ->orWhereHas('user', function($userQuery) use ($search) {
+                          $userQuery->where('name', 'LIKE', "%{$search}%")
+                                   ->orWhere('phone_number', 'LIKE', "%{$search}%")
+                                   ->orWhere('faculty', 'LIKE', "%{$search}%");
+                      });
+            });
         }
 
         $submissions = $q->paginate(20);
@@ -36,7 +54,10 @@ class SubmissionController extends Controller
             $submission->load('reviewedByAdmin');
         }
         
-        return view('admin.submissions.show', compact('submission'));
+        // Get submissions with similar titles (case-insensitive)
+        $similarTitles = $submission->getSimilarTitles();
+        
+        return view('admin.submissions.show', compact('submission', 'similarTitles'));
     }
 
     // review action: set approved or denied with a comment
@@ -56,5 +77,17 @@ class SubmissionController extends Controller
         $submission->save();
 
         return redirect()->route('admin.submissions.show', $submission)->with('success', 'Review tersimpan.');
+    }
+
+    // download file - force download instead of opening in browser
+    public function download(Submission $submission)
+    {
+        $filePath = storage_path('app/public/' . $submission->file_path);
+        
+        if (!file_exists($filePath)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return response()->download($filePath, $submission->file_name);
     }
 }

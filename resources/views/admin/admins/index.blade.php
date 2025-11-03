@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Admin - Admin Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+        <title>Kelola Admin - Pengajuan HKI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
@@ -82,6 +82,60 @@
                         </div>
                     </div>
 
+                    <!-- Search Bar Section -->
+                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-900 flex items-center">
+                                    <i class="fas fa-search mr-3 text-indigo-600"></i>Pencarian Admin
+                                </h2>
+                                
+                            </div>
+                            <div class="flex">
+                                <!-- Search Bar -->
+                                <form method="GET" action="{{ route('admin.admins.index') }}" class="flex">
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-search text-gray-400"></i>
+                                        </div>
+                                        <input type="text" 
+                                               name="search" 
+                                               value="{{ request('search') }}" 
+                                               placeholder="Cari Admin" 
+                                               class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-80">
+                                    </div>
+                                    <button type="submit" class="ml-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                        <i class="fas fa-search mr-1"></i>Cari
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Search Notification -->
+                    @if(request('search'))
+                        <div class="bg-indigo-50 border-l-4 border-indigo-400 p-4 rounded mb-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-search text-indigo-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-indigo-700">
+                                            Pencarian aktif: <span class="font-medium">"{{ request('search') }}"</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <a href="{{ route('admin.admins.index') }}" 
+                                       class="inline-flex items-center px-3 py-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-sm font-medium rounded-lg transition duration-200">
+                                        <i class="fas fa-times mr-1"></i>Hapus Pencarian
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Admins Table -->
                     <div class="bg-white shadow rounded-lg overflow-hidden">
                         <div class="px-4 md:px-6 py-4 border-b border-gray-200">
@@ -94,58 +148,85 @@
                         </div>
                         
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
-                                        <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">NIP/NIDN/NIDK/NIM</th>
-                                        <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Nomor WhatsApp</th>
-                                        <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Bergabung</th>
-                                        <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($admins as $adminItem)
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-                                                <div class="flex items-center">
-                                                    <div class="w-8 h-8 md:w-10 md:h-10 bg-indigo-500 rounded-full flex items-center justify-center">
-                                                        <span class="text-white font-medium text-xs md:text-sm">{{ substr($adminItem->name, 0, 1) }}</span>
-                                                    </div>
-                                                    <div class="ml-3 md:ml-4">
-                                                        <div class="text-sm font-medium text-gray-900">{{ $adminItem->name }}</div>
-                                                        @if($adminItem->id === session('admin_id'))
-                                                            <div class="text-xs text-indigo-600 font-medium">(Anda)</div>
-                                                        @endif
-                                                        <div class="text-xs text-gray-500 md:hidden">{{ $adminItem->nip_nidn_nidk_nim }}</div>
-                                                        <div class="text-xs text-gray-500 lg:hidden">{{ $adminItem->phone_number }}</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
-                                                {{ $adminItem->nip_nidn_nidk_nim }}
-                                            </td>
-                                            <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
-                                                {{ $adminItem->phone_number }}
-                                            </td>
-                                            <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
-                                                {{ $adminItem->created_at->format('d M Y H:i') }}
-                                            </td>
-                                            <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-                                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                                    <i class="fas fa-check-circle mr-1"></i>Aktif
-                                                </span>
-                                            </td>
+                            @if($admins->count() > 0)
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">NIP/NIDN/NIDK/NIM</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Nomor WhatsApp</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Bergabung</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        @foreach($admins as $adminItem)
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <div class="w-8 h-8 md:w-10 md:h-10 bg-indigo-500 rounded-full flex items-center justify-center">
+                                                            <span class="text-white font-medium text-xs md:text-sm">{{ substr($adminItem->name, 0, 1) }}</span>
+                                                        </div>
+                                                        <div class="ml-3 md:ml-4">
+                                                            <div class="text-sm font-medium text-gray-900">{{ $adminItem->name }}</div>
+                                                            @if($adminItem->id === session('admin_id'))
+                                                                <div class="text-xs text-indigo-600 font-medium">(Anda)</div>
+                                                            @endif
+                                                            <div class="text-xs text-gray-500 md:hidden">{{ $adminItem->nip_nidn_nidk_nim }}</div>
+                                                            <div class="text-xs text-gray-500 lg:hidden">{{ $adminItem->phone_number }}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
+                                                    {{ $adminItem->nip_nidn_nidk_nim }}
+                                                </td>
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                                                    {{ $adminItem->phone_number }}
+                                                </td>
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                                                    {{ $adminItem->created_at->format('d M Y H:i') }}
+                                                </td>
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                                        <i class="fas fa-check-circle mr-1"></i>Aktif
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @else
+                                <!-- Empty State -->
+                                <div class="p-8 text-center">
+                                    @if(request('search'))
+                                        <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                                            Tidak ada admin yang ditemukan
+                                        </h3>
+                                        <p class="text-gray-600 mb-4">
+                                            Tidak ada admin yang cocok dengan pencarian "{{ request('search') }}"
+                                        </p>
+                                        <a href="{{ route('admin.admins.index') }}" 
+                                           class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                            <i class="fas fa-times mr-2"></i>Hapus Pencarian
+                                        </a>
+                                    @else
+                                        <i class="fas fa-user-shield text-6xl text-gray-300 mb-4"></i>
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Tidak ada admin</h3>
+                                        <p class="text-gray-600 mb-4">Belum ada admin yang terdaftar di sistem.</p>
+                                        <a href="{{ route('admin.create') }}" 
+                                           class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                            <i class="fas fa-plus mr-2"></i>Tambah Admin
+                                        </a>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Pagination -->
                         @if($admins->hasPages())
                             <div class="px-4 md:px-6 py-4 border-t border-gray-200">
-                                {{ $admins->links() }}
+                                {{ $admins->appends(request()->query())->links() }}
                             </div>
                         @endif
                     </div>

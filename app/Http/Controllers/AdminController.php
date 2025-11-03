@@ -23,17 +23,47 @@ class AdminController extends Controller
     }
 
     // Menampilkan halaman manajemen user
-    public function userIndex()
+    public function userIndex(Request $request)
     {
-        // Ambil semua user, urutkan berdasarkan yang terbaru, dan bagi per 15 data per halaman (pagination).
-        $users = User::orderBy('created_at', 'desc')->paginate(15);
+        $q = User::orderBy('created_at', 'desc');
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $q->where('status', $request->status);
+        }
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $q->where(function($query) use ($search) {
+                $query->where('name', 'LIKE', "%{$search}%")
+                      ->orWhere('phone_number', 'LIKE', "%{$search}%")
+                      ->orWhere('faculty', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Ambil users dengan pagination dan pertahankan query parameters
+        $users = $q->paginate(15);
         return view('admin.users.index', compact('users'));
     }
 
     // Menampilkan halaman manajemen admin
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
-        $admins = Admin::orderBy('created_at', 'desc')->paginate(15);
+        $q = Admin::orderBy('created_at', 'desc');
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $q->where(function($query) use ($search) {
+                $query->where('name', 'LIKE', "%{$search}%")
+                      ->orWhere('nip_nidn_nidk_nim', 'LIKE', "%{$search}%")
+                      ->orWhere('phone_number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Ambil admins dengan pagination dan pertahankan query parameters
+        $admins = $q->paginate(15);
         return view('admin.admins.index', compact('admins'));
     }
 
@@ -74,6 +104,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'nip_nidn_nidk_nim' => 'required|string|unique:admins', // Harus unik
             'phone_number' => 'required|string|unique:admins', // Harus unik
+            'country_code' => 'required|string|max:5',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -82,6 +113,7 @@ class AdminController extends Controller
             'name' => $request->name,
             'nip_nidn_nidk_nim' => $request->nip_nidn_nidk_nim,
             'phone_number' => $request->phone_number,
+            'country_code' => $request->country_code,
             'password' => Hash::make($request->password), // Enkripsi password
         ]);
 

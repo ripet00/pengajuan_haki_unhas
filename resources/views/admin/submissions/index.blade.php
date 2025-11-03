@@ -1,12 +1,56 @@
-@extends('admin.layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pengajuan HKI - Pengajuan HKI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        @include('admin.partials.sidebar')
 
-@section('title', 'Daftar Pengajuan HKI')
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            @include('admin.partials.header', ['title' => 'Pengajuan HKI'])
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+                <div class="px-4 sm:px-6 lg:px-8 py-6">
+                    @if(session('success'))
+                        <div class="mb-6 bg-green-50 border-l-4 border-green-400 p-4 rounded">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check-circle text-green-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-green-700">{{ session('success') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="mb-6 bg-red-50 border-l-4 border-red-400 p-4 rounded">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <ul class="text-sm text-red-700">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
 @php
 use Illuminate\Support\Facades\Storage;
 @endphp
-
-@section('content')
 <div class="space-y-6">
     <!-- Header Section -->
     <div class="bg-white rounded-lg shadow p-6">
@@ -17,7 +61,28 @@ use Illuminate\Support\Facades\Storage;
                 </h1>
                 <p class="text-gray-600 mt-1">Kelola dan review pengajuan HKI dari pengguna</p>
             </div>
-            <div class="flex space-x-3">
+            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                <!-- Search Bar -->
+                <form method="GET" action="{{ route('admin.submissions.index') }}" class="flex">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" 
+                               name="search" 
+                               value="{{ request('search') }}" 
+                               placeholder="Cari Judul Karya Cipta" 
+                               class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 w-64">
+                        <!-- Preserve existing filter when searching -->
+                        @if(request('status'))
+                            <input type="hidden" name="status" value="{{ request('status') }}">
+                        @endif
+                    </div>
+                    <button type="submit" class="ml-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition duration-200 cursor-pointer">
+                        <i class="fas fa-search mr-1"></i>Cari
+                    </button>
+                </form>
+                
                 <!-- Filter Status -->
                 <form method="GET" action="{{ route('admin.submissions.index') }}" class="flex space-x-2">
                     <select name="status" class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" onchange="this.form.submit()">
@@ -26,10 +91,47 @@ use Illuminate\Support\Facades\Storage;
                         <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
                         <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
                     </select>
+                    <!-- Preserve existing search when filtering -->
+                    @if(request('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
                 </form>
             </div>
         </div>
     </div>
+
+    <!-- Active Filters Notification -->
+    @if(request('search') || request('status'))
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-filter text-blue-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-blue-700">
+                            Filter aktif: 
+                            @if(request('search'))
+                                <span class="font-medium">Pencarian: "{{ request('search') }}"</span>
+                                @if(request('status'))
+                                    , 
+                                @endif
+                            @endif
+                            @if(request('status'))
+                                <span class="font-medium">Status: {{ ucfirst(request('status')) }}</span>
+                            @endif
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <a href="{{ route('admin.submissions.index') }}" 
+                       class="inline-flex items-center px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-sm font-medium rounded-lg transition duration-200">
+                        <i class="fas fa-times mr-1"></i>Hapus Filter
+                    </a>
+                </div>
+            </div>
+        </div>
+    @endif
 
     @if($submissions->count() > 0)
         <!-- Statistics Cards -->
@@ -87,7 +189,7 @@ use Illuminate\Support\Facades\Storage;
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengaju</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengusul</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul Karya</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Dokumen</th>
@@ -121,7 +223,11 @@ use Illuminate\Support\Facades\Storage;
                                 <div>
                                     <div class="text-sm font-medium text-gray-900">{{ Str::limit($submission->title, 40) }}</div>
                                     <div class="text-sm text-gray-500">
-                                        <i class="fas fa-file-pdf text-red-500 mr-1"></i>
+                                        @if($submission->file_type === 'video')
+                                            <i class="fas fa-video text-purple-500 mr-1"></i>
+                                        @else
+                                            <i class="fas fa-file-pdf text-red-500 mr-1"></i>
+                                        @endif
                                         {{ $submission->file_name }}
                                     </div>
                                 </div>
@@ -199,9 +305,14 @@ use Illuminate\Support\Facades\Storage;
                                     
                                     <a href="{{ Storage::disk('public')->url($submission->file_path) }}" 
                                        target="_blank" 
-                                       class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                        <i class="fas fa-file-pdf mr-1"></i>
-                                        PDF
+                                       class="inline-flex items-center px-3 py-2 {{ $submission->file_type === 'video' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-red-600 hover:bg-red-700' }} text-white text-sm font-medium rounded-lg transition duration-200">
+                                        @if($submission->file_type === 'video')
+                                            <i class="fas fa-video mr-1"></i>
+                                            Video
+                                        @else
+                                            <i class="fas fa-file-pdf mr-1"></i>
+                                            PDF
+                                        @endif
                                     </a>
                                     
                                     @if($submission->status != 'pending')
@@ -228,14 +339,37 @@ use Illuminate\Support\Facades\Storage;
     @else
         <!-- Empty State -->
         <div class="bg-white rounded-lg shadow p-8 text-center">
-            <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">Tidak ada pengajuan
-                @if(request('status'))
-                    dengan status "{{ ucfirst(request('status')) }}"
-                @endif
-            </h3>
-            <p class="text-gray-600">Pengajuan HKI akan muncul di sini setelah user melakukan submission.</p>
+            @if(request('search') || request('status'))
+                <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                    Tidak ada hasil yang ditemukan
+                </h3>
+                <p class="text-gray-600 mb-4">
+                    Tidak ada pengajuan yang cocok dengan 
+                    @if(request('search') && request('status'))
+                        pencarian "{{ request('search') }}" dan status "{{ ucfirst(request('status')) }}"
+                    @elseif(request('search'))
+                        pencarian "{{ request('search') }}"
+                    @else
+                        status "{{ ucfirst(request('status')) }}"
+                    @endif
+                </p>
+                <a href="{{ route('admin.submissions.index') }}" 
+                   class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                    <i class="fas fa-times mr-2"></i>Hapus Filter
+                </a>
+            @else
+                <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Tidak ada pengajuan</h3>
+                <p class="text-gray-600">Pengajuan HKI akan muncul di sini setelah user melakukan submission.</p>
+            @endif
         </div>
     @endif
-</div>
-@endsection
+                </div>
+            </main>
+        </div>
+    </div>
+
+    @include('admin.partials.sidebar-script')
+</body>
+</html>

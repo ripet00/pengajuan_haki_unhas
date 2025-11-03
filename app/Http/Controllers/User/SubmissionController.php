@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSubmissionRequest;
+use App\Http\Requests\ResubmitSubmissionRequest;
 use App\Models\Submission;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -69,6 +70,11 @@ class SubmissionController extends Controller
                 'user_id' => $user->id,
                 'title' => $request->input('title'),
                 'categories' => $request->input('categories'),
+                'file_type' => $request->input('file_type'),
+                'youtube_link' => $request->input('youtube_link'),
+                'creator_name' => $request->input('creator_name'),
+                'creator_whatsapp' => $request->input('creator_whatsapp'),
+                'creator_country_code' => $request->input('creator_country_code'),
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
                 'file_size' => $file->getSize(),
@@ -82,13 +88,17 @@ class SubmissionController extends Controller
             // Log the error for debugging
             Log::error('File upload error: ' . $e->getMessage(), [
                 'user_id' => Auth::id(),
+                'request_data' => $request->all(),
                 'file_size' => $request->hasFile('document') ? $request->file('document')->getSize() : 'unknown',
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
                 'error_trace' => $e->getTraceAsString()
             ]);
             
-            // Return user-friendly error message instead of internal server error
+            // Return user-friendly error message with actual error for debugging
             return back()->withErrors([
-                'document' => 'Terjadi kesalahan saat mengupload file. Pastikan file PDF Anda tidak melebihi 20MB dan coba lagi.'
+                'document' => 'Terjadi kesalahan saat mengupload file: ' . $e->getMessage() . '. Pastikan semua field terisi dan file tidak melebihi 20MB.'
             ])->withInput();
         }
     }
@@ -107,7 +117,7 @@ class SubmissionController extends Controller
      * @param \App\Http\Requests\StoreSubmissionRequest|\Illuminate\Http\Request $request
      * @param \App\Models\Submission $submission
      */
-    public function resubmit(StoreSubmissionRequest $request, Submission $submission) {
+    public function resubmit(ResubmitSubmissionRequest $request, Submission $submission) {
         $this->authorizeOwnership($submission);
 
         if ($submission->status !== 'rejected') {
@@ -151,6 +161,11 @@ class SubmissionController extends Controller
             $submission->update([
                 'title' => $request->input('title'),
                 'categories' => $request->input('categories'),
+                'file_type' => $request->input('file_type'),
+                'youtube_link' => $request->input('youtube_link'),
+                'creator_name' => $request->input('creator_name'),
+                'creator_whatsapp' => $request->input('creator_whatsapp'),
+                'creator_country_code' => $request->input('creator_country_code'),
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
                 'file_size' => $file->getSize(),
@@ -183,5 +198,20 @@ class SubmissionController extends Controller
         if ($submission->user_id !== Auth::id()) {
             abort(403);
         }
+    }
+
+    // download file - force download instead of opening in browser
+    public function download(Submission $submission)
+    {
+        // Ensure user can only download their own submissions
+        $this->authorizeOwnership($submission);
+        
+        $filePath = storage_path('app/public/' . $submission->file_path);
+        
+        if (!file_exists($filePath)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return response()->download($filePath, $submission->file_name);
     }
 }
