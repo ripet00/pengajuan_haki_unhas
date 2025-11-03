@@ -71,7 +71,7 @@ use Illuminate\Support\Facades\Storage;
                         <input type="text" 
                                name="search" 
                                value="{{ request('search') }}" 
-                               placeholder="Cari judul, nama pencipta, kategori, file, YouTube..." 
+                               placeholder="Cari Judul Karya Cipta" 
                                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 w-64">
                         <!-- Preserve existing filter when searching -->
                         @if(request('status'))
