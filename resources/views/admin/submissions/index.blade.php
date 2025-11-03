@@ -61,7 +61,28 @@ use Illuminate\Support\Facades\Storage;
                 </h1>
                 <p class="text-gray-600 mt-1">Kelola dan review pengajuan HKI dari pengguna</p>
             </div>
-            <div class="flex space-x-3">
+            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                <!-- Search Bar -->
+                <form method="GET" action="{{ route('admin.submissions.index') }}" class="flex">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" 
+                               name="search" 
+                               value="{{ request('search') }}" 
+                               placeholder="Cari judul, nama pencipta, kategori, file, YouTube..." 
+                               class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 w-64">
+                        <!-- Preserve existing filter when searching -->
+                        @if(request('status'))
+                            <input type="hidden" name="status" value="{{ request('status') }}">
+                        @endif
+                    </div>
+                    <button type="submit" class="ml-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition duration-200 cursor-pointer">
+                        <i class="fas fa-search mr-1"></i>Cari
+                    </button>
+                </form>
+                
                 <!-- Filter Status -->
                 <form method="GET" action="{{ route('admin.submissions.index') }}" class="flex space-x-2">
                     <select name="status" class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" onchange="this.form.submit()">
@@ -70,10 +91,47 @@ use Illuminate\Support\Facades\Storage;
                         <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
                         <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
                     </select>
+                    <!-- Preserve existing search when filtering -->
+                    @if(request('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
                 </form>
             </div>
         </div>
     </div>
+
+    <!-- Active Filters Notification -->
+    @if(request('search') || request('status'))
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-filter text-blue-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-blue-700">
+                            Filter aktif: 
+                            @if(request('search'))
+                                <span class="font-medium">Pencarian: "{{ request('search') }}"</span>
+                                @if(request('status'))
+                                    , 
+                                @endif
+                            @endif
+                            @if(request('status'))
+                                <span class="font-medium">Status: {{ ucfirst(request('status')) }}</span>
+                            @endif
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <a href="{{ route('admin.submissions.index') }}" 
+                       class="inline-flex items-center px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-sm font-medium rounded-lg transition duration-200">
+                        <i class="fas fa-times mr-1"></i>Hapus Filter
+                    </a>
+                </div>
+            </div>
+        </div>
+    @endif
 
     @if($submissions->count() > 0)
         <!-- Statistics Cards -->
@@ -281,13 +339,30 @@ use Illuminate\Support\Facades\Storage;
     @else
         <!-- Empty State -->
         <div class="bg-white rounded-lg shadow p-8 text-center">
-            <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">Tidak ada pengajuan
-                @if(request('status'))
-                    dengan status "{{ ucfirst(request('status')) }}"
-                @endif
-            </h3>
-            <p class="text-gray-600">Pengajuan HKI akan muncul di sini setelah user melakukan submission.</p>
+            @if(request('search') || request('status'))
+                <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                    Tidak ada hasil yang ditemukan
+                </h3>
+                <p class="text-gray-600 mb-4">
+                    Tidak ada pengajuan yang cocok dengan 
+                    @if(request('search') && request('status'))
+                        pencarian "{{ request('search') }}" dan status "{{ ucfirst(request('status')) }}"
+                    @elseif(request('search'))
+                        pencarian "{{ request('search') }}"
+                    @else
+                        status "{{ ucfirst(request('status')) }}"
+                    @endif
+                </p>
+                <a href="{{ route('admin.submissions.index') }}" 
+                   class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                    <i class="fas fa-times mr-2"></i>Hapus Filter
+                </a>
+            @else
+                <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Tidak ada pengajuan</h3>
+                <p class="text-gray-600">Pengajuan HKI akan muncul di sini setelah user melakukan submission.</p>
+            @endif
         </div>
     @endif
                 </div>
