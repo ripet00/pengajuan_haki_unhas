@@ -73,6 +73,7 @@ class SubmissionController extends Controller
                 'youtube_link' => $request->input('youtube_link'),
                 'creator_name' => $request->input('creator_name'),
                 'creator_whatsapp' => $request->input('creator_whatsapp'),
+
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
                 'file_size' => $file->getSize(),
