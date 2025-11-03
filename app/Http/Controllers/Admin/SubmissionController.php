@@ -20,8 +20,26 @@ class SubmissionController extends Controller
     {
         $q = Submission::with('user', 'reviewedByAdmin')->latest();
 
+        // Filter by status
         if ($request->filled('status')) {
             $q->where('status', $request->status);
+        }
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $q->where(function($query) use ($search) {
+                $query->where('title', 'LIKE', "%{$search}%")
+                      ->orWhere('categories', 'LIKE', "%{$search}%")
+                      ->orWhere('file_name', 'LIKE', "%{$search}%")
+                      ->orWhere('creator_name', 'LIKE', "%{$search}%")
+                      ->orWhere('youtube_link', 'LIKE', "%{$search}%")
+                      ->orWhereHas('user', function($userQuery) use ($search) {
+                          $userQuery->where('name', 'LIKE', "%{$search}%")
+                                   ->orWhere('phone_number', 'LIKE', "%{$search}%")
+                                   ->orWhere('faculty', 'LIKE', "%{$search}%");
+                      });
+            });
         }
 
         $submissions = $q->paginate(20);
