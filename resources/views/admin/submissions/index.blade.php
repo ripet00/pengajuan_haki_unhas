@@ -192,6 +192,7 @@ use Illuminate\Support\Facades\Storage;
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengusul</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul Karya</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Karya</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Dokumen</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Biodata</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
@@ -237,6 +238,19 @@ use Illuminate\Support\Facades\Storage;
                                     <i class="fas fa-{{ $submission->categories == 'Universitas' ? 'university' : 'globe' }} mr-1"></i>
                                     {{ $submission->categories }}
                                 </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($submission->jenisKarya)
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                                        <i class="fas fa-file-alt mr-1"></i>
+                                        {{ $submission->jenisKarya->nama }}
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                        <i class="fas fa-question mr-1"></i>
+                                        Tidak diset
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-6 py-4">
                                 @if($submission->status == 'pending')

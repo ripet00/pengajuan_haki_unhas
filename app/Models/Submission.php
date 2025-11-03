@@ -12,6 +12,7 @@ class Submission extends Model
         'user_id',
         'title',
         'categories',
+        'jenis_karya_id',
         'file_type',
         'youtube_link',
         'creator_name',
@@ -39,6 +40,12 @@ class Submission extends Model
         'biodata_reviewed_at' => 'datetime',
         'file_size' => 'integer',
     ];
+
+    // Relasi ke model JenisKarya
+    public function jenisKarya()
+    {
+        return $this->belongsTo(JenisKarya::class);
+    }
 
     // Relasi ke model User
     public function user()

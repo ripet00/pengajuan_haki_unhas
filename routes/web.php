@@ -72,6 +72,17 @@ Route::prefix('admin')->group(function () {
         Route::get('submissions/{submission}/download', [AdminSubmissionController::class, 'download'])->name('admin.submissions.download');
         Route::post('submissions/{submission}/review', [AdminSubmissionController::class, 'review'])->name('admin.submissions.review');
         
+        // Jenis Karya management routes
+        Route::resource('jenis-karyas', \App\Http\Controllers\Admin\JenisKaryaController::class)->names([
+            'index' => 'admin.jenis-karyas.index',
+            'create' => 'admin.jenis-karyas.create',
+            'store' => 'admin.jenis-karyas.store',
+            'show' => 'admin.jenis-karyas.show',
+            'edit' => 'admin.jenis-karyas.edit',
+            'update' => 'admin.jenis-karyas.update',
+            'destroy' => 'admin.jenis-karyas.destroy',
+        ]);
+        
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
     });
 });

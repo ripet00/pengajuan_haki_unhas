@@ -18,6 +18,7 @@ class StoreSubmissionRequest extends FormRequest
         $rules = [
             'title' => ['required', 'string', 'max:255'],
             'categories' => ['required', 'in:Universitas,Umum'],
+            'jenis_karya_id' => ['required', 'exists:jenis_karyas,id'],
             'file_type' => ['required', 'in:pdf,video'],
             'creator_name' => ['required', 'string', 'max:255'],
             'creator_whatsapp' => ['required', 'string', 'regex:/^0[0-9]{8,13}$/'],
@@ -50,6 +51,8 @@ class StoreSubmissionRequest extends FormRequest
             'title.max' => 'Judul karya maksimal 255 karakter.',
             'categories.required' => 'Kategori pengajuan wajib dipilih.',
             'categories.in' => 'Kategori pengajuan tidak valid.',
+            'jenis_karya_id.required' => 'Jenis karya wajib dipilih.',
+            'jenis_karya_id.exists' => 'Jenis karya yang dipilih tidak valid.',
             'file_type.required' => 'Jenis file wajib dipilih.',
             'file_type.in' => 'Jenis file tidak valid.',
             'creator_name.required' => 'Nama pencipta pertama wajib diisi.',

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSubmissionRequest;
 use App\Http\Requests\ResubmitSubmissionRequest;
 use App\Models\Submission;
+use App\Models\JenisKarya;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -16,7 +17,7 @@ class SubmissionController extends Controller
     public function index() {
         $user = Auth::user();
         $submissions = Submission::where('user_id', $user->id)
-                                ->with('reviewedByAdmin')
+                                ->with(['reviewedByAdmin', 'jenisKarya'])
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(10);
         
@@ -25,7 +26,8 @@ class SubmissionController extends Controller
 
     // Show create form
     public function create() {
-        return view('user.submissions.create');
+        $jenisKaryas = JenisKarya::active()->orderBy('nama')->get();
+        return view('user.submissions.create', compact('jenisKaryas'));
     }
 
     // Store initial submission
@@ -70,6 +72,7 @@ class SubmissionController extends Controller
                 'user_id' => $user->id,
                 'title' => $request->input('title'),
                 'categories' => $request->input('categories'),
+                'jenis_karya_id' => $request->input('jenis_karya_id'),
                 'file_type' => $request->input('file_type'),
                 'youtube_link' => $request->input('youtube_link'),
                 'creator_name' => $request->input('creator_name'),
@@ -106,7 +109,9 @@ class SubmissionController extends Controller
     // Show a user's submission
     public function show(Submission $submission) {
         $this->authorizeOwnership($submission);
-        return view('user.submissions.show', compact('submission'));
+        $submission->load('jenisKarya');
+        $jenisKaryas = JenisKarya::active()->orderBy('nama')->get();
+        return view('user.submissions.show', compact('submission', 'jenisKaryas'));
     }
 
 
@@ -161,6 +166,7 @@ class SubmissionController extends Controller
             $submission->update([
                 'title' => $request->input('title'),
                 'categories' => $request->input('categories'),
+                'jenis_karya_id' => $request->input('jenis_karya_id'),
                 'file_type' => $request->input('file_type'),
                 'youtube_link' => $request->input('youtube_link'),
                 'creator_name' => $request->input('creator_name'),
