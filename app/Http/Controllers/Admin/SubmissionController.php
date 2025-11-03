@@ -36,7 +36,10 @@ class SubmissionController extends Controller
             $submission->load('reviewedByAdmin');
         }
         
-        return view('admin.submissions.show', compact('submission'));
+        // Get submissions with similar titles (case-insensitive)
+        $similarTitles = $submission->getSimilarTitles();
+        
+        return view('admin.submissions.show', compact('submission', 'similarTitles'));
     }
 
     // review action: set approved or denied with a comment

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pengajuan Baru - HKI Unhas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .gradient-bg {
@@ -137,16 +137,36 @@
                         <label for="creator_whatsapp" class="block text-sm font-medium text-gray-700 mb-2">
                             <i class="fab fa-whatsapp mr-2 text-gray-400"></i>Nomor WhatsApp Pencipta <span class="text-red-500">*</span>
                         </label>
-                        <input 
-                            type="text" 
-                            id="creator_whatsapp" 
-                            name="creator_whatsapp" 
-                            value="{{ old('creator_whatsapp') }}"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition duration-200"
-                            placeholder="081234567890"
-                            required
-                        >
-                        <p class="text-xs text-gray-500 mt-1">Format: 081234567890 atau +6281234567890</p>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-1">
+                                <select 
+                                    id="creator_country_code" 
+                                    name="creator_country_code"
+                                    class="w-full px-3 py-3 border border-gray-300 rounded-lg input-focus transition duration-200 text-sm"
+                                    required
+                                >
+                                    @foreach(getCountryCodes() as $code => $label)
+                                        <option value="{{ $code }}" {{ old('creator_country_code', '+62') == $code ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-span-2">
+                                <input 
+                                    type="text" 
+                                    id="creator_whatsapp" 
+                                    name="creator_whatsapp" 
+                                    value="{{ old('creator_whatsapp') }}"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition duration-200"
+                                    placeholder="081234567890"
+                                    pattern="^0[0-9]{8,13}$"
+                                    title="Nomor harus dimulai dengan 0 dan berisi 9-14 digit"
+                                    required
+                                >
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Masukkan nomor dengan format 0xxxxxxxx</p>
                     </div>
                 </div>
 

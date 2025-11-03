@@ -74,6 +74,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'nip_nidn_nidk_nim' => 'required|string|unique:admins', // Harus unik
             'phone_number' => 'required|string|unique:admins', // Harus unik
+            'country_code' => 'required|string|max:5',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -82,6 +83,7 @@ class AdminController extends Controller
             'name' => $request->name,
             'nip_nidn_nidk_nim' => $request->nip_nidn_nidk_nim,
             'phone_number' => $request->phone_number,
+            'country_code' => $request->country_code,
             'password' => Hash::make($request->password), // Enkripsi password
         ]);
 

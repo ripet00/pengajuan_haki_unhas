@@ -5,14 +5,21 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class StoreSubmissionRequest extends FormRequest
+class ResubmitSubmissionRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function authorize(): bool
     {
-        // request ini untuk user yang submit, bukan admin
         return Auth::check();
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         $rules = [
@@ -24,21 +31,27 @@ class StoreSubmissionRequest extends FormRequest
             'creator_country_code' => ['required', 'string', 'max:5'],
         ];
 
-        // Conditional validation based on file type
+        // More flexible file validation - let middleware handle the strict checking
         /** @var string|null $fileType */
         $fileType = request('file_type');
         if ($fileType === 'pdf') {
-            // More flexible validation - let middleware handle strict type checking
-            $rules['document'] = ['required', 'file', 'max:20480']; // 20MB
+            // More lenient PDF validation - accept various PDF mime types
+            $rules['document'] = ['required', 'file', 'max:20480']; // 20MB, let middleware check PDF
         } elseif ($fileType === 'video') {
-            // More flexible validation - let middleware handle strict type checking  
-            $rules['document'] = ['required', 'file', 'max:20480']; // 20MB for video
+            // More lenient video validation
+            $rules['document'] = ['required', 'file', 'max:20480']; // 20MB, let middleware check MP4
             $rules['youtube_link'] = ['nullable', 'url', 'regex:/^(https?\:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/'];
+        } else {
+            // Default validation if file_type is not set properly
+            $rules['document'] = ['required', 'file', 'max:20480'];
         }
 
         return $rules;
     }
 
+    /**
+     * Get the validation error messages.
+     */
     public function messages(): array
     {
         /** @var string|null $fileType */
@@ -60,7 +73,6 @@ class StoreSubmissionRequest extends FormRequest
             'creator_country_code.max' => 'Kode negara tidak valid.',
             'document.required' => 'File wajib diunggah.',
             'document.file' => 'Pastikan Anda mengunggah file yang valid.',
-            'document.mimes' => "Hanya file {$expectedFormat} yang diperbolehkan untuk jenis file yang dipilih.",
             'document.max' => 'Ukuran file terlalu besar. Maksimal 20MB untuk PDF atau video MP4.',
             'youtube_link.url' => 'Link YouTube harus berupa URL yang valid.',
             'youtube_link.regex' => 'Link harus berupa URL YouTube yang valid.',

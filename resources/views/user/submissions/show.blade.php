@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Pengajuan - HKI Unhas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .gradient-bg {
@@ -269,8 +269,8 @@
                             <div class="mb-2">
                                 <label class="block text-sm font-medium text-gray-500 mb-1">WhatsApp Pencipta</label>
                                 <div class="flex items-center space-x-2">
-                                    <p class="text-gray-900">{{ $submission->creator_whatsapp }}</p>
-                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $submission->creator_whatsapp) }}" 
+                                    <p class="text-gray-900">{{ ($submission->creator_country_code ?? '+62') . ' ' . $submission->creator_whatsapp }}</p>
+                                    <a href="{{ generateWhatsAppUrl($submission->creator_whatsapp, $submission->creator_country_code ?? '+62') }}" 
                                        target="_blank"
                                        class="inline-flex items-center px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition duration-200">
                                         <i class="fab fa-whatsapp mr-1"></i>Hubungi
@@ -387,12 +387,88 @@
                         </div>
 
                         <div>
-                            <label for="document" class="block text-sm font-medium text-gray-700 mb-1">Dokumen PDF Baru</label>
+                            <label for="file_type" class="block text-sm font-medium text-gray-700 mb-1">Jenis File</label>
+                            <select 
+                                id="file_type" 
+                                name="file_type"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                required
+                                onchange="toggleFileFields()"
+                            >
+                                <option value="pdf" {{ old('file_type', $submission->file_type) == 'pdf' ? 'selected' : '' }}>PDF</option>
+                                <option value="video" {{ old('file_type', $submission->file_type) == 'video' ? 'selected' : '' }}>Video (MP4)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="creator_name" class="block text-sm font-medium text-gray-700 mb-1">Nama Pencipta Pertama</label>
+                            <input 
+                                type="text" 
+                                id="creator_name" 
+                                name="creator_name" 
+                                value="{{ old('creator_name', $submission->creator_name) }}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                required
+                            >
+                        </div>
+
+                        <div>
+                            <label for="creator_whatsapp" class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp Pencipta Pertama</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="col-span-1">
+                                    <select 
+                                        id="creator_country_code" 
+                                        name="creator_country_code"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
+                                        required
+                                    >
+                                        @foreach(getCountryCodes() as $code => $label)
+                                            <option value="{{ $code }}" {{ old('creator_country_code', $submission->creator_country_code ?? '+62') == $code ? 'selected' : '' }}>
+                                                {{ $label }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-span-2">
+                                    <input 
+                                        type="text" 
+                                        id="creator_whatsapp" 
+                                        name="creator_whatsapp" 
+                                        value="{{ old('creator_whatsapp', $submission->creator_whatsapp) }}"
+                                        placeholder="081234567890"
+                                        pattern="^0[0-9]{8,13}$"
+                                        title="Nomor harus dimulai dengan 0 dan berisi 9-14 digit"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        required
+                                    >
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Masukkan nomor dengan format 0xxxxxxxx</p>
+                        </div>
+
+                        <div id="youtube-field" style="display: {{ old('file_type', $submission->file_type) == 'video' ? 'block' : 'none' }};">
+                            <label for="youtube_link" class="block text-sm font-medium text-gray-700 mb-1">Link YouTube (opsional)</label>
+                            <input 
+                                type="url" 
+                                id="youtube_link" 
+                                name="youtube_link" 
+                                value="{{ old('youtube_link', $submission->youtube_link) }}"
+                                placeholder="https://www.youtube.com/watch?v=..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="document" class="block text-sm font-medium text-gray-700 mb-1">
+                                <span id="file-label">
+                                    {{ old('file_type', $submission->file_type) == 'video' ? 'File Video MP4 Baru' : 'Dokumen PDF Baru' }}
+                                </span>
+                            </label>
                             <input 
                                 type="file" 
                                 id="document" 
                                 name="document" 
-                                accept=".pdf"
+                                accept="{{ old('file_type', $submission->file_type) == 'video' ? '.mp4' : '.pdf' }}"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                                 required
                             >
@@ -406,6 +482,25 @@
                         </button>
                     </form>
                 </div>
+
+                <script>
+                function toggleFileFields() {
+                    const fileType = document.getElementById('file_type').value;
+                    const youtubeField = document.getElementById('youtube-field');
+                    const documentInput = document.getElementById('document');
+                    const fileLabel = document.getElementById('file-label');
+                    
+                    if (fileType === 'video') {
+                        youtubeField.style.display = 'block';
+                        documentInput.accept = '.mp4';
+                        fileLabel.textContent = 'File Video MP4 Baru';
+                    } else {
+                        youtubeField.style.display = 'none';
+                        documentInput.accept = '.pdf';
+                        fileLabel.textContent = 'Dokumen PDF Baru';
+                    }
+                }
+                </script>
                 @endif
             </div>
         </div>
