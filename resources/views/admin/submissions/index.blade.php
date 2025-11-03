@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900 flex items-center">
-                    <i class="fas fa-file-upload mr-3 text-red-600"></i>Manajemen Pengajuan HKI
+                    <i class="fas fa-file-upload mr-3 text-red-600"></i>Manajemen Pengajuan HAKI
                 </h1>
                 <p class="text-gray-600 mt-1">Kelola dan review pengajuan HKI dari pengguna</p>
             </div>
