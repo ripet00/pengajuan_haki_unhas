@@ -95,6 +95,28 @@
                     </p>
                 </div>
 
+                <div>
+                    <label for="jenis_karya_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-file-alt mr-2 text-gray-400"></i>Jenis Karya
+                    </label>
+                    <select 
+                        id="jenis_karya_id" 
+                        name="jenis_karya_id"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition duration-200"
+                        required
+                    >
+                        <option value="">Pilih Jenis Karya</option>
+                        @foreach($jenisKaryas as $jenisKarya)
+                            <option value="{{ $jenisKarya->id }}" {{ old('jenis_karya_id') == $jenisKarya->id ? 'selected' : '' }}>
+                                {{ $jenisKarya->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Pilih jenis karya yang sesuai dengan submission Anda
+                    </p>
+                </div>
+
                 <!-- File Type Selection -->
                 <div>
                     <label for="file_type" class="block text-sm font-medium text-gray-700 mb-2">

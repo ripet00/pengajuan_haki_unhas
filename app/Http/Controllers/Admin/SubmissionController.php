@@ -18,7 +18,7 @@ class SubmissionController extends Controller
     // list submissions (filter optional)
     public function index(Request $request)
     {
-        $q = Submission::with('user', 'reviewedByAdmin')->latest();
+        $q = Submission::with('user', 'reviewedByAdmin', 'jenisKarya')->latest();
 
         // Filter by status
         if ($request->filled('status')) {
@@ -49,10 +49,11 @@ class SubmissionController extends Controller
     // view one submission (and download/open file)
     public function show(Submission $submission)
     {
-        // Load the admin relationship manually if needed
+        // Load the admin and jenis karya relationships manually if needed
         if ($submission->reviewed_by_admin_id) {
             $submission->load('reviewedByAdmin');
         }
+        $submission->load('jenisKarya');
         
         // Get submissions with similar titles (case-insensitive)
         $similarTitles = $submission->getSimilarTitles();

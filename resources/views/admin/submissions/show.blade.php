@@ -165,6 +165,23 @@ use Illuminate\Support\Facades\Storage;
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="font-medium text-gray-700">Jenis Karya:</div>
+                                <div class="sm:col-span-2">
+                                    @if($submission->jenisKarya)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                                            <i class="fas fa-file-alt mr-1"></i>
+                                            {{ $submission->jenisKarya->nama }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                            <i class="fas fa-question mr-1"></i>
+                                            Tidak diset
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="font-medium text-gray-700">Status:</div>
                                 <div class="sm:col-span-2">
                                     @if($submission->status == 'pending')
