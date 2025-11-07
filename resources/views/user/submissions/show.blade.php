@@ -160,12 +160,17 @@
 
                 <!-- Step 3: Upload Biodata -->
                 <div class="relative z-10 flex flex-col items-center">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $submission->biodata_status == 'approved' || $submission->biodata_status == 'rejected' || $submission->biodata_status == 'pending' ? ($submission->biodata_status == 'approved' ? 'bg-green-500 border-green-500' : ($submission->biodata_status == 'rejected' ? 'bg-red-500 border-red-500' : 'bg-yellow-500 border-yellow-500')) : ($submission->status == 'approved' ? 'bg-blue-500 border-blue-500' : 'bg-gray-200 border-gray-300') }}">
-                        @if($submission->biodata_status == 'approved')
+                    {{-- normalize checks to accept both 'rejected' and 'denied' values for biodata_status --}}
+                    @php
+                        $bStatus = $submission->biodata_status;
+                        $isBRejected = $bStatus === 'rejected' || $bStatus === 'denied';
+                    @endphp
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $bStatus == 'approved' || $isBRejected || $bStatus == 'pending' ? ($bStatus == 'approved' ? 'bg-green-500 border-green-500' : ($isBRejected ? 'bg-red-500 border-red-500' : 'bg-yellow-500 border-yellow-500')) : ($submission->status == 'approved' ? 'bg-blue-500 border-blue-500' : 'bg-gray-200 border-gray-300') }}">
+                        @if($bStatus == 'approved')
                             <i class="fas fa-check text-white"></i>
-                        @elseif($submission->biodata_status == 'rejected')
+                        @elseif($isBRejected)
                             <i class="fas fa-times text-white"></i>
-                        @elseif($submission->biodata_status == 'pending')
+                        @elseif($bStatus == 'pending')
                             <i class="fas fa-clock text-white"></i>
                         @elseif($submission->status == 'approved')
                             <i class="fas fa-user-plus text-white"></i>
@@ -173,7 +178,7 @@
                             <i class="fas fa-user-plus text-gray-400"></i>
                         @endif
                     </div>
-                    <span class="mt-2 text-xs text-center font-medium {{ $submission->biodata_status == 'approved' ? 'text-green-600' : ($submission->biodata_status == 'rejected' ? 'text-red-600' : ($submission->biodata_status == 'pending' ? 'text-yellow-600' : ($submission->status == 'approved' ? 'text-blue-600' : 'text-gray-400'))) }}">
+                    <span class="mt-2 text-xs text-center font-medium {{ $bStatus == 'approved' ? 'text-green-600' : ($isBRejected ? 'text-red-600' : ($bStatus == 'pending' ? 'text-yellow-600' : ($submission->status == 'approved' ? 'text-blue-600' : 'text-gray-400'))) }}">
                         Upload<br>Biodata
                     </span>
                 </div>
@@ -191,15 +196,19 @@
 
             <!-- Progress Description -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-                @if($submission->biodata_status == 'approved')
+                @php
+                    $bStatus = $submission->biodata_status;
+                    $isBRejected = $bStatus === 'rejected' || $bStatus === 'denied';
+                @endphp
+                @if($bStatus == 'approved')
                     <p class="text-sm text-green-700 font-medium">
                         <i class="fas fa-check-circle mr-2"></i>Pengajuan HKI Anda telah selesai diproses!
                     </p>
-                @elseif($submission->biodata_status == 'rejected')
+                @elseif($isBRejected)
                     <p class="text-sm text-red-700 font-medium">
                         <i class="fas fa-exclamation-triangle mr-2"></i>Biodata ditolak. Silakan upload ulang biodata yang sesuai.
                     </p>
-                @elseif($submission->biodata_status == 'pending')
+                @elseif($bStatus == 'pending')
                     <p class="text-sm text-yellow-700 font-medium">
                         <i class="fas fa-clock mr-2"></i>Biodata sedang direview oleh admin.
                     </p>
@@ -392,6 +401,67 @@
                     </div>
                 </div>
 
+                <!-- Biodata Navigation Section -->
+                @if($submission->status == 'approved')
+                    @if($submission->biodata)
+                        <!-- Biodata exists - show view biodata section -->
+                        <div class="mt-6 p-6 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-green-800 mb-2">
+                                        <i class="fas fa-check-circle mr-2"></i>Biodata Telah Dibuat
+                                    </h4>
+                                    <p class="text-sm text-green-700 mb-2">
+                                        Status Biodata: 
+                                        @if($submission->biodata->status == 'approved')
+                                            <span class="font-semibold text-green-800">Disetujui</span>
+                                        @elseif($submission->biodata->status == 'denied')
+                                            <span class="font-semibold text-red-800">Ditolak</span>
+                                        @else
+                                            <span class="font-semibold text-yellow-800">Menunggu Review</span>
+                                        @endif
+                                    </p>
+                                    @if($submission->biodata->status == 'denied' && $submission->biodata->rejection_reason)
+                                        <p class="text-sm text-red-700 bg-red-100 p-2 rounded mt-2">
+                                            <strong>Alasan Penolakan:</strong> {{ $submission->biodata->rejection_reason }}
+                                        </p>
+                                    @endif
+                                </div>
+                                <div class="flex space-x-3">
+                                    <a href="{{ route('user.biodata.show', [$submission, $submission->biodata]) }}" 
+                                       class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                        <i class="fas fa-eye mr-2"></i>Lihat Biodata
+                                    </a>
+                                    @if($submission->biodata->canBeEdited())
+                                        <a href="{{ route('user.biodata.create', $submission) }}" 
+                                           class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                            <i class="fas fa-edit mr-2"></i>Edit Biodata
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <!-- Biodata not created yet - show create biodata section -->
+                        <div class="mt-6 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-blue-800 mb-2">
+                                        <i class="fas fa-arrow-right mr-2"></i>Langkah Selanjutnya
+                                    </h4>
+                                    <p class="text-sm text-blue-700">
+                                        Dokumen Anda telah disetujui! Silakan lengkapi biodata untuk melanjutkan proses pengajuan HKI.
+                                    </p>
+                                </div>
+                                <a href="{{ route('user.biodata.create', $submission) }}" 
+                                   class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 shadow-lg hover:shadow-xl">
+                                    <i class="fas fa-plus mr-2"></i>Buat Biodata
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+                @endif
+
                 <!-- Rejection Reason -->
                 @if($submission->status == 'rejected' && $submission->rejection_reason)
                 <div class="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -573,6 +643,17 @@
                 @endif
             </div>
         </div>
+
+        <!-- Floating Next Button -->
+        @if($submission->status == 'approved' && !$submission->biodata)
+        <div class="fixed bottom-6 right-6 z-50">
+            <a href="{{ route('user.biodata.create', $submission) }}" 
+               class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition duration-200 transform hover:scale-105">
+                <span class="mr-2">Next</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        @endif
     </main>
 </body>
 </html>
