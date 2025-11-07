@@ -220,40 +220,54 @@
                                 <td class="px-6 py-4">
                                     @if($submission->status == 'pending')
                                         <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-yellow-100 text-yellow-800">
-                                            <i class="fas fa-clock mr-1"></i>Pending
+                                            <i class="fas fa-clock mr-1"></i>
+                                            <span class="ml-0">Pending</span>
                                         </span>
                                     @elseif($submission->status == 'approved')
                                         <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
-                                            <i class="fas fa-check-circle mr-1"></i>Disetujui
+                                            <i class="fas fa-check-circle mr-1"></i>
+                                            <span class="ml-0">Disetujui</span>
                                         </span>
                                     @else
                                         <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-red-100 text-red-800">
-                                            <i class="fas fa-times-circle mr-1"></i>Ditolak
+                                            <i class="fas fa-times-circle mr-1"></i>
+                                            <span class="ml-0">Ditolak</span>
                                         </span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4">
-                                    @if($submission->biodata_status == 'not_started')
+                                    {{-- If there is a biodata record and it's denied, show Ditolak regardless of biodata_status field --}}
+                                    @if(isset($submission->biodata) && $submission->biodata->status === 'denied')
+                                        <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-red-100 text-red-800">
+                                            <i class="fas fa-times mr-1"></i>
+                                            <span class="ml-0">Ditolak</span>
+                                        </span>
+                                    @elseif($submission->biodata_status == 'not_started')
                                         @if($submission->status == 'approved')
-                                            <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-800">
-                                                <i class="fas fa-upload mr-1"></i>Siap Upload
+                                            <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-800">
+                                                <i class="fas fa-upload mr-1"></i>
+                                                <span class="ml-0">Siap Upload</span>
                                             </span>
                                         @else
                                             <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-gray-100 text-gray-600">
-                                                <i class="fas fa-lock mr-1"></i>Menunggu
+                                                <i class="fas fa-lock mr-1"></i>
+                                                <span class="ml-0">Terkunci</span>
                                             </span>
                                         @endif
                                     @elseif($submission->biodata_status == 'pending')
                                         <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-yellow-100 text-yellow-800">
-                                            <i class="fas fa-clock mr-1"></i>Review
+                                            <i class="fas fa-clock mr-1"></i>
+                                            <span class="ml-0">Review</span>
                                         </span>
                                     @elseif($submission->biodata_status == 'approved')
                                         <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
-                                            <i class="fas fa-check-double mr-1"></i>Selesai
+                                            <i class="fas fa-check-double mr-1"></i>
+                                            <span class="ml-0">Selesai</span>
                                         </span>
-                                    @else
+                                    @elseif($submission->biodata_status == 'denied')
                                         <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-red-100 text-red-800">
-                                            <i class="fas fa-times mr-1"></i>Ditolak
+                                            <i class="fas fa-times mr-1"></i>
+                                            <span class="ml-0">Ditolak</span>
                                         </span>
                                     @endif
                                 </td>
