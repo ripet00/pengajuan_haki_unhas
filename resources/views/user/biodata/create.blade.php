@@ -161,12 +161,20 @@
                         </p>
                     </div>                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="tempat_ciptaan" class="block text-sm font-medium text-gray-700 mb-1">Tempat Ciptaan *</label>
+                            <label for="tempat_ciptaan" class="block text-sm font-medium text-gray-700 mb-1">
+                                Tempat Ciptaan *
+                                @if($biodata && $biodata->error_tempat_ciptaan)
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                @endif
+                            </label>
                             <input type="text" 
                                    id="tempat_ciptaan" 
                                    name="tempat_ciptaan" 
                                    value="{{ old('tempat_ciptaan', $biodata ? $biodata->tempat_ciptaan : '') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="{{ $biodata && $biodata->error_tempat_ciptaan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan tempat ciptaan' }}"
+                                   class="w-full px-3 py-2 border {{ $biodata && $biodata->error_tempat_ciptaan ? 'border-red-300 bg-red-50' : 'border-gray-300' }} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
                             @error('tempat_ciptaan')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -174,12 +182,19 @@
                         </div>
 
                         <div>
-                            <label for="tanggal_ciptaan" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Ciptaan *</label>
+                            <label for="tanggal_ciptaan" class="block text-sm font-medium text-gray-700 mb-1">
+                                Tanggal Ciptaan *
+                                @if($biodata && $biodata->error_tanggal_ciptaan)
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                @endif
+                            </label>
                             <input type="date" 
                                    id="tanggal_ciptaan" 
                                    name="tanggal_ciptaan" 
                                    value="{{ old('tanggal_ciptaan', $biodata && $biodata->tanggal_ciptaan ? $biodata->tanggal_ciptaan->format('Y-m-d') : '') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   class="w-full px-3 py-2 border {{ $biodata && $biodata->error_tanggal_ciptaan ? 'border-red-300 bg-red-50' : 'border-gray-300' }} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
                             @error('tanggal_ciptaan')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -188,11 +203,19 @@
                     </div>
 
                     <div>
-                        <label for="uraian_singkat" class="block text-sm font-medium text-gray-700 mb-1">Uraian Singkat Karya Cipta *</label>
+                        <label for="uraian_singkat" class="block text-sm font-medium text-gray-700 mb-1">
+                            Uraian Singkat Karya Cipta *
+                            @if($biodata && $biodata->error_uraian_singkat)
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                </span>
+                            @endif
+                        </label>
                         <textarea id="uraian_singkat" 
                                   name="uraian_singkat" 
                                   rows="4"
-                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="{{ $biodata && $biodata->error_uraian_singkat ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan uraian singkat karya cipta' }}"
+                                  class="w-full px-3 py-2 border {{ $biodata && $biodata->error_uraian_singkat ? 'border-red-300 bg-red-50' : 'border-gray-300' }} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                   required>{{ old('uraian_singkat', $biodata ? $biodata->uraian_singkat : '') }}</textarea>
                         @error('uraian_singkat')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -226,7 +249,13 @@
                     <div class="flex justify-between items-center">
                         <div>
                             <h4 class="text-lg font-semibold text-gray-900">Review & Submit</h4>
-                            <p class="text-sm text-gray-600">Pastikan semua data telah diisi dengan benar.</p>
+                            <p class="text-sm text-gray-600">
+                                @if($biodata && $biodata->status === 'denied')
+                                    Perbaiki data yang ditandai admin dan submit ulang biodata.
+                                @else
+                                    Pastikan semua data telah diisi dengan benar.
+                                @endif
+                            </p>
                         </div>
                         <div class="flex space-x-3">
                             <a href="{{ route('user.submissions.show', $submission) }}" 
@@ -234,9 +263,12 @@
                                 <i class="fas fa-times mr-2"></i>Batal
                             </a>
                             <button type="submit" 
-                                    class="inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200">
-                                <i class="fas fa-save mr-2"></i>
-                                {{ $isEdit ? 'Update' : 'Simpan' }} Biodata
+                                    class="inline-flex items-center px-6 py-2 {{ $biodata && $biodata->status === 'denied' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700' }} text-white font-medium rounded-lg transition duration-200">
+                                @if($biodata && $biodata->status === 'denied')
+                                    <i class="fas fa-redo mr-2"></i>Submit Revisi Biodata
+                                @else
+                                    <i class="fas fa-save mr-2"></i>{{ $isEdit ? 'Update' : 'Simpan' }} Biodata
+                                @endif
                             </button>
                         </div>
                     </div>
@@ -274,123 +306,243 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Nama Lengkap *
+                                ${member.error_name ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][name]" 
                                    value="${member.name || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="${member.error_name ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan nama lengkap'}"
+                                   class="w-full px-3 py-2 border ${member.error_name ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">NIK</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                NIK
+                                ${member.error_nik ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][nik]" 
                                    value="${member.nik || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_nik ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan NIK'}"
+                                   class="w-full px-3 py-2 border ${member.error_nik ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Pekerjaan</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Pekerjaan
+                                ${member.error_pekerjaan ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][pekerjaan]" 
                                    value="${member.pekerjaan || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_pekerjaan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan pekerjaan'}"
+                                   class="w-full px-3 py-2 border ${member.error_pekerjaan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Universitas</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Universitas
+                                ${member.error_universitas ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][universitas]" 
                                    value="${member.universitas || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_universitas ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan universitas'}"
+                                   class="w-full px-3 py-2 border ${member.error_universitas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Fakultas</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Fakultas
+                                ${member.error_fakultas ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][fakultas]" 
                                    value="${member.fakultas || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_fakultas ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan fakultas'}"
+                                   class="w-full px-3 py-2 border ${member.error_fakultas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Program Studi</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Program Studi
+                                ${member.error_program_studi ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][program_studi]" 
                                    value="${member.program_studi || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_program_studi ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan program studi'}"
+                                   class="w-full px-3 py-2 border ${member.error_program_studi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Alamat
+                                ${member.error_alamat ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <textarea name="members[${index}][alamat]" 
                                       rows="2"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">${member.alamat || ''}</textarea>
+                                      placeholder="${member.error_alamat ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan alamat lengkap'}"
+                                      class="w-full px-3 py-2 border ${member.error_alamat ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">${member.alamat || ''}</textarea>
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Kelurahan</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Kelurahan
+                                ${member.error_kelurahan ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][kelurahan]" 
                                    value="${member.kelurahan || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_kelurahan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kelurahan'}"
+                                   class="w-full px-3 py-2 border ${member.error_kelurahan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Kecamatan
+                                ${member.error_kecamatan ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][kecamatan]" 
                                    value="${member.kecamatan || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_kecamatan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kecamatan'}"
+                                   class="w-full px-3 py-2 border ${member.error_kecamatan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Kota/Kabupaten</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Kota/Kabupaten
+                                ${member.error_kota_kabupaten ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][kota_kabupaten]" 
                                    value="${member.kota_kabupaten || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_kota_kabupaten ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kota/kabupaten'}"
+                                   class="w-full px-3 py-2 border ${member.error_kota_kabupaten ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Provinsi
+                                ${member.error_provinsi ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][provinsi]" 
                                    value="${member.provinsi || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_provinsi ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan provinsi'}"
+                                   class="w-full px-3 py-2 border ${member.error_provinsi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Kode Pos</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Kode Pos
+                                ${member.error_kode_pos ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][kode_pos]" 
                                    value="${member.kode_pos || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_kode_pos ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kode pos'}"
+                                   class="w-full px-3 py-2 border ${member.error_kode_pos ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Email
+                                ${member.error_email ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="email" 
                                    name="members[${index}][email]" 
                                    value="${member.email || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_email ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan email'}"
+                                   class="w-full px-3 py-2 border ${member.error_email ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nomor HP</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Nomor HP
+                                ${member.error_nomor_hp ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][nomor_hp]" 
                                    value="${member.nomor_hp || ''}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_nomor_hp ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan nomor HP'}"
+                                   class="w-full px-3 py-2 border ${member.error_nomor_hp ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Kewarganegaraan</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Kewarganegaraan
+                                ${member.error_kewarganegaraan ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
                                    name="members[${index}][kewarganegaraan]" 
                                    value="${member.kewarganegaraan || 'Indonesia'}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   placeholder="${member.error_kewarganegaraan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kewarganegaraan'}"
+                                   class="w-full px-3 py-2 border ${member.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                     </div>
                 </div>
