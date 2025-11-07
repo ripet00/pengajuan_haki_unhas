@@ -94,6 +94,9 @@ class BiodataController extends Controller
         try {
             DB::beginTransaction();
 
+            // Check if this is an edit/resubmit
+            $isEdit = $submission->biodata !== null;
+
             // Create or update biodata
             $biodata = $submission->biodata;
             if (!$biodata) {
@@ -171,8 +174,13 @@ class BiodataController extends Controller
 
             DB::commit();
 
+            // Different message for resubmission vs new submission
+            $message = $isEdit 
+                ? 'Biodata berhasil direvisi dan telah dikirim ulang untuk review admin.' 
+                : 'Biodata berhasil disimpan dan sedang menunggu review admin.';
+
             return redirect()->route('user.biodata.show', [$submission, $biodata])
-                ->with('success', 'Biodata berhasil disimpan dan sedang menunggu review admin.');
+                ->with('success', $message);
 
         } catch (\Exception $e) {
             DB::rollback();
