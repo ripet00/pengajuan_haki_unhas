@@ -53,6 +53,12 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('admin.biodata-pengaju.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.biodata-pengaju.*') ? 'sidebar-active' : '' }}">
+                    <i class="fas fa-user-friends mr-3 {{ Request::routeIs('admin.biodata-pengaju.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
+                    <span class="sidebar-text transition-opacity duration-300">Biodata Pengaju</span>
+                </a>
+            </li>
+            <li>
                 <a href="#" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group">
                     <i class="fas fa-chart-bar mr-3 text-gray-500"></i>
                     <span class="sidebar-text transition-opacity duration-300">Laporan</span>
