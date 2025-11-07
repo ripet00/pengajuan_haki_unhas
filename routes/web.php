@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\AdminController;
@@ -9,7 +10,8 @@ use App\Http\Controllers\User\SubmissionController as UserSubmissionController;
 
 // Default route redirects based on authentication status
 Route::get('/', function () {
-    if (auth()->check()) {
+    // Use the Auth facade for static analysis compatibility (intelephense)
+    if (Auth::check()) {
         return redirect('/users/dashboard');
     }
     if (session('admin_id')) {
@@ -44,6 +46,11 @@ Route::prefix('users')->middleware('auth')->group(function () {
     Route::get('submissions/{submission}', [UserSubmissionController::class, 'show'])->name('user.submissions.show');
     Route::get('submissions/{submission}/download', [UserSubmissionController::class, 'download'])->name('user.submissions.download');
     Route::post('submissions/{submission}/resubmit', [UserSubmissionController::class, 'resubmit'])->middleware('file.upload')->name('user.submissions.resubmit');
+    
+    // Biodata routes
+    Route::get('submissions/{submission}/biodata/create', [App\Http\Controllers\User\BiodataController::class, 'create'])->name('user.biodata.create');
+    Route::post('submissions/{submission}/biodata', [App\Http\Controllers\User\BiodataController::class, 'store'])->name('user.biodata.store');
+    Route::get('submissions/{submission}/biodata/{biodata}', [App\Http\Controllers\User\BiodataController::class, 'show'])->name('user.biodata.show');
 });
 
 // Admin Authentication Routes
@@ -71,6 +78,12 @@ Route::prefix('admin')->group(function () {
         Route::get('submissions/{submission}', [AdminSubmissionController::class, 'show'])->name('admin.submissions.show');
         Route::get('submissions/{submission}/download', [AdminSubmissionController::class, 'download'])->name('admin.submissions.download');
         Route::post('submissions/{submission}/review', [AdminSubmissionController::class, 'review'])->name('admin.submissions.review');
+
+        // Admin biodata routes  
+        Route::get('biodata-pengaju', [\App\Http\Controllers\Admin\BiodataController::class, 'index'])->name('admin.biodata-pengaju.index');
+        Route::get('biodata-pengaju/{biodata}', [\App\Http\Controllers\Admin\BiodataController::class, 'show'])->name('admin.biodata-pengaju.show');
+        Route::post('biodata-pengaju/{biodata}/review', [\App\Http\Controllers\Admin\BiodataController::class, 'review'])->name('admin.biodata-pengaju.review');
+    Route::post('biodata-pengaju/{biodata}/update-errors', [\App\Http\Controllers\Admin\BiodataController::class, 'updateErrorFlags'])->name('admin.biodata-pengaju.update-errors');
         
         // Jenis Karya management routes
         Route::resource('jenis-karyas', \App\Http\Controllers\Admin\JenisKaryaController::class)->names([
