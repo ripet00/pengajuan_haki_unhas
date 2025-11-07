@@ -120,14 +120,6 @@
                                 <i class="fas fa-times-circle mr-1"></i>Ditolak
                             @endif
                         </span>
-                        
-                        <!-- Edit Button -->
-                        @if($biodata->canBeEdited())
-                            <a href="{{ route('user.biodata.create', $biodata->submission) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                <i class="fas fa-edit mr-2"></i>Edit Biodata
-                            </a>
-                        @endif
                     </div>
                 </div>
             </div>
@@ -344,14 +336,6 @@
                 <i class="fas fa-arrow-left mr-2"></i>
                 Kembali ke Submission
             </a>
-            
-            @if($biodata->canBeEdited())
-                <a href="{{ route('user.biodata.create', $biodata->submission) }}" 
-                   class="inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200">
-                    <i class="fas fa-edit mr-2"></i>
-                    Edit Biodata
-                </a>
-            @endif
         </div>
     </main>
 </body>
