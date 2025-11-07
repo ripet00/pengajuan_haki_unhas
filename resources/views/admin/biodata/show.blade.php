@@ -183,17 +183,29 @@
                                         @csrf
                                         <h4 class="text-sm font-medium text-gray-700 mb-2">Tandai Error pada Biodata</h4>
                                         <div class="flex flex-wrap gap-3">
-                                            <label class="inline-flex items-center text-sm">
-                                                <input type="checkbox" name="error_tempat_ciptaan" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $biodata->error_tempat_ciptaan ? 'checked' : '' }}>
-                                                <span class="ml-2">Tempat Ciptaan</span>
+                                            <label class="inline-flex items-center text-sm cursor-pointer relative">
+                                                <input type="hidden" name="error_tempat_ciptaan" value="0">
+                                                <input type="checkbox" name="error_tempat_ciptaan" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Tempat Ciptaan salah" {{ $biodata->error_tempat_ciptaan ? 'checked' : '' }}>
+                                                <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 mr-2 relative">
+                                                    <i class="fas fa-times {{ $biodata->error_tempat_ciptaan ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
+                                                </span>
+                                                <span>Tempat Ciptaan</span>
                                             </label>
-                                            <label class="inline-flex items-center text-sm">
-                                                <input type="checkbox" name="error_tanggal_ciptaan" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $biodata->error_tanggal_ciptaan ? 'checked' : '' }}>
-                                                <span class="ml-2">Tanggal Ciptaan</span>
+                                            <label class="inline-flex items-center text-sm cursor-pointer relative">
+                                                <input type="hidden" name="error_tanggal_ciptaan" value="0">
+                                                <input type="checkbox" name="error_tanggal_ciptaan" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Tanggal Ciptaan salah" {{ $biodata->error_tanggal_ciptaan ? 'checked' : '' }}>
+                                                <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 mr-2 relative">
+                                                    <i class="fas fa-times {{ $biodata->error_tanggal_ciptaan ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
+                                                </span>
+                                                <span>Tanggal Ciptaan</span>
                                             </label>
-                                            <label class="inline-flex items-center text-sm">
-                                                <input type="checkbox" name="error_uraian_singkat" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $biodata->error_uraian_singkat ? 'checked' : '' }}>
-                                                <span class="ml-2">Uraian Singkat</span>
+                                            <label class="inline-flex items-center text-sm cursor-pointer relative">
+                                                <input type="hidden" name="error_uraian_singkat" value="0">
+                                                <input type="checkbox" name="error_uraian_singkat" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Uraian Singkat salah" {{ $biodata->error_uraian_singkat ? 'checked' : '' }}>
+                                                <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 mr-2 relative">
+                                                    <i class="fas fa-times {{ $biodata->error_uraian_singkat ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
+                                                </span>
+                                                <span>Uraian Singkat</span>
                                             </label>
                                         </div>
                                         <div>
@@ -222,149 +234,262 @@
                                             <i class="fas fa-user mr-1"></i>
                                             Pencipta {{ $index + 1 }}
                                         </span>
-                                        <!-- Cross-check toggle button -->
-                                        <button type="button" onclick="document.getElementById('member-check-{{ $member->id }}').classList.toggle('hidden')" class="inline-flex items-center px-3 py-1 text-sm bg-yellow-50 border border-yellow-200 rounded text-yellow-800 hover:bg-yellow-100">
-                                            <i class="fas fa-check-square mr-2"></i>Cross-check
-                                        </button>
                                     </div>
                                     
-                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Lengkap</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->name ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">NIK</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->nik ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Pekerjaan</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->pekerjaan ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Universitas</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->universitas ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Fakultas</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->fakultas ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Program Studi</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->program_studi ?: '-' }}</p>
-                                        </div>
-                                        <div class="md:col-span-2">
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->alamat ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kelurahan</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->kelurahan ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kecamatan</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->kecamatan ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kota/Kabupaten</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->kota_kabupaten ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Provinsi</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->provinsi ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Pos</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->kode_pos ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Email</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->email ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor HP</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->nomor_hp ?: '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kewarganegaraan</label>
-                                            <p class="mt-1 text-sm text-gray-900">{{ $member->kewarganegaraan ?: '-' }}</p>
-                                        </div>
-                                    </div>
+                                    <form method="POST" action="{{ route('admin.biodata-pengaju.update-errors', $biodata) }}">
+                                        @csrf
+                                        <input type="hidden" name="members[{{ $member->id }}][id]" value="{{ $member->id }}">
 
-                                    <!-- Per-member cross-check form (hidden by default) -->
-                                    <div id="member-check-{{ $member->id }}" class="mt-4 hidden">
-                                        <form method="POST" action="{{ route('admin.biodata-pengaju.update-errors', $biodata) }}" class="space-y-3">
-                                            @csrf
-                                            <input type="hidden" name="members[{{ $member->id }}][id]" value="{{ $member->id }}">
-                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_name]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_name ? 'checked' : '' }}>
-                                                    <span class="ml-2">Nama</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_nik]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_nik ? 'checked' : '' }}>
-                                                    <span class="ml-2">NIK</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_pekerjaan]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_pekerjaan ? 'checked' : '' }}>
-                                                    <span class="ml-2">Pekerjaan</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_universitas]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_universitas ? 'checked' : '' }}>
-                                                    <span class="ml-2">Universitas</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_fakultas]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_fakultas ? 'checked' : '' }}>
-                                                    <span class="ml-2">Fakultas</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_program_studi]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_program_studi ? 'checked' : '' }}>
-                                                    <span class="ml-2">Program Studi</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_alamat]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_alamat ? 'checked' : '' }}>
-                                                    <span class="ml-2">Alamat</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_kelurahan]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_kelurahan ? 'checked' : '' }}>
-                                                    <span class="ml-2">Kelurahan</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_kecamatan]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_kecamatan ? 'checked' : '' }}>
-                                                    <span class="ml-2">Kecamatan</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_kota_kabupaten]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_kota_kabupaten ? 'checked' : '' }}>
-                                                    <span class="ml-2">Kota/Kabupaten</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_provinsi]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_provinsi ? 'checked' : '' }}>
-                                                    <span class="ml-2">Provinsi</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_kode_pos]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_kode_pos ? 'checked' : '' }}>
-                                                    <span class="ml-2">Kode Pos</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_email]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_email ? 'checked' : '' }}>
-                                                    <span class="ml-2">Email</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_nomor_hp]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_nomor_hp ? 'checked' : '' }}>
-                                                    <span class="ml-2">Nomor HP</span>
-                                                </label>
-                                                <label class="inline-flex items-center text-sm">
-                                                    <input type="checkbox" name="members[{{ $member->id }}][error_kewarganegaraan]" value="1" class="form-checkbox h-4 w-4 text-red-600" {{ $member->error_kewarganegaraan ? 'checked' : '' }}>
-                                                    <span class="ml-2">Kewarganegaraan</span>
-                                                </label>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            @php $mid = $member->id; @endphp
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Lengkap</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->name ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer relative">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_name]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_name]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Nama salah" {{ $member->error_name ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
+                                                            <i class="fas fa-times {{ $member->error_name ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <button type="submit" class="mt-2 inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded">
-                                                    <i class="fas fa-save mr-2"></i>Simpan Tanda untuk Pencipta
-                                                </button>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">NIK</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->nik ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer relative">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_nik]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_nik]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai NIK salah" {{ $member->error_nik ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
+                                                            <i class="fas fa-times {{ $member->error_nik ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
                                             </div>
-                                        </form>
-                                    </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Pekerjaan</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->pekerjaan ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer relative">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_pekerjaan]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_pekerjaan]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Pekerjaan salah" {{ $member->error_pekerjaan ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
+                                                            <i class="fas fa-times {{ $member->error_pekerjaan ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Universitas</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->universitas ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer relative">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_universitas]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_universitas]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Universitas salah" {{ $member->error_universitas ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
+                                                            <i class="fas fa-times {{ $member->error_universitas ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Fakultas</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->fakultas ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer relative">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_fakultas]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_fakultas]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Fakultas salah" {{ $member->error_fakultas ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
+                                                            <i class="fas fa-times {{ $member->error_fakultas ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Program Studi</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->program_studi ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_program_studi]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_program_studi]" value="1" class="peer hidden" aria-label="Tandai Program Studi salah" {{ $member->error_program_studi ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
+                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="md:col-span-2 flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->alamat ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_alamat]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_alamat]" value="1" class="peer hidden" aria-label="Tandai Alamat salah" {{ $member->error_alamat ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
+                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kecamatan</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->kecamatan ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_kecamatan]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_kecamatan]" value="1" class="peer hidden" aria-label="Tandai Kecamatan salah" {{ $member->error_kecamatan ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
+                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kelurahan</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->kelurahan ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_kelurahan]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_kelurahan]" value="1" class="peer hidden" aria-label="Tandai Kelurahan salah" {{ $member->error_kelurahan ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
+                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kota/Kabupaten</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->kota_kabupaten ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_kota_kabupaten]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_kota_kabupaten]" value="1" class="peer hidden" aria-label="Tandai Kota/Kabupaten salah" {{ $member->error_kota_kabupaten ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
+                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Provinsi</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->provinsi ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_provinsi]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_provinsi]" value="1" class="peer hidden" aria-label="Tandai Provinsi salah" {{ $member->error_provinsi ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
+                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Pos</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->kode_pos ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_kode_pos]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_kode_pos]" value="1" class="peer hidden" aria-label="Tandai Kode Pos salah" {{ $member->error_kode_pos ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
+                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Email</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->email ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_email]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_email]" value="1" class="peer hidden" aria-label="Tandai Email salah" {{ $member->error_email ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
+                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor HP</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->nomor_hp ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_nomor_hp]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_nomor_hp]" value="1" class="peer hidden" aria-label="Tandai Nomor HP salah" {{ $member->error_nomor_hp ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
+                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kewarganegaraan</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->kewarganegaraan ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_kewarganegaraan]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_kewarganegaraan]" value="1" class="peer hidden" aria-label="Tandai Kewarganegaraan salah" {{ $member->error_kewarganegaraan ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
+                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 text-right">
+                                            <button type="submit" class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded">
+                                                <i class="fas fa-save mr-2"></i>Simpan Tanda untuk Pencipta
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
                                 @endforeach
                             </div>
@@ -574,6 +699,76 @@
         
         // Setup validation for both forms
         setupFormValidation('form'); // This will handle all forms on the page
+        
+        // Handle error flag checkboxes for biodata level
+        function handleErrorCheckboxes() {
+            const biodataCheckboxes = document.querySelectorAll('input[type="checkbox"][name^="error_"]');
+            biodataCheckboxes.forEach(checkbox => {
+                // Set initial state based on database value (checked attribute)
+                const icon = checkbox.parentElement.querySelector('i.fas.fa-times');
+                if (icon) {
+                    if (checkbox.checked) {
+                        icon.classList.remove('opacity-0');
+                        icon.classList.add('opacity-100');
+                    } else {
+                        icon.classList.remove('opacity-100');
+                        icon.classList.add('opacity-0');
+                    }
+                }
+                
+                // Handle changes
+                checkbox.addEventListener('change', function() {
+                    const icon = this.parentElement.querySelector('i.fas.fa-times');
+                    if (icon) {
+                        if (this.checked) {
+                            icon.classList.remove('opacity-0');
+                            icon.classList.add('opacity-100');
+                        } else {
+                            icon.classList.remove('opacity-100');
+                            icon.classList.add('opacity-0');
+                        }
+                    }
+                });
+            });
+            
+            // Handle member error checkboxes
+            const memberCheckboxes = document.querySelectorAll('input[type="checkbox"][name*="members["]');
+            memberCheckboxes.forEach(checkbox => {
+                // Set initial state based on database value (checked attribute)
+                const icon = checkbox.parentElement.querySelector('i.fas.fa-times');
+                if (icon) {
+                    if (checkbox.checked) {
+                        icon.classList.remove('opacity-0');
+                        icon.classList.add('opacity-100');
+                    } else {
+                        icon.classList.remove('opacity-100');
+                        icon.classList.add('opacity-0');
+                    }
+                }
+                
+                // Handle changes
+                checkbox.addEventListener('change', function() {
+                    const icon = this.parentElement.querySelector('i.fas.fa-times');
+                    if (icon) {
+                        if (this.checked) {
+                            icon.classList.remove('opacity-0');
+                            icon.classList.add('opacity-100');
+                        } else {
+                            icon.classList.remove('opacity-100');
+                            icon.classList.add('opacity-0');
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Function to refresh checkbox states after form submission
+        function refreshCheckboxStates() {
+            handleErrorCheckboxes();
+        }
+        
+        // Initialize error checkboxes
+        handleErrorCheckboxes();
     });
     </script>
 </body>
