@@ -427,18 +427,81 @@
                                         </p>
                                     @endif
                                 </div>
-                                <div class="flex space-x-3">
+                                    <div class="flex space-x-3">
                                     <a href="{{ route('user.biodata.show', [$submission, $submission->biodata]) }}" 
                                        class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                         <i class="fas fa-eye mr-2"></i>Lihat Biodata
                                     </a>
-                                    @if($submission->biodata->canBeEdited())
-                                        <a href="{{ route('user.biodata.create', $submission) }}" 
-                                           class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                            <i class="fas fa-edit mr-2"></i>Edit Biodata
-                                        </a>
-                                    @endif
+                                    <!-- Edit disabled after submission per requirement -->
                                 </div>
+
+                                {{-- Show admin-marked error flags for biodata and members --}}
+                                @php $b = $submission->biodata; @endphp
+                                @if($b)
+                                    @php
+                                        $bErrors = [];
+                                        if(!empty($b->error_tempat_ciptaan)) $bErrors[] = 'Tempat Ciptaan';
+                                        if(!empty($b->error_tanggal_ciptaan)) $bErrors[] = 'Tanggal Ciptaan';
+                                        if(!empty($b->error_uraian_singkat)) $bErrors[] = 'Uraian Singkat';
+                                    @endphp
+
+                                    @php
+                                        $memberWarnings = [];
+                                        foreach($b->members as $mi => $m) {
+                                            $mErr = [];
+                                            if(!empty($m->error_name)) $mErr[] = 'Nama';
+                                            if(!empty($m->error_nik)) $mErr[] = 'NIK';
+                                            if(!empty($m->error_pekerjaan)) $mErr[] = 'Pekerjaan';
+                                            if(!empty($m->error_universitas)) $mErr[] = 'Universitas';
+                                            if(!empty($m->error_fakultas)) $mErr[] = 'Fakultas';
+                                            if(!empty($m->error_program_studi)) $mErr[] = 'Program Studi';
+                                            if(!empty($m->error_alamat)) $mErr[] = 'Alamat';
+                                            if(!empty($m->error_kelurahan)) $mErr[] = 'Kelurahan';
+                                            if(!empty($m->error_kecamatan)) $mErr[] = 'Kecamatan';
+                                            if(!empty($m->error_kota_kabupaten)) $mErr[] = 'Kota/Kabupaten';
+                                            if(!empty($m->error_provinsi)) $mErr[] = 'Provinsi';
+                                            if(!empty($m->error_kode_pos)) $mErr[] = 'Kode Pos';
+                                            if(!empty($m->error_email)) $mErr[] = 'Email';
+                                            if(!empty($m->error_nomor_hp)) $mErr[] = 'Nomor HP';
+                                            if(!empty($m->error_kewarganegaraan)) $mErr[] = 'Kewarganegaraan';
+
+                                            if(count($mErr)) {
+                                                $memberWarnings[] = ['index' => $mi + 1, 'fields' => $mErr];
+                                            }
+                                        }
+                                    @endphp
+
+                                    @if(count($bErrors) || count($memberWarnings))
+                                        <div class="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
+                                            <h4 class="text-sm font-semibold text-red-800 mb-2">
+                                                <i class="fas fa-exclamation-triangle mr-1"></i>Data yang Perlu Diperbaiki
+                                            </h4>
+                                            <p class="text-sm text-red-700 mb-2">Admin telah menandai beberapa field yang perlu diperbaiki. Silakan perbaiki biodata dan kirim ulang.</p>
+
+                                            @if(count($bErrors))
+                                                <div class="mb-2">
+                                                    <strong class="text-sm text-red-800">Kesalahan di Biodata:</strong>
+                                                    <ul class="list-disc list-inside text-sm text-red-700 mt-1">
+                                                        @foreach($bErrors as $bf)
+                                                            <li>{{ $bf }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+
+                                            @if(count($memberWarnings))
+                                                <div>
+                                                    <strong class="text-sm text-red-800">Kesalahan pada Pencipta:</strong>
+                                                    <ul class="list-disc list-inside text-sm text-red-700 mt-1">
+                                                        @foreach($memberWarnings as $mw)
+                                                            <li>Pencipta {{ $mw['index'] }}: {{ implode(', ', $mw['fields']) }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
+                                @endif
                             </div>
                         </div>
                     @else
