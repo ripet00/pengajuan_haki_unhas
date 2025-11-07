@@ -111,13 +111,21 @@
                     </div>
                     <div class="flex items-center space-x-3">
                         <!-- Status Badge -->
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border status-{{ $biodata->status }}">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border
+                            @if($biodata->status == 'pending') 
+                                bg-yellow-100 text-yellow-800 border-yellow-200
+                            @elseif($biodata->status == 'approved') 
+                                bg-green-100 text-green-800 border-green-200
+                            @elseif($biodata->status == 'denied') 
+                                bg-red-100 text-red-800 border-red-200
+                            @endif
+                        ">
                             @if($biodata->status == 'pending')
                                 <i class="fas fa-clock mr-1"></i>Menunggu Review
                             @elseif($biodata->status == 'approved')
-                                <i class="fas fa-check-circle mr-1"></i>Disetujui
+                                <i class="fas fa-check mr-1"></i>Disetujui
                             @elseif($biodata->status == 'denied')
-                                <i class="fas fa-times-circle mr-1"></i>Ditolak
+                                <i class="fas fa-times mr-1"></i>Ditolak
                             @endif
                         </span>
                     </div>
@@ -129,7 +137,7 @@
                 @if($biodata->status == 'denied' && $biodata->rejection_reason)
                     <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
                         <h4 class="text-sm font-semibold text-red-800 mb-2">
-                            <i class="fas fa-exclamation-triangle mr-1"></i>Alasan Penolakan
+                            <i class="fas fa-times-circle mr-1"></i>Biodata Ditolak
                         </h4>
                         <p class="text-sm text-red-700">{{ $biodata->rejection_reason }}</p>
                         <p class="text-sm text-red-600 mt-2">
@@ -214,7 +222,7 @@
                         <div class="flex items-start justify-between mb-4">
                             <h4 class="text-lg font-semibold text-gray-900">
                                 <i class="fas fa-user mr-2 text-blue-600"></i>
-                                Pencipta ke-{{ $index + 1 }} {{ $member->is_leader ? '(Ketua)' : '' }}
+                                Pencipta ke-{{ $index + 1 }} {{ $member->is_leader ? '' : '' }}
                             </h4>
                             @if($member->is_leader)
                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -331,6 +339,15 @@
 
         <!-- Action Buttons -->
         <div class="mt-6 flex justify-center space-x-4">
+            <!-- Edit Biodata Button - Only show when status is denied -->
+            @if($biodata->status === 'denied')
+                <a href="{{ route('user.biodata.create', $biodata->submission) }}" 
+                   class="inline-flex items-center px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-200">
+                    <i class="fas fa-edit mr-2"></i>
+                    Edit Biodata
+                </a>
+            @endif
+            
             <a href="{{ route('user.submissions.show', $biodata->submission) }}" 
                class="inline-flex items-center px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition duration-200">
                 <i class="fas fa-arrow-left mr-2"></i>
