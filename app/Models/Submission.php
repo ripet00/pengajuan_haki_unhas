@@ -65,6 +65,28 @@ class Submission extends Model
         return $this->belongsTo(Admin::class, 'biodata_reviewed_by');
     }
 
+    // Relasi ke model Biodata (One-to-One)
+    public function biodata()
+    {
+        return $this->hasOne(Biodata::class);
+    }
+
+    /**
+     * Check if submission can have biodata created
+     */
+    public function canCreateBiodata()
+    {
+        return $this->status === 'approved' && !$this->biodata;
+    }
+
+    /**
+     * Check if submission has biodata
+     */
+    public function hasBiodata()
+    {
+        return $this->biodata !== null;
+    }
+
     /**
      * Find submissions with similar titles (case-insensitive)
      * @param string $title
