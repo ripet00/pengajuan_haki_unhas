@@ -93,7 +93,10 @@ class BiodataController extends Controller
 
             // Update submission biodata_status
             $biodata->submission->update([
-                'biodata_status' => 'approved'
+                'biodata_status' => 'approved',
+                'biodata_reviewed_at' => now(),
+                'biodata_reviewed_by' => $admin->id,
+                'biodata_rejection_reason' => null
             ]);
 
             return back()->with('success', 'Biodata berhasil disetujui.');
@@ -105,9 +108,12 @@ class BiodataController extends Controller
                 'rejection_reason' => $request->rejection_reason
             ]);
 
-            // Update submission biodata_status
+            // Update submission biodata_status - use 'rejected' not 'denied'
             $biodata->submission->update([
-                'biodata_status' => 'denied'
+                'biodata_status' => 'rejected',
+                'biodata_reviewed_at' => now(),
+                'biodata_reviewed_by' => $admin->id,
+                'biodata_rejection_reason' => $request->rejection_reason
             ]);
 
             return back()->with('success', 'Biodata berhasil ditolak.');

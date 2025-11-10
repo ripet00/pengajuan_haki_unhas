@@ -264,7 +264,7 @@
                                             <i class="fas fa-check-double mr-1"></i>
                                             <span class="ml-0">Selesai</span>
                                         </span>
-                                    @elseif($submission->biodata_status == 'denied')
+                                    @elseif($submission->biodata_status == 'rejected')
                                         <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-red-100 text-red-800">
                                             <i class="fas fa-times mr-1"></i>
                                             <span class="ml-0">Ditolak</span>
