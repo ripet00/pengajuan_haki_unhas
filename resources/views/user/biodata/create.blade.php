@@ -236,6 +236,12 @@
                         </button>
                     </div>
                     <p class="text-sm text-gray-600 mt-1">Maksimal 10 orang pencipta (termasuk ketua)</p>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+                        <p class="text-sm text-blue-800">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            <strong>Field Wajib Diisi:</strong> Nama Lengkap (*), NIK (*), Pekerjaan (*), Alamat (*), Email (*), dan Nomor HP (*)
+                        </p>
+                    </div>
                 </div>
                 
                 <div id="members-container" class="divide-y divide-gray-200">
@@ -253,9 +259,13 @@
                                 @if($biodata && $biodata->status === 'denied')
                                     Perbaiki data yang ditandai admin dan submit ulang biodata.
                                 @else
-                                    Pastikan semua data telah diisi dengan benar.
+                                    Pastikan semua data telah diisi dengan benar sebelum submit.
                                 @endif
                             </p>
+                            <div class="mt-2 text-xs text-gray-500">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                Semua field bertanda (*) wajib diisi untuk setiap pencipta
+                            </div>
                         </div>
                         <div class="flex space-x-3">
                             <a href="{{ route('user.submissions.show', $submission) }}" 
@@ -324,7 +334,7 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                NIK
+                                NIK *
                                 ${member.error_nik ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -335,12 +345,13 @@
                                    name="members[${index}][nik]" 
                                    value="${member.nik || ''}"
                                    placeholder="${member.error_nik ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan NIK'}"
-                                   class="w-full px-3 py-2 border ${member.error_nik ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border ${member.error_nik ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Pekerjaan
+                                Pekerjaan *
                                 ${member.error_pekerjaan ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -351,7 +362,8 @@
                                    name="members[${index}][pekerjaan]" 
                                    value="${member.pekerjaan || ''}"
                                    placeholder="${member.error_pekerjaan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan pekerjaan'}"
-                                   class="w-full px-3 py-2 border ${member.error_pekerjaan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border ${member.error_pekerjaan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
                         </div>
                         
                         <div>
@@ -404,7 +416,7 @@
                         
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Alamat
+                                Alamat *
                                 ${member.error_alamat ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -414,7 +426,8 @@
                             <textarea name="members[${index}][alamat]" 
                                       rows="2"
                                       placeholder="${member.error_alamat ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan alamat lengkap'}"
-                                      class="w-full px-3 py-2 border ${member.error_alamat ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">${member.alamat || ''}</textarea>
+                                      class="w-full px-3 py-2 border ${member.error_alamat ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                      required>${member.alamat || ''}</textarea>
                         </div>
                         
                         <div>
@@ -499,7 +512,7 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Email
+                                Email *
                                 ${member.error_email ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -510,12 +523,13 @@
                                    name="members[${index}][email]" 
                                    value="${member.email || ''}"
                                    placeholder="${member.error_email ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan email'}"
-                                   class="w-full px-3 py-2 border ${member.error_email ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border ${member.error_email ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Nomor HP
+                                Nomor HP *
                                 ${member.error_nomor_hp ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -526,7 +540,8 @@
                                    name="members[${index}][nomor_hp]" 
                                    value="${member.nomor_hp || ''}"
                                    placeholder="${member.error_nomor_hp ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan nomor HP'}"
-                                   class="w-full px-3 py-2 border ${member.error_nomor_hp ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border ${member.error_nomor_hp ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
                         </div>
                         
                         <div>
@@ -639,6 +654,35 @@
             
             // Add event listener for add member button
             document.getElementById('add-member-btn').addEventListener('click', addMember);
+            
+            // Add form validation before submit
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                const requiredFields = form.querySelectorAll('input[required], textarea[required]');
+                let isValid = true;
+                let firstInvalidField = null;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.classList.add('border-red-500', 'bg-red-50');
+                        if (!firstInvalidField) {
+                            firstInvalidField = field;
+                        }
+                    } else {
+                        field.classList.remove('border-red-500', 'bg-red-50');
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Mohon lengkapi semua field yang wajib diisi (*)');
+                    if (firstInvalidField) {
+                        firstInvalidField.focus();
+                        firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            });
         });
     </script>
 </body>

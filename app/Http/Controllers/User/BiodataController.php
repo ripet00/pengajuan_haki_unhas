@@ -75,19 +75,19 @@ class BiodataController extends Controller
             'uraian_singkat' => 'required|string',
             'members' => 'required|array|min:1|max:10',
             'members.*.name' => 'required|string|max:255',
-            'members.*.nik' => 'nullable|string|max:20',
-            'members.*.pekerjaan' => 'nullable|string|max:255',
+            'members.*.nik' => 'required|string|max:20',
+            'members.*.pekerjaan' => 'required|string|max:255',
             'members.*.universitas' => 'nullable|string|max:255',
             'members.*.fakultas' => 'nullable|string|max:255',
             'members.*.program_studi' => 'nullable|string|max:255',
-            'members.*.alamat' => 'nullable|string',
+            'members.*.alamat' => 'required|string',
             'members.*.kelurahan' => 'nullable|string|max:255',
             'members.*.kecamatan' => 'nullable|string|max:255',
             'members.*.kota_kabupaten' => 'nullable|string|max:255',
             'members.*.provinsi' => 'nullable|string|max:255',
             'members.*.kode_pos' => 'nullable|string|max:10',
-            'members.*.email' => 'nullable|email|max:255',
-            'members.*.nomor_hp' => 'nullable|string|max:20',
+            'members.*.email' => 'required|email|max:255',
+            'members.*.nomor_hp' => 'required|string|max:20',
             'members.*.kewarganegaraan' => 'nullable|string|max:100',
         ]);
 
@@ -171,6 +171,12 @@ class BiodataController extends Controller
                     'error_kewarganegaraan' => false,
                 ]);
             }
+
+            // Update submission biodata_status when biodata is submitted
+            $submission->update([
+                'biodata_status' => 'pending',
+                'biodata_submitted_at' => now(),
+            ]);
 
             DB::commit();
 
