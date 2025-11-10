@@ -83,6 +83,39 @@ class BiodataController extends Controller
             return back()->with('error', 'Admin session tidak valid.');
         }
 
+        // Update biodata error flags
+        $biodata->update([
+            'error_tempat_ciptaan' => $request->boolean('error_tempat_ciptaan'),
+            'error_tanggal_ciptaan' => $request->boolean('error_tanggal_ciptaan'),
+            'error_uraian_singkat' => $request->boolean('error_uraian_singkat'),
+        ]);
+
+        // Update member error flags
+        if ($request->has('members')) {
+            foreach ($request->members as $memberId => $memberErrors) {
+                $member = $biodata->members()->find($memberId);
+                if ($member) {
+                    $member->update([
+                        'error_name' => isset($memberErrors['error_name']) ? (bool)$memberErrors['error_name'] : false,
+                        'error_nik' => isset($memberErrors['error_nik']) ? (bool)$memberErrors['error_nik'] : false,
+                        'error_pekerjaan' => isset($memberErrors['error_pekerjaan']) ? (bool)$memberErrors['error_pekerjaan'] : false,
+                        'error_universitas' => isset($memberErrors['error_universitas']) ? (bool)$memberErrors['error_universitas'] : false,
+                        'error_fakultas' => isset($memberErrors['error_fakultas']) ? (bool)$memberErrors['error_fakultas'] : false,
+                        'error_program_studi' => isset($memberErrors['error_program_studi']) ? (bool)$memberErrors['error_program_studi'] : false,
+                        'error_alamat' => isset($memberErrors['error_alamat']) ? (bool)$memberErrors['error_alamat'] : false,
+                        'error_kelurahan' => isset($memberErrors['error_kelurahan']) ? (bool)$memberErrors['error_kelurahan'] : false,
+                        'error_kecamatan' => isset($memberErrors['error_kecamatan']) ? (bool)$memberErrors['error_kecamatan'] : false,
+                        'error_kota_kabupaten' => isset($memberErrors['error_kota_kabupaten']) ? (bool)$memberErrors['error_kota_kabupaten'] : false,
+                        'error_provinsi' => isset($memberErrors['error_provinsi']) ? (bool)$memberErrors['error_provinsi'] : false,
+                        'error_kode_pos' => isset($memberErrors['error_kode_pos']) ? (bool)$memberErrors['error_kode_pos'] : false,
+                        'error_email' => isset($memberErrors['error_email']) ? (bool)$memberErrors['error_email'] : false,
+                        'error_nomor_hp' => isset($memberErrors['error_nomor_hp']) ? (bool)$memberErrors['error_nomor_hp'] : false,
+                        'error_kewarganegaraan' => isset($memberErrors['error_kewarganegaraan']) ? (bool)$memberErrors['error_kewarganegaraan'] : false,
+                    ]);
+                }
+            }
+        }
+
         if ($request->action === 'approve') {
             $biodata->update([
                 'status' => 'approved',
@@ -99,7 +132,7 @@ class BiodataController extends Controller
                 'biodata_rejection_reason' => null
             ]);
 
-            return back()->with('success', 'Biodata berhasil disetujui.');
+            return back()->with('success', 'Biodata berhasil disetujui dan error flags berhasil disimpan.');
         } else {
             $biodata->update([
                 'status' => 'denied',
@@ -116,7 +149,7 @@ class BiodataController extends Controller
                 'biodata_rejection_reason' => $request->rejection_reason
             ]);
 
-            return back()->with('success', 'Biodata berhasil ditolak.');
+            return back()->with('success', 'Biodata berhasil ditolak dan error flags berhasil disimpan.');
         }
     }
 

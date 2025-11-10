@@ -59,8 +59,15 @@
 
                         <!-- Main Content Grid -->
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <!-- Left Column - Main Content -->
-                            <div class="lg:col-span-2 space-y-6">
+                            
+                            @if($biodata->status === 'pending')
+                                <!-- Wrap entire left column in review form for pending biodata -->
+                                <form method="POST" action="{{ route('admin.biodata-pengaju.review', $biodata) }}" class="lg:col-span-2 space-y-6">
+                                    @csrf
+                            @else
+                                <!-- No form wrapper for already reviewed biodata -->
+                                <div class="lg:col-span-2 space-y-6">
+                            @endif
 
                         <!-- Header Card -->
                         <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -179,41 +186,33 @@
 
                                 <!-- Biodata-level error flags (positioned under Detail Biodata) -->
                                 <div class="mt-4 border-t pt-4">
-                                    <form method="POST" action="{{ route('admin.biodata-pengaju.update-errors', $biodata) }}" class="space-y-3">
-                                        @csrf
-                                        <h4 class="text-sm font-medium text-gray-700 mb-2">Tandai Error pada Biodata</h4>
-                                        <div class="flex flex-wrap gap-3">
-                                            <label class="inline-flex items-center text-sm cursor-pointer relative">
-                                                <input type="hidden" name="error_tempat_ciptaan" value="0">
-                                                <input type="checkbox" name="error_tempat_ciptaan" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Tempat Ciptaan salah" {{ $biodata->error_tempat_ciptaan ? 'checked' : '' }}>
-                                                <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 mr-2 relative">
-                                                    <i class="fas fa-times {{ $biodata->error_tempat_ciptaan ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
-                                                </span>
-                                                <span>Tempat Ciptaan</span>
-                                            </label>
-                                            <label class="inline-flex items-center text-sm cursor-pointer relative">
-                                                <input type="hidden" name="error_tanggal_ciptaan" value="0">
-                                                <input type="checkbox" name="error_tanggal_ciptaan" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Tanggal Ciptaan salah" {{ $biodata->error_tanggal_ciptaan ? 'checked' : '' }}>
-                                                <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 mr-2 relative">
-                                                    <i class="fas fa-times {{ $biodata->error_tanggal_ciptaan ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
-                                                </span>
-                                                <span>Tanggal Ciptaan</span>
-                                            </label>
-                                            <label class="inline-flex items-center text-sm cursor-pointer relative">
-                                                <input type="hidden" name="error_uraian_singkat" value="0">
-                                                <input type="checkbox" name="error_uraian_singkat" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Uraian Singkat salah" {{ $biodata->error_uraian_singkat ? 'checked' : '' }}>
-                                                <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 mr-2 relative">
-                                                    <i class="fas fa-times {{ $biodata->error_uraian_singkat ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
-                                                </span>
-                                                <span>Uraian Singkat</span>
-                                            </label>
-                                        </div>
-                                        <div>
-                                            <button type="submit" class="mt-2 inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded">
-                                                <i class="fas fa-save mr-2"></i>Simpan Biodata Error
-                                            </button>
-                                        </div>
-                                    </form>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-2">Tandai Error pada Biodata</h4>
+                                    <div class="flex flex-wrap gap-3">
+                                        <label class="inline-flex items-center text-sm cursor-pointer relative">
+                                            <input type="hidden" name="error_tempat_ciptaan" value="0">
+                                            <input type="checkbox" name="error_tempat_ciptaan" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Tempat Ciptaan salah" {{ $biodata->error_tempat_ciptaan ? 'checked' : '' }}>
+                                            <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 mr-2 relative">
+                                                <i class="fas fa-times {{ $biodata->error_tempat_ciptaan ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
+                                            </span>
+                                            <span>Tempat Ciptaan</span>
+                                        </label>
+                                        <label class="inline-flex items-center text-sm cursor-pointer relative">
+                                            <input type="hidden" name="error_tanggal_ciptaan" value="0">
+                                            <input type="checkbox" name="error_tanggal_ciptaan" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Tanggal Ciptaan salah" {{ $biodata->error_tanggal_ciptaan ? 'checked' : '' }}>
+                                            <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 mr-2 relative">
+                                                <i class="fas fa-times {{ $biodata->error_tanggal_ciptaan ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
+                                            </span>
+                                            <span>Tanggal Ciptaan</span>
+                                        </label>
+                                        <label class="inline-flex items-center text-sm cursor-pointer relative">
+                                            <input type="hidden" name="error_uraian_singkat" value="0">
+                                            <input type="checkbox" name="error_uraian_singkat" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Uraian Singkat salah" {{ $biodata->error_uraian_singkat ? 'checked' : '' }}>
+                                            <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 mr-2 relative">
+                                                <i class="fas fa-times {{ $biodata->error_uraian_singkat ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
+                                            </span>
+                                            <span>Uraian Singkat</span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -236,12 +235,11 @@
                                         </span>
                                     </div>
                                     
-                                    <form method="POST" action="{{ route('admin.biodata-pengaju.update-errors', $biodata) }}">
-                                        @csrf
-                                        <input type="hidden" name="members[{{ $member->id }}][id]" value="{{ $member->id }}">
+                                    <!-- Hidden fields for member ID -->
+                                    <input type="hidden" name="members[{{ $member->id }}][id]" value="{{ $member->id }}">
 
-                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                            @php $mid = $member->id; @endphp
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        @php $mid = $member->id; @endphp
 
                                             <div class="flex items-start justify-between">
                                                 <div class="pr-4 w-full">
@@ -483,19 +481,17 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="mt-4 text-right">
-                                            <button type="submit" class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded">
-                                                <i class="fas fa-save mr-2"></i>Simpan Tanda untuk Pencipta
-                                            </button>
-                                        </div>
-                                    </form>
+                                    </div>
                                 </div>
                                 @endforeach
                             </div>
                         </div>
                         @endif
-                            </div>
+                            @if($biodata->status === 'pending')
+                                </form>
+                            @else
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -521,9 +517,8 @@
                         @endif
                             
                             @if($biodata->status === 'pending')
-                                <form method="POST" action="{{ route('admin.biodata-pengaju.review', $biodata) }}" class="space-y-4">
-                                    @csrf
-                                    
+                                <!-- Review controls are part of the main form wrapping the left column -->
+                                <div class="space-y-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-3">Keputusan Review:</label>
                                         <div class="space-y-2">
@@ -558,7 +553,7 @@
                                     <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg">
                                         <i class="fas fa-gavel mr-2"></i>SUBMIT REVIEW
                                     </button>
-                                </form>
+                                </div>
                             @else
                                 <div class="mb-6">
                                     <div class="text-center mb-4">
