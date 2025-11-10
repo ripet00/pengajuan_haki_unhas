@@ -173,9 +173,12 @@
                                    id="tempat_ciptaan" 
                                    name="tempat_ciptaan" 
                                    value="{{ old('tempat_ciptaan', $biodata ? $biodata->tempat_ciptaan : '') }}"
-                                   placeholder="{{ $biodata && $biodata->error_tempat_ciptaan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan tempat ciptaan' }}"
+                                   placeholder="{{ $biodata && $biodata->error_tempat_ciptaan ? 'Admin menandai field ini perlu diperbaiki' : 'Contoh: Makassar, Jakarta, Bandung' }}"
                                    class="w-full px-3 py-2 border {{ $biodata && $biodata->error_tempat_ciptaan ? 'border-red-300 bg-red-50' : 'border-gray-300' }} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
+                            <p class="mt-1 text-xs text-gray-500">
+                                <i class="fas fa-info-circle mr-1"></i>Isi dengan nama kota/kabupaten tempat karya cipta dibuat
+                            </p>
                             @error('tempat_ciptaan')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -327,9 +330,12 @@
                             <input type="text" 
                                    name="members[${index}][name]" 
                                    value="${member.name || ''}"
-                                   placeholder="${member.error_name ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan nama lengkap'}"
+                                   placeholder="${member.error_name ? 'Admin menandai field ini perlu diperbaiki' : 'Contoh: Dr. Ir. Ahmad Sudirman, M.T.'}"
                                    class="w-full px-3 py-2 border ${member.error_name ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>Isi dengan nama lengkap beserta gelar (jika ada)
+                            </p>
                         </div>
                         
                         <div>
@@ -344,11 +350,31 @@
                             <input type="text" 
                                    name="members[${index}][nik]" 
                                    value="${member.nik || ''}"
-                                   placeholder="${member.error_nik ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan NIK'}"
+                                   placeholder="${member.error_nik ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan NIK 16 digit'}"
+                                   pattern="[0-9]{16}"
+                                   maxlength="16"
                                    class="w-full px-3 py-2 border ${member.error_nik ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>NIK harus 16 digit angka
+                            </p>
                         </div>
-                        
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Jenis Kelamin *
+                        </label>
+                        <select name="members[${index}][jenis_kelamin]" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                required>
+                            <option value="">Pilih Jenis Kelamin</option>
+                            <option value="Pria" ${member.jenis_kelamin === 'Pria' ? 'selected' : ''}>Pria</option>
+                            <option value="Wanita" ${member.jenis_kelamin === 'Wanita' ? 'selected' : ''}>Wanita</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Pekerjaan *
@@ -368,7 +394,7 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Universitas
+                                Universitas *
                                 ${member.error_universitas ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -379,12 +405,13 @@
                                    name="members[${index}][universitas]" 
                                    value="${member.universitas || ''}"
                                    placeholder="${member.error_universitas ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan universitas'}"
-                                   class="w-full px-3 py-2 border ${member.error_universitas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border ${member.error_universitas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Fakultas
+                                Fakultas *
                                 ${member.error_fakultas ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -395,12 +422,13 @@
                                    name="members[${index}][fakultas]" 
                                    value="${member.fakultas || ''}"
                                    placeholder="${member.error_fakultas ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan fakultas'}"
-                                   class="w-full px-3 py-2 border ${member.error_fakultas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border ${member.error_fakultas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Program Studi
+                                Program Studi *
                                 ${member.error_program_studi ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -411,7 +439,8 @@
                                    name="members[${index}][program_studi]" 
                                    value="${member.program_studi || ''}"
                                    placeholder="${member.error_program_studi ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan program studi'}"
-                                   class="w-full px-3 py-2 border ${member.error_program_studi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border ${member.error_program_studi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
                         </div>
                         
                         <div class="md:col-span-2">
@@ -432,7 +461,7 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Kelurahan
+                                Kelurahan *
                                 ${member.error_kelurahan ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -443,12 +472,13 @@
                                    name="members[${index}][kelurahan]" 
                                    value="${member.kelurahan || ''}"
                                    placeholder="${member.error_kelurahan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kelurahan'}"
-                                   class="w-full px-3 py-2 border ${member.error_kelurahan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border ${member.error_kelurahan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Kecamatan
+                                Kecamatan *
                                 ${member.error_kecamatan ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -459,12 +489,13 @@
                                    name="members[${index}][kecamatan]" 
                                    value="${member.kecamatan || ''}"
                                    placeholder="${member.error_kecamatan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kecamatan'}"
-                                   class="w-full px-3 py-2 border ${member.error_kecamatan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border ${member.error_kecamatan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Kota/Kabupaten
+                                Kota/Kabupaten *
                                 ${member.error_kota_kabupaten ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -475,12 +506,13 @@
                                    name="members[${index}][kota_kabupaten]" 
                                    value="${member.kota_kabupaten || ''}"
                                    placeholder="${member.error_kota_kabupaten ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kota/kabupaten'}"
-                                   class="w-full px-3 py-2 border ${member.error_kota_kabupaten ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border ${member.error_kota_kabupaten ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Provinsi
+                                Provinsi *
                                 ${member.error_provinsi ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -496,7 +528,7 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Kode Pos
+                                Kode Pos *
                                 ${member.error_kode_pos ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -507,7 +539,8 @@
                                    name="members[${index}][kode_pos]" 
                                    value="${member.kode_pos || ''}"
                                    placeholder="${member.error_kode_pos ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kode pos'}"
-                                   class="w-full px-3 py-2 border ${member.error_kode_pos ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border ${member.error_kode_pos ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
                         </div>
                         
                         <div>
@@ -546,7 +579,7 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Kewarganegaraan
+                                Kewarganegaraan *
                                 ${member.error_kewarganegaraan ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -557,7 +590,8 @@
                                    name="members[${index}][kewarganegaraan]" 
                                    value="${member.kewarganegaraan || 'Indonesia'}"
                                    placeholder="${member.error_kewarganegaraan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kewarganegaraan'}"
-                                   class="w-full px-3 py-2 border ${member.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border ${member.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
                         </div>
                     </div>
                 </div>

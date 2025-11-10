@@ -13,6 +13,7 @@ class BiodataMember extends Model
         'biodata_id',
         'name',
         'nik',
+        'jenis_kelamin',
         'pekerjaan',
         'universitas',
         'fakultas',
