@@ -58,16 +58,15 @@
                         </div>
 
                         <!-- Main Content Grid -->
+                        @if($biodata->status === 'pending')
+                            <!-- Wrap entire grid in review form for pending biodata -->
+                            <form method="POST" action="{{ route('admin.biodata-pengaju.review', $biodata) }}">
+                                @csrf
+                        @endif
+                        
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            
-                            @if($biodata->status === 'pending')
-                                <!-- Wrap entire left column in review form for pending biodata -->
-                                <form method="POST" action="{{ route('admin.biodata-pengaju.review', $biodata) }}" class="lg:col-span-2 space-y-6">
-                                    @csrf
-                            @else
-                                <!-- No form wrapper for already reviewed biodata -->
-                                <div class="lg:col-span-2 space-y-6">
-                            @endif
+                            <!-- Left Column - Main Content -->
+                            <div class="lg:col-span-2 space-y-6">
 
                         <!-- Header Card -->
                         <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -487,13 +486,8 @@
                             </div>
                         </div>
                         @endif
-                            @if($biodata->status === 'pending')
-                                </form>
-                            @else
-                                </div>
-                            @endif
-                        </div>
-                    </div>
+                            </div>
+                            <!-- End Left Column -->
 
                     <!-- Review Panel -->
                     <div class="lg:col-span-1">
@@ -655,7 +649,14 @@
                             </div>
                         </div>
                     </div>
+                    <!-- End Review Panel -->
                     </div>
+                    <!-- End Grid -->
+                    
+                    @if($biodata->status === 'pending')
+                        </form>
+                    @endif
+                    
                     </div>
                 </div>
             </main>
