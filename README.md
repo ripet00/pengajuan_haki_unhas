@@ -1,10 +1,10 @@
-# Sistem Pengajuan HAKI UNHAS
+# Sistem Pengajuan HKI UNHAS
 
-Aplikasi berbasis web untuk pengelolaan pengajuan Hak Kekayaan Intelektual (HAKI) di Universitas Hasanuddin.
+Aplikasi berbasis web untuk pengelolaan pengajuan Hak Kekayaan Intelektual (HKI) di Universitas Hasanuddin.
 
 ## 📋 Deskripsi Project
 
-Sistem ini memungkinkan dosen dan peneliti untuk mengajukan permohonan pendaftaran HAKI (Hak Cipta, Paten, Merek, dll) secara online. Admin dapat mengelola submission, melakukan review biodata, dan memproses pengajuan.
+Sistem ini memungkinkan dosen dan peneliti untuk mengajukan permohonan pendaftaran HKI (Hak Cipta, Paten, Merek, dll) secara online. Admin dapat mengelola submission, melakukan review biodata, dan memproses pengajuan.
 
 ---
 
@@ -86,7 +86,7 @@ Sistem ini memungkinkan dosen dan peneliti untuk mengajukan permohonan pendaftar
 
 ### Untuk User (Dosen/Peneliti)
 - ✅ Registrasi dan login
-- ✅ Submit pengajuan HAKI
+- ✅ Submit pengajuan HKI
 - ✅ Input biodata pencipta/inventor dengan validasi lengkap
 - ✅ **Dynamic wilayah dropdown** (Provinsi → Kota → Kecamatan → Kelurahan)
 - ✅ Support WNA (Warga Negara Asing) dengan input manual
