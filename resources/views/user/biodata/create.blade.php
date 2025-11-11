@@ -217,9 +217,12 @@
                         <textarea id="uraian_singkat" 
                                   name="uraian_singkat" 
                                   rows="4"
-                                  placeholder="{{ $biodata && $biodata->error_uraian_singkat ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan uraian singkat karya cipta' }}"
+                                  placeholder="{{ $biodata && $biodata->error_uraian_singkat ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan uraian singkat karya cipta maksimal 2 kalimat.' }}"
                                   class="w-full px-3 py-2 border {{ $biodata && $biodata->error_uraian_singkat ? 'border-red-300 bg-red-50' : 'border-gray-300' }} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                   required>{{ old('uraian_singkat', $biodata ? $biodata->uraian_singkat : '') }}</textarea>
+                        <p class="mt-1 text-xs text-gray-500">
+                            <i class="fas fa-info-circle mr-1"></i>Cukup tuliskan maksimal 2 kalimat yang menjelaskan inti dari karya cipta
+                        </p>
                         @error('uraian_singkat')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
