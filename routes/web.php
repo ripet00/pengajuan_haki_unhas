@@ -51,6 +51,12 @@ Route::prefix('users')->middleware('auth')->group(function () {
     Route::get('submissions/{submission}/biodata/create', [App\Http\Controllers\User\BiodataController::class, 'create'])->name('user.biodata.create');
     Route::post('submissions/{submission}/biodata', [App\Http\Controllers\User\BiodataController::class, 'store'])->name('user.biodata.store');
     Route::get('submissions/{submission}/biodata/{biodata}', [App\Http\Controllers\User\BiodataController::class, 'show'])->name('user.biodata.show');
+    
+    // Wilayah API routes
+    Route::get('api/wilayah/provinces', [App\Http\Controllers\Api\WilayahController::class, 'getProvinces'])->name('api.wilayah.provinces');
+    Route::get('api/wilayah/cities/{provinceCode}', [App\Http\Controllers\Api\WilayahController::class, 'getCities'])->name('api.wilayah.cities');
+    Route::get('api/wilayah/districts/{cityCode}', [App\Http\Controllers\Api\WilayahController::class, 'getDistricts'])->name('api.wilayah.districts');
+    Route::get('api/wilayah/villages/{districtCode}', [App\Http\Controllers\Api\WilayahController::class, 'getVillages'])->name('api.wilayah.villages');
 });
 
 // Admin Authentication Routes

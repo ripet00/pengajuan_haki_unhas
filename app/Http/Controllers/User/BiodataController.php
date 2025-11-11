@@ -90,6 +90,9 @@ class BiodataController extends Controller
             'members.*.email' => 'required|email|max:255',
             'members.*.nomor_hp' => 'required|string|max:20',
             'members.*.kewarganegaraan' => 'required|string|max:100',
+            // Optional helper fields that won't be stored
+            'members.*.kewarganegaraan_type' => 'nullable|string',
+            'members.*.kewarganegaraan_asing' => 'nullable|string|max:100',
         ]);
 
         try {

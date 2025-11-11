@@ -468,80 +468,179 @@
                                     </span>
                                 ` : ''}
                             </label>
+                            <select name="members[${index}][kewarganegaraan_type]" 
+                                    id="kewarganegaraan_type_${index}"
+                                    data-member-index="${index}"
+                                    class="kewarganegaraan-type-select w-full px-3 py-2 border ${member.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required>
+                                <option value="">Pilih Kewarganegaraan</option>
+                                <option value="Indonesia" ${(member.kewarganegaraan || 'Indonesia') === 'Indonesia' ? 'selected' : ''}>Indonesia</option>
+                                <option value="Warga Negara Asing" ${(member.kewarganegaraan && member.kewarganegaraan !== 'Indonesia') ? 'selected' : ''}>Warga Negara Asing</option>
+                            </select>
+                        </div>
+                        
+                        <div id="kewarganegaraan_asing_div_${index}" class="kewarganegaraan-asing-container" style="display: ${(member.kewarganegaraan && member.kewarganegaraan !== 'Indonesia') ? 'block' : 'none'}">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Negara Asal *
+                                ${member.error_kewarganegaraan ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
                             <input type="text" 
-                                   name="members[${index}][kewarganegaraan]" 
-                                   value="${member.kewarganegaraan || 'Indonesia'}"
-                                   placeholder="${member.error_kewarganegaraan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kewarganegaraan'}"
+                                   name="members[${index}][kewarganegaraan_asing]" 
+                                   id="kewarganegaraan_asing_${index}"
+                                   value="${(member.kewarganegaraan && member.kewarganegaraan !== 'Indonesia') ? member.kewarganegaraan : ''}"
+                                   placeholder="Contoh: Malaysia, Singapura, Amerika Serikat"
                                    class="w-full px-3 py-2 border ${member.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
                         </div>
                         
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Provinsi *
-                                ${member.error_provinsi ? `
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
-                                    </span>
-                                ` : ''}
-                            </label>
-                            <input type="text" 
-                                   name="members[${index}][provinsi]" 
-                                   value="${member.provinsi || ''}"
-                                   placeholder="${member.error_provinsi ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan provinsi'}"
-                                   class="w-full px-3 py-2 border ${member.error_provinsi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   required>
+                        <!-- Hidden input to store final kewarganegaraan value -->
+                        <input type="hidden" name="members[${index}][kewarganegaraan]" id="kewarganegaraan_final_${index}" value="${member.kewarganegaraan || 'Indonesia'}">
+                        
+                        <div class="wilayah-container" id="wilayah_container_${index}" style="display: ${(member.kewarganegaraan || 'Indonesia') === 'Indonesia' ? 'contents' : 'none'}">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Provinsi *
+                                    ${member.error_provinsi ? `
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                        </span>
+                                    ` : ''}
+                                </label>
+                                <select name="members[${index}][provinsi]" 
+                                        id="provinsi_${index}"
+                                        data-member-index="${index}"
+                                        class="provinsi-select w-full px-3 py-2 border ${member.error_provinsi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Pilih Provinsi</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Kota/Kabupaten *
+                                    ${member.error_kota_kabupaten ? `
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                        </span>
+                                    ` : ''}
+                                </label>
+                                <select name="members[${index}][kota_kabupaten]" 
+                                        id="kota_kabupaten_${index}"
+                                        data-member-index="${index}"
+                                        class="kota-select w-full px-3 py-2 border ${member.error_kota_kabupaten ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        disabled>
+                                    <option value="">Pilih Kota/Kabupaten</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Kecamatan *
+                                    ${member.error_kecamatan ? `
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                        </span>
+                                    ` : ''}
+                                </label>
+                                <select name="members[${index}][kecamatan]" 
+                                        id="kecamatan_${index}"
+                                        data-member-index="${index}"
+                                        class="kecamatan-select w-full px-3 py-2 border ${member.error_kecamatan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        disabled>
+                                    <option value="">Pilih Kecamatan</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Kelurahan *
+                                    ${member.error_kelurahan ? `
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                        </span>
+                                    ` : ''}
+                                </label>
+                                <select name="members[${index}][kelurahan]" 
+                                        id="kelurahan_${index}"
+                                        data-member-index="${index}"
+                                        class="kelurahan-select w-full px-3 py-2 border ${member.error_kelurahan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        disabled>
+                                    <option value="">Pilih Kelurahan</option>
+                                </select>
+                            </div>
                         </div>
                         
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Kota/Kabupaten *
-                                ${member.error_kota_kabupaten ? `
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
-                                    </span>
-                                ` : ''}
-                            </label>
-                            <input type="text" 
-                                   name="members[${index}][kota_kabupaten]" 
-                                   value="${member.kota_kabupaten || ''}"
-                                   placeholder="${member.error_kota_kabupaten ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kota/kabupaten'}"
-                                   class="w-full px-3 py-2 border ${member.error_kota_kabupaten ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   required>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Kecamatan *
-                                ${member.error_kecamatan ? `
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
-                                    </span>
-                                ` : ''}
-                            </label>
-                            <input type="text" 
-                                   name="members[${index}][kecamatan]" 
-                                   value="${member.kecamatan || ''}"
-                                   placeholder="${member.error_kecamatan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kecamatan'}"
-                                   class="w-full px-3 py-2 border ${member.error_kecamatan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   required>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Kelurahan *
-                                ${member.error_kelurahan ? `
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
-                                    </span>
-                                ` : ''}
-                            </label>
-                            <input type="text" 
-                                   name="members[${index}][kelurahan]" 
-                                   value="${member.kelurahan || ''}"
-                                   placeholder="${member.error_kelurahan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kelurahan'}"
-                                   class="w-full px-3 py-2 border ${member.error_kelurahan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   required>
+                        <div class="non-wilayah-container" id="non_wilayah_container_${index}" style="display: ${member.kewarganegaraan === 'Asing' ? 'contents' : 'none'}">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Provinsi/Negara Bagian *
+                                    ${member.error_provinsi ? `
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                        </span>
+                                    ` : ''}
+                                </label>
+                                <input type="text" 
+                                       name="members[${index}][provinsi_manual]" 
+                                       id="provinsi_manual_${index}"
+                                       value="${member.kewarganegaraan === 'Asing' ? member.provinsi || '' : ''}"
+                                       placeholder="Masukkan provinsi/negara bagian"
+                                       class="w-full px-3 py-2 border ${member.error_provinsi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Kota *
+                                    ${member.error_kota_kabupaten ? `
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                        </span>
+                                    ` : ''}
+                                </label>
+                                <input type="text" 
+                                       name="members[${index}][kota_manual]" 
+                                       id="kota_manual_${index}"
+                                       value="${member.kewarganegaraan === 'Asing' ? member.kota_kabupaten || '' : ''}"
+                                       placeholder="Masukkan nama kota"
+                                       class="w-full px-3 py-2 border ${member.error_kota_kabupaten ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Kecamatan/Distrik
+                                    ${member.error_kecamatan ? `
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                        </span>
+                                    ` : ''}
+                                </label>
+                                <input type="text" 
+                                       name="members[${index}][kecamatan_manual]" 
+                                       id="kecamatan_manual_${index}"
+                                       value="${member.kewarganegaraan === 'Asing' ? member.kecamatan || '' : ''}"
+                                       placeholder="Masukkan kecamatan/distrik (opsional)"
+                                       class="w-full px-3 py-2 border ${member.error_kecamatan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Kelurahan/Desa
+                                    ${member.error_kelurahan ? `
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                        </span>
+                                    ` : ''}
+                                </label>
+                                <input type="text" 
+                                       name="members[${index}][kelurahan_manual]" 
+                                       id="kelurahan_manual_${index}"
+                                       value="${member.kewarganegaraan === 'Asing' ? member.kelurahan || '' : ''}"
+                                       placeholder="Masukkan kelurahan/desa (opsional)"
+                                       class="w-full px-3 py-2 border ${member.error_kelurahan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
                         </div>
                         
                         <div>
@@ -608,6 +707,15 @@
             const container = document.getElementById('members-container');
             const memberHtml = createMemberForm(memberCount);
             container.insertAdjacentHTML('beforeend', memberHtml);
+            
+            // Populate provinces for the new member
+            if (window.provincesData) {
+                const provinsiSelect = document.getElementById(`provinsi_${memberCount}`);
+                if (provinsiSelect) {
+                    populateSelect(provinsiSelect, window.provincesData, 'Pilih Provinsi');
+                }
+            }
+            
             memberCount++;
             updateAddButton();
         }
@@ -672,6 +780,9 @@
         
         // Initialize form
         document.addEventListener('DOMContentLoaded', function() {
+            // Load provinces data for all members
+            loadProvinces();
+            
             // Add existing members or create first member
             if (existingMembers.length > 0) {
                 existingMembers.forEach((member, index) => {
@@ -679,26 +790,98 @@
                     const memberHtml = createMemberForm(index, member);
                     container.insertAdjacentHTML('beforeend', memberHtml);
                     memberCount++;
+                    
+                    // Initialize wilayah handlers for this member
+                    initializeWilayahHandlers(index);
                 });
             } else {
                 // Create first member (leader) with user data
                 addMember();
+                initializeWilayahHandlers(0);
             }
             
             updateAddButton();
             
             // Add event listener for add member button
-            document.getElementById('add-member-btn').addEventListener('click', addMember);
+            document.getElementById('add-member-btn').addEventListener('click', function() {
+                addMember();
+                initializeWilayahHandlers(memberCount - 1);
+            });
             
             // Add form validation before submit
             const form = document.querySelector('form');
             form.addEventListener('submit', function(e) {
-                const requiredFields = form.querySelectorAll('input[required], textarea[required]');
+                // Handle kewarganegaraan_final and manual inputs for Asing nationality
+                document.querySelectorAll('.kewarganegaraan-type-select').forEach((typeSelect, idx) => {
+                    const memberIndex = typeSelect.id.replace('kewarganegaraan_type_', '');
+                    
+                    if (typeSelect.value === 'Warga Negara Asing') {
+                        const kewarganegaraanAsingInput = document.getElementById(`kewarganegaraan_asing_${memberIndex}`);
+                        const kewarganegaraanFinal = document.getElementById(`kewarganegaraan_final_${memberIndex}`);
+                        
+                        // Update final kewarganegaraan value
+                        if (kewarganegaraanAsingInput && kewarganegaraanAsingInput.value) {
+                            kewarganegaraanFinal.value = kewarganegaraanAsingInput.value;
+                        }
+                        
+                        // Copy values from manual inputs to main inputs for wilayah
+                        const provinsiManual = document.getElementById(`provinsi_manual_${memberIndex}`);
+                        const kotaManual = document.getElementById(`kota_manual_${memberIndex}`);
+                        const kecamatanManual = document.getElementById(`kecamatan_manual_${memberIndex}`);
+                        const kelurahanManual = document.getElementById(`kelurahan_manual_${memberIndex}`);
+                        
+                        const provinsiSelect = document.getElementById(`provinsi_${memberIndex}`);
+                        const kotaSelect = document.getElementById(`kota_kabupaten_${memberIndex}`);
+                        const kecamatanSelect = document.getElementById(`kecamatan_${memberIndex}`);
+                        const kelurahanSelect = document.getElementById(`kelurahan_${memberIndex}`);
+                        
+                        if (provinsiManual && provinsiManual.value) {
+                            // Create temporary option and select it
+                            provinsiSelect.innerHTML = `<option value="${provinsiManual.value}" selected>${provinsiManual.value}</option>`;
+                        }
+                        if (kotaManual && kotaManual.value) {
+                            kotaSelect.innerHTML = `<option value="${kotaManual.value}" selected>${kotaManual.value}</option>`;
+                        }
+                        if (kecamatanManual && kecamatanManual.value) {
+                            kecamatanSelect.innerHTML = `<option value="${kecamatanManual.value}" selected>${kecamatanManual.value}</option>`;
+                        }
+                        if (kelurahanManual && kelurahanManual.value) {
+                            kelurahanSelect.innerHTML = `<option value="${kelurahanManual.value}" selected>${kelurahanManual.value}</option>`;
+                        }
+                    } else if (typeSelect.value === 'Indonesia') {
+                        // Ensure kewarganegaraan_final is set to Indonesia
+                        const kewarganegaraanFinal = document.getElementById(`kewarganegaraan_final_${memberIndex}`);
+                        kewarganegaraanFinal.value = 'Indonesia';
+                    }
+                });
+                
+                const requiredFields = form.querySelectorAll('input[required], textarea[required], select[required]');
                 let isValid = true;
                 let firstInvalidField = null;
                 
                 requiredFields.forEach(field => {
-                    if (!field.value.trim()) {
+                    // Skip disabled fields
+                    if (field.disabled) return;
+                    
+                    // Skip manual input fields if wilayah container is hidden
+                    if (field.id && field.id.includes('_manual_')) {
+                        const memberIndex = field.id.split('_').pop();
+                        const wilayahContainer = document.getElementById(`wilayah_container_${memberIndex}`);
+                        if (wilayahContainer && wilayahContainer.style.display !== 'none') {
+                            return; // Skip manual fields when wilayah dropdown is shown
+                        }
+                    }
+                    
+                    // Skip kewarganegaraan_asing field if Indonesia is selected
+                    if (field.id && field.id.includes('kewarganegaraan_asing_')) {
+                        const memberIndex = field.id.replace('kewarganegaraan_asing_', '');
+                        const kewarganegaraanTypeSelect = document.getElementById(`kewarganegaraan_type_${memberIndex}`);
+                        if (kewarganegaraanTypeSelect && kewarganegaraanTypeSelect.value === 'Indonesia') {
+                            return; // Skip kewarganegaraan_asing when Indonesia is selected
+                        }
+                    }
+                    
+                    if (!field.value || !field.value.trim()) {
                         isValid = false;
                         field.classList.add('border-red-500', 'bg-red-50');
                         if (!firstInvalidField) {
@@ -719,6 +902,172 @@
                 }
             });
         });
+        
+        // Wilayah Functions
+        function loadProvinces() {
+            fetch('{{ route("api.wilayah.provinces") }}')
+                .then(response => response.json())
+                .then(data => {
+                    window.provincesData = data;
+                    // Populate all province selects
+                    document.querySelectorAll('.provinsi-select').forEach(select => {
+                        populateSelect(select, data, 'Pilih Provinsi');
+                    });
+                })
+                .catch(error => console.error('Error loading provinces:', error));
+        }
+        
+        function populateSelect(selectElement, data, placeholder = 'Pilih') {
+            selectElement.innerHTML = `<option value="">${placeholder}</option>`;
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.nama;
+                option.setAttribute('data-kode', item.kode);
+                option.textContent = item.nama;
+                selectElement.appendChild(option);
+            });
+        }
+        
+        function initializeWilayahHandlers(index) {
+            // Kewarganegaraan type change handler
+            const kewarganegaraanTypeSelect = document.getElementById(`kewarganegaraan_type_${index}`);
+            if (kewarganegaraanTypeSelect) {
+                kewarganegaraanTypeSelect.addEventListener('change', function() {
+                    const wilayahContainer = document.getElementById(`wilayah_container_${index}`);
+                    const nonWilayahContainer = document.getElementById(`non_wilayah_container_${index}`);
+                    const kewarganegaraanAsingDiv = document.getElementById(`kewarganegaraan_asing_div_${index}`);
+                    const kewarganegaraanFinal = document.getElementById(`kewarganegaraan_final_${index}`);
+                    const kewarganegaraanAsingInput = document.getElementById(`kewarganegaraan_asing_${index}`);
+                    
+                    if (this.value === 'Indonesia') {
+                        // Show wilayah dropdowns, hide manual inputs
+                        wilayahContainer.style.display = 'contents';
+                        nonWilayahContainer.style.display = 'none';
+                        kewarganegaraanAsingDiv.style.display = 'none';
+                        
+                        // Set final kewarganegaraan to Indonesia
+                        kewarganegaraanFinal.value = 'Indonesia';
+                        
+                        // Enable dropdown selects
+                        document.getElementById(`provinsi_${index}`).disabled = false;
+                        
+                        // Clear manual inputs
+                        document.getElementById(`provinsi_manual_${index}`).value = '';
+                        document.getElementById(`kota_manual_${index}`).value = '';
+                        document.getElementById(`kecamatan_manual_${index}`).value = '';
+                        document.getElementById(`kelurahan_manual_${index}`).value = '';
+                        kewarganegaraanAsingInput.value = '';
+                    } else {
+                        // Hide wilayah dropdowns, show manual inputs
+                        wilayahContainer.style.display = 'none';
+                        nonWilayahContainer.style.display = 'contents';
+                        kewarganegaraanAsingDiv.style.display = 'block';
+                        
+                        // Disable dropdown selects
+                        document.getElementById(`provinsi_${index}`).disabled = true;
+                        document.getElementById(`kota_kabupaten_${index}`).disabled = true;
+                        document.getElementById(`kecamatan_${index}`).disabled = true;
+                        document.getElementById(`kelurahan_${index}`).disabled = true;
+                        
+                        // Clear dropdown values
+                        document.getElementById(`provinsi_${index}`).value = '';
+                        document.getElementById(`kota_kabupaten_${index}`).value = '';
+                        document.getElementById(`kecamatan_${index}`).value = '';
+                        document.getElementById(`kelurahan_${index}`).value = '';
+                    }
+                });
+                
+                // Kewarganegaraan asing input handler
+                const kewarganegaraanAsingInput = document.getElementById(`kewarganegaraan_asing_${index}`);
+                if (kewarganegaraanAsingInput) {
+                    kewarganegaraanAsingInput.addEventListener('input', function() {
+                        const kewarganegaraanFinal = document.getElementById(`kewarganegaraan_final_${index}`);
+                        kewarganegaraanFinal.value = this.value;
+                    });
+                }
+            }
+            
+            // Provinsi change handler
+            const provinsiSelect = document.getElementById(`provinsi_${index}`);
+            if (provinsiSelect) {
+                provinsiSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const provinceCode = selectedOption.getAttribute('data-kode');
+                    const kotaSelect = document.getElementById(`kota_kabupaten_${index}`);
+                    const kecamatanSelect = document.getElementById(`kecamatan_${index}`);
+                    const kelurahanSelect = document.getElementById(`kelurahan_${index}`);
+                    
+                    // Reset dependent selects
+                    kotaSelect.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
+                    kecamatanSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                    kelurahanSelect.innerHTML = '<option value="">Pilih Kelurahan</option>';
+                    kotaSelect.disabled = true;
+                    kecamatanSelect.disabled = true;
+                    kelurahanSelect.disabled = true;
+                    
+                    if (provinceCode) {
+                        fetch(`{{ url('users/api/wilayah/cities') }}/${provinceCode}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                populateSelect(kotaSelect, data, 'Pilih Kota/Kabupaten');
+                                kotaSelect.disabled = false;
+                            })
+                            .catch(error => console.error('Error loading cities:', error));
+                    }
+                });
+            }
+            
+            // Kota change handler
+            const kotaSelect = document.getElementById(`kota_kabupaten_${index}`);
+            if (kotaSelect) {
+                kotaSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const cityCode = selectedOption.getAttribute('data-kode');
+                    const kecamatanSelect = document.getElementById(`kecamatan_${index}`);
+                    const kelurahanSelect = document.getElementById(`kelurahan_${index}`);
+                    
+                    // Reset dependent selects
+                    kecamatanSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                    kelurahanSelect.innerHTML = '<option value="">Pilih Kelurahan</option>';
+                    kecamatanSelect.disabled = true;
+                    kelurahanSelect.disabled = true;
+                    
+                    if (cityCode) {
+                        fetch(`{{ url('users/api/wilayah/districts') }}/${cityCode}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                populateSelect(kecamatanSelect, data, 'Pilih Kecamatan');
+                                kecamatanSelect.disabled = false;
+                            })
+                            .catch(error => console.error('Error loading districts:', error));
+                    }
+                });
+            }
+            
+            // Kecamatan change handler
+            const kecamatanSelect = document.getElementById(`kecamatan_${index}`);
+            if (kecamatanSelect) {
+                kecamatanSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const districtCode = selectedOption.getAttribute('data-kode');
+                    const kelurahanSelect = document.getElementById(`kelurahan_${index}`);
+                    
+                    // Reset dependent select
+                    kelurahanSelect.innerHTML = '<option value="">Pilih Kelurahan</option>';
+                    kelurahanSelect.disabled = true;
+                    
+                    if (districtCode) {
+                        fetch(`{{ url('users/api/wilayah/villages') }}/${districtCode}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                populateSelect(kelurahanSelect, data, 'Pilih Kelurahan');
+                                kelurahanSelect.disabled = false;
+                            })
+                            .catch(error => console.error('Error loading villages:', error));
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>
