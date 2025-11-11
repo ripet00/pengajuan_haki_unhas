@@ -1,11 +1,272 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Pengajuan HAKI UNHAS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi berbasis web untuk pengelolaan pengajuan Hak Kekayaan Intelektual (HAKI) di Universitas Hasanuddin.
+
+## 📋 Deskripsi Project
+
+Sistem ini memungkinkan dosen dan peneliti untuk mengajukan permohonan pendaftaran HAKI (Hak Cipta, Paten, Merek, dll) secara online. Admin dapat mengelola submission, melakukan review biodata, dan memproses pengajuan.
+
+---
+
+## 🚀 Quick Start
+
+### Prasyarat
+- PHP >= 8.2
+- Composer
+- MySQL >= 5.7 atau MariaDB >= 10.3
+- Node.js & NPM
+
+### Instalasi
+
+1. **Clone repository**
+   ```bash
+   git clone https://github.com/ripet00/pengajuan_haki_unhas.git
+   cd pengajuan_haki_unhas
+   ```
+
+2. **Install dependencies**
+   ```bash
+   composer install
+   npm install
+   ```
+
+3. **Setup environment**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+4. **Konfigurasi database**
+   
+   Edit file `.env`:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=pengajuan_haki_unhas
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+
+5. **⚠️ PENTING: Import database wilayah**
+   
+   Sebelum migration, **WAJIB** import data wilayah untuk fitur dropdown:
+   ```bash
+   mysql -u root -p pengajuan_haki_unhas < database/sql/wilayah.sql
+   ```
+   
+   Atau via phpMyAdmin:
+   - Import file: `database/sql/wilayah.sql`
+   - Pilih database: `pengajuan_haki_unhas`
+   
+   📖 **Dokumentasi lengkap**: [database/sql/README.md](database/sql/README.md)
+
+6. **Run migrations**
+   ```bash
+   php artisan migrate
+   ```
+
+7. **Build assets**
+   ```bash
+   npm run build
+   # atau untuk development:
+   npm run dev
+   ```
+
+8. **Jalankan server**
+   ```bash
+   php artisan serve
+   ```
+
+   Aplikasi akan berjalan di: `http://localhost:8000`
+
+---
+
+## 📚 Fitur Utama
+
+### Untuk User (Dosen/Peneliti)
+- ✅ Registrasi dan login
+- ✅ Submit pengajuan HAKI
+- ✅ Input biodata pencipta/inventor dengan validasi lengkap
+- ✅ **Dynamic wilayah dropdown** (Provinsi → Kota → Kecamatan → Kelurahan)
+- ✅ Support WNA (Warga Negara Asing) dengan input manual
+- ✅ Track status pengajuan
+- ✅ Edit biodata jika ditolak admin
+
+### Untuk Admin
+- ✅ Review submission
+- ✅ Review biodata dengan error flagging
+- ✅ Approve/reject dengan komentar
+- ✅ Dashboard statistik
+- ✅ Manajemen user
+
+---
+
+## 🗄️ Database Setup (PENTING!)
+
+### ⚠️ Data Wilayah Indonesia
+
+Aplikasi ini **MEMERLUKAN** data wilayah Indonesia untuk fitur dynamic dropdown pada form biodata.
+
+**Lokasi file**: `database/sql/wilayah.sql`
+
+**Cara import**:
+```bash
+# Via command line
+mysql -u root -p pengajuan_haki_unhas < database/sql/wilayah.sql
+
+# Via Laravel (alternatif - jika ada seeder)
+php artisan db:seed --class=WilayahSeeder
+```
+
+**Verifikasi**:
+```sql
+SELECT COUNT(*) FROM wilayah;
+-- Harus return ribuan rows
+```
+
+📖 **Dokumentasi detail**: 
+- [Database SQL Files](database/sql/README.md)
+- [Dynamic Wilayah Dropdown](docs/dynamic_wilayah_dropdown.md)
+
+---
+
+## 📖 Dokumentasi Lengkap
+
+Dokumentasi fitur-fitur tersedia di folder `docs/`:
+
+| Dokumen | Deskripsi |
+|---------|-----------|
+| [dynamic_wilayah_dropdown.md](docs/dynamic_wilayah_dropdown.md) | Fitur cascade dropdown wilayah Indonesia |
+| [user_header_visibility_fix.md](docs/user_header_visibility_fix.md) | Fix visibility header pada user dashboard |
+
+---
+
+## 🏗️ Struktur Project
+
+```
+pengajuan_haki_unhas/
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── Admin/          # Admin controllers
+│   │   ├── User/           # User controllers
+│   │   └── Api/            # API controllers (Wilayah, dll)
+│   ├── Models/             # Eloquent models
+│   └── ...
+├── database/
+│   ├── migrations/         # Database migrations
+│   ├── seeders/           # Database seeders
+│   └── sql/               # ⚠️ Additional SQL files (wilayah.sql)
+├── docs/                  # 📚 Dokumentasi fitur
+├── resources/
+│   ├── views/
+│   │   ├── admin/         # Admin views
+│   │   └── user/          # User views
+│   ├── css/
+│   └── js/
+├── routes/
+│   └── web.php            # Routes definition
+└── ...
+```
+
+---
+
+## 🔧 Teknologi yang Digunakan
+
+- **Framework**: Laravel 11
+- **Database**: MySQL / MariaDB
+- **Frontend**: 
+  - Blade Templates
+  - Tailwind CSS
+  - Vanilla JavaScript (ES6+)
+- **Authentication**: Laravel Breeze
+- **Icons**: Font Awesome
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run tests
+php artisan test
+
+# Run specific test
+php artisan test --filter BiodataTest
+```
+
+---
+
+## 📝 Development Notes
+
+### Timezone
+Aplikasi menggunakan timezone **Asia/Makassar (WITA)**.
+
+Config: `config/app.php`
+```php
+'timezone' => 'Asia/Makassar',
+```
+
+### Validasi Form Biodata
+Semua field biodata **WAJIB** diisi:
+- NIK: Harus 16 digit angka
+- Jenis Kelamin: Pria/Wanita
+- Kewarganegaraan:
+  - Indonesia → Dropdown wilayah otomatis
+  - Asing → Input manual negara + wilayah
+
+### API Endpoints
+```
+GET /users/api/wilayah/provinces
+GET /users/api/wilayah/cities/{provinceCode}
+GET /users/api/wilayah/districts/{cityCode}
+GET /users/api/wilayah/villages/{districtCode}
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Dropdown wilayah kosong
+**Solusi**: Pastikan database wilayah sudah diimport
+```bash
+mysql -u root -p pengajuan_haki_unhas < database/sql/wilayah.sql
+```
+
+### Migration error
+**Solusi**: 
+1. Drop database dan create ulang
+2. Import wilayah.sql
+3. Run migration lagi
+
+### Asset tidak muncul
+**Solusi**:
+```bash
+npm run build
+php artisan storage:link
+```
+
+---
+
+## 👥 Team
+
+- **Developer**: Denzel
+- **Institution**: Universitas Hasanuddin
+- **Year**: 2025
+
+---
+
+## 📄 License
+
+Project ini menggunakan Laravel framework yang dilisensikan di bawah [MIT license](https://opensource.org/licenses/MIT).
+
+---
+
+## 🔗 Links
+
+- [Laravel Documentation](https://laravel.com/docs)
+- [Tailwind CSS](https://tailwindcss.com)
+
+---
 
 ## About Laravel
 
