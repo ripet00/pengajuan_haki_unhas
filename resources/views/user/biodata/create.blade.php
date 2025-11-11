@@ -451,6 +451,23 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Kewarganegaraan *
+                                ${member.error_kewarganegaraan ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
+                            <input type="text" 
+                                   name="members[${index}][kewarganegaraan]" 
+                                   value="${member.kewarganegaraan || 'Indonesia'}"
+                                   placeholder="${member.error_kewarganegaraan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kewarganegaraan'}"
+                                   class="w-full px-3 py-2 border ${member.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Kelurahan *
                                 ${member.error_kelurahan ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
@@ -564,23 +581,6 @@
                                    value="${member.nomor_hp || ''}"
                                    placeholder="${member.error_nomor_hp ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan nomor HP'}"
                                    class="w-full px-3 py-2 border ${member.error_nomor_hp ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   required>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Kewarganegaraan *
-                                ${member.error_kewarganegaraan ? `
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
-                                    </span>
-                                ` : ''}
-                            </label>
-                            <input type="text" 
-                                   name="members[${index}][kewarganegaraan]" 
-                                   value="${member.kewarganegaraan || 'Indonesia'}"
-                                   placeholder="${member.error_kewarganegaraan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kewarganegaraan'}"
-                                   class="w-full px-3 py-2 border ${member.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
                         </div>
                     </div>
