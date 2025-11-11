@@ -174,6 +174,12 @@ class BiodataController extends Controller
                 ]);
             }
 
+            // Update submission biodata_status when biodata is submitted
+            $submission->update([
+                'biodata_status' => 'pending',
+                'biodata_submitted_at' => now(),
+            ]);
+
             DB::commit();
 
             // Different message for resubmission vs new submission

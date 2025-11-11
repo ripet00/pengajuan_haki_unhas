@@ -239,6 +239,12 @@
                         </button>
                     </div>
                     <p class="text-sm text-gray-600 mt-1">Maksimal 10 orang pencipta (termasuk ketua)</p>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+                        <p class="text-sm text-blue-800">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            <strong>Field Wajib Diisi:</strong> Nama Lengkap (*), NIK (*), Pekerjaan (*), Alamat (*), Email (*), dan Nomor HP (*)
+                        </p>
+                    </div>
                 </div>
                 
                 <div id="members-container" class="divide-y divide-gray-200">
@@ -256,9 +262,13 @@
                                 @if($biodata && $biodata->status === 'denied')
                                     Perbaiki data yang ditandai admin dan submit ulang biodata.
                                 @else
-                                    Pastikan semua data telah diisi dengan benar.
+                                    Pastikan semua data telah diisi dengan benar sebelum submit.
                                 @endif
                             </p>
+                            <div class="mt-2 text-xs text-gray-500">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                Semua field bertanda (*) wajib diisi untuk setiap pencipta
+                            </div>
                         </div>
                         <div class="flex space-x-3">
                             <a href="{{ route('user.submissions.show', $submission) }}" 
@@ -678,6 +688,35 @@
             
             // Add event listener for add member button
             document.getElementById('add-member-btn').addEventListener('click', addMember);
+            
+            // Add form validation before submit
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                const requiredFields = form.querySelectorAll('input[required], textarea[required]');
+                let isValid = true;
+                let firstInvalidField = null;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.classList.add('border-red-500', 'bg-red-50');
+                        if (!firstInvalidField) {
+                            firstInvalidField = field;
+                        }
+                    } else {
+                        field.classList.remove('border-red-500', 'bg-red-50');
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Mohon lengkapi semua field yang wajib diisi (*)');
+                    if (firstInvalidField) {
+                        firstInvalidField.focus();
+                        firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            });
         });
     </script>
 </body>

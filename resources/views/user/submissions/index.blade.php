@@ -220,8 +220,8 @@
                                 <td class="px-6 py-4">
                                     @if($submission->status == 'pending')
                                         <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-yellow-100 text-yellow-800">
-                                            <i class="fas fa-clock mr-1"></i>
-                                            <span class="ml-0">Pending</span>
+                                            <i class="fas fa-clock mr-1"></i>Pending
+                                            <span class="ml-0">Siap Upload</span>
                                         </span>
                                     @elseif($submission->status == 'approved')
                                         <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
