@@ -239,10 +239,14 @@
                         </button>
                     </div>
                     <p class="text-sm text-gray-600 mt-1">Maksimal 10 orang pencipta (termasuk ketua)</p>
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2 space-y-2">
                         <p class="text-sm text-blue-800">
                             <i class="fas fa-info-circle mr-1"></i>
                             <strong>Field Wajib Diisi:</strong> Semua field wajib diisi dan pastikan data sudah benar dan lengkap sebelum submit.
+                        </p>
+                        <p class="text-sm text-blue-800">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            <strong>Urutan Pencipta:</strong> Pastikan urutan nama pencipta sudah sesuai dengan yang tertera pada karya cipta (Pencipta ke-1 adalah ketua/penulis pertama).
                         </p>
                     </div>
                 </div>
