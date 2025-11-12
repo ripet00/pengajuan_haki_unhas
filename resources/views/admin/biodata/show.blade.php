@@ -274,6 +274,22 @@
 
                                             <div class="flex items-start justify-between">
                                                 <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Kelamin</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->jenis_kelamin ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <label class="inline-flex items-center cursor-pointer relative">
+                                                        <input type="hidden" name="members[{{ $mid }}][error_jenis_kelamin]" value="0">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_jenis_kelamin]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Jenis Kelamin salah" {{ $member->error_jenis_kelamin ? 'checked' : '' }}>
+                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
+                                                            <i class="fas fa-times {{ $member->error_jenis_kelamin ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
                                                     <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Pekerjaan</label>
                                                     <p class="mt-1 text-sm text-gray-900">{{ $member->pekerjaan ?: '-' }}</p>
                                                 </div>
