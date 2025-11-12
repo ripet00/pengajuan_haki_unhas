@@ -784,6 +784,82 @@
             }
         }
         
+        // Function to load existing wilayah data for a member
+        async function loadExistingWilayahData(index, member) {
+            if (!member.provinsi) return;
+            
+            const provinsiSelect = document.getElementById(`provinsi_${index}`);
+            const kotaSelect = document.getElementById(`kota_kabupaten_${index}`);
+            const kecamatanSelect = document.getElementById(`kecamatan_${index}`);
+            const kelurahanSelect = document.getElementById(`kelurahan_${index}`);
+            
+            try {
+                // Wait for provinces to load first
+                await new Promise(resolve => {
+                    const checkProvinces = setInterval(() => {
+                        if (window.provincesData && provinsiSelect.options.length > 1) {
+                            clearInterval(checkProvinces);
+                            resolve();
+                        }
+                    }, 100);
+                });
+                
+                // Set provinsi
+                for (let option of provinsiSelect.options) {
+                    if (option.value === member.provinsi) {
+                        provinsiSelect.value = member.provinsi;
+                        const provinceCode = option.getAttribute('data-kode');
+                        
+                        // Load and set kota
+                        if (provinceCode && member.kota_kabupaten) {
+                            const citiesResponse = await fetch(`{{ url('users/api/wilayah/cities') }}/${provinceCode}`);
+                            const citiesData = await citiesResponse.json();
+                            populateSelect(kotaSelect, citiesData, 'Pilih Kota/Kabupaten');
+                            kotaSelect.disabled = false;
+                            
+                            // Set kota
+                            for (let option of kotaSelect.options) {
+                                if (option.value === member.kota_kabupaten) {
+                                    kotaSelect.value = member.kota_kabupaten;
+                                    const cityCode = option.getAttribute('data-kode');
+                                    
+                                    // Load and set kecamatan
+                                    if (cityCode && member.kecamatan) {
+                                        const districtsResponse = await fetch(`{{ url('users/api/wilayah/districts') }}/${cityCode}`);
+                                        const districtsData = await districtsResponse.json();
+                                        populateSelect(kecamatanSelect, districtsData, 'Pilih Kecamatan');
+                                        kecamatanSelect.disabled = false;
+                                        
+                                        // Set kecamatan
+                                        for (let option of kecamatanSelect.options) {
+                                            if (option.value === member.kecamatan) {
+                                                kecamatanSelect.value = member.kecamatan;
+                                                const districtCode = option.getAttribute('data-kode');
+                                                
+                                                // Load and set kelurahan
+                                                if (districtCode && member.kelurahan) {
+                                                    const villagesResponse = await fetch(`{{ url('users/api/wilayah/villages') }}/${districtCode}`);
+                                                    const villagesData = await villagesResponse.json();
+                                                    populateSelect(kelurahanSelect, villagesData, 'Pilih Kelurahan');
+                                                    kelurahanSelect.disabled = false;
+                                                    kelurahanSelect.value = member.kelurahan;
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading existing wilayah data:', error);
+            }
+        }
+        
         // Initialize form
         document.addEventListener('DOMContentLoaded', function() {
             // Load provinces data for all members
@@ -799,6 +875,11 @@
                     
                     // Initialize wilayah handlers for this member
                     initializeWilayahHandlers(index);
+                    
+                    // Load existing wilayah data if member is WNI
+                    if (!member.kewarganegaraan || member.kewarganegaraan === 'Indonesia') {
+                        loadExistingWilayahData(index, member);
+                    }
                 });
             } else {
                 // Create first member (leader) with user data
