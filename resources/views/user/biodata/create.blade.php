@@ -245,11 +245,11 @@
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2 space-y-2">
                         <p class="text-sm text-blue-800">
                             <i class="fas fa-info-circle mr-1"></i>
-                            <strong>Field Wajib Diisi:</strong> Semua field wajib diisi dan pastikan data sudah benar dan lengkap sebelum submit.
+                            <strong>Field Wajib Diisi: Semua field wajib diisi dan pastikan data sudah benar dan lengkap sebelum submit.</strong> 
                         </p>
                         <p class="text-sm text-blue-800">
                             <i class="fas fa-exclamation-triangle mr-1"></i>
-                            <strong>Urutan Pencipta:</strong> Pastikan urutan nama pencipta sudah sesuai dengan yang tertera pada karya cipta (Pencipta ke-1 adalah ketua/penulis pertama).
+                            <strong>Urutan Pencipta: Pastikan urutan nama pencipta sudah sesuai dengan yang tertera pada karya cipta (Pencipta ke-1 adalah ketua/penulis pertama).</strong>
                         </p>
                     </div>
                 </div>
@@ -500,8 +500,7 @@
                                    id="kewarganegaraan_asing_${index}"
                                    value="${(member.kewarganegaraan && member.kewarganegaraan !== 'Indonesia') ? member.kewarganegaraan : ''}"
                                    placeholder="Contoh: Malaysia, Singapura, Amerika Serikat"
-                                   class="w-full px-3 py-2 border ${member.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   required>
+                                   class="kewarganegaraan-asing-input w-full px-3 py-2 border ${member.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <!-- Hidden input to store final kewarganegaraan value -->
@@ -818,6 +817,8 @@
             // Add form validation before submit
             const form = document.querySelector('form');
             form.addEventListener('submit', function(e) {
+                console.log('Form submit triggered');
+                
                 // Handle kewarganegaraan_final and manual inputs for Asing nationality
                 document.querySelectorAll('.kewarganegaraan-type-select').forEach((typeSelect, idx) => {
                     const memberIndex = typeSelect.id.replace('kewarganegaraan_type_', '');
@@ -825,6 +826,17 @@
                     if (typeSelect.value === 'Warga Negara Asing') {
                         const kewarganegaraanAsingInput = document.getElementById(`kewarganegaraan_asing_${memberIndex}`);
                         const kewarganegaraanFinal = document.getElementById(`kewarganegaraan_final_${memberIndex}`);
+                        
+                        // Validate kewarganegaraan_asing is filled when visible
+                        const kewarganegaraanAsingDiv = document.getElementById(`kewarganegaraan_asing_div_${memberIndex}`);
+                        if (kewarganegaraanAsingDiv && kewarganegaraanAsingDiv.style.display !== 'none') {
+                            if (!kewarganegaraanAsingInput || !kewarganegaraanAsingInput.value.trim()) {
+                                alert('Mohon isi Negara Asal untuk Warga Negara Asing pada anggota ke-' + (parseInt(memberIndex) + 1));
+                                kewarganegaraanAsingInput.focus();
+                                kewarganegaraanAsingInput.classList.add('border-red-500', 'bg-red-50');
+                                return false;
+                            }
+                        }
                         
                         // Update final kewarganegaraan value
                         if (kewarganegaraanAsingInput && kewarganegaraanAsingInput.value) {
@@ -845,20 +857,26 @@
                         if (provinsiManual && provinsiManual.value) {
                             // Create temporary option and select it
                             provinsiSelect.innerHTML = `<option value="${provinsiManual.value}" selected>${provinsiManual.value}</option>`;
+                            provinsiSelect.disabled = false;
                         }
                         if (kotaManual && kotaManual.value) {
                             kotaSelect.innerHTML = `<option value="${kotaManual.value}" selected>${kotaManual.value}</option>`;
+                            kotaSelect.disabled = false;
                         }
                         if (kecamatanManual && kecamatanManual.value) {
                             kecamatanSelect.innerHTML = `<option value="${kecamatanManual.value}" selected>${kecamatanManual.value}</option>`;
+                            kecamatanSelect.disabled = false;
                         }
                         if (kelurahanManual && kelurahanManual.value) {
                             kelurahanSelect.innerHTML = `<option value="${kelurahanManual.value}" selected>${kelurahanManual.value}</option>`;
+                            kelurahanSelect.disabled = false;
                         }
                     } else if (typeSelect.value === 'Indonesia') {
                         // Ensure kewarganegaraan_final is set to Indonesia
                         const kewarganegaraanFinal = document.getElementById(`kewarganegaraan_final_${memberIndex}`);
-                        kewarganegaraanFinal.value = 'Indonesia';
+                        if (kewarganegaraanFinal) {
+                            kewarganegaraanFinal.value = 'Indonesia';
+                        }
                     }
                 });
                 
@@ -870,21 +888,36 @@
                     // Skip disabled fields
                     if (field.disabled) return;
                     
+                    // Skip hidden fields
+                    if (field.type === 'hidden') return;
+                    
                     // Skip manual input fields if wilayah container is hidden
                     if (field.id && field.id.includes('_manual_')) {
                         const memberIndex = field.id.split('_').pop();
+                        const nonWilayahContainer = document.getElementById(`non_wilayah_container_${memberIndex}`);
+                        if (nonWilayahContainer && nonWilayahContainer.style.display === 'none') {
+                            return; // Skip manual fields when hidden
+                        }
+                    }
+                    
+                    // Skip dropdown fields if wilayah container is hidden
+                    if (field.id && (field.id.includes('provinsi_') || field.id.includes('kota_kabupaten_') || 
+                                     field.id.includes('kecamatan_') || field.id.includes('kelurahan_'))) {
+                        if (field.id.includes('_manual_')) return; // Already handled above
+                        
+                        const memberIndex = field.id.split('_').pop();
                         const wilayahContainer = document.getElementById(`wilayah_container_${memberIndex}`);
-                        if (wilayahContainer && wilayahContainer.style.display !== 'none') {
-                            return; // Skip manual fields when wilayah dropdown is shown
+                        if (wilayahContainer && wilayahContainer.style.display === 'none') {
+                            return; // Skip dropdown fields when hidden
                         }
                     }
                     
                     // Skip kewarganegaraan_asing field if Indonesia is selected
                     if (field.id && field.id.includes('kewarganegaraan_asing_')) {
                         const memberIndex = field.id.replace('kewarganegaraan_asing_', '');
-                        const kewarganegaraanTypeSelect = document.getElementById(`kewarganegaraan_type_${memberIndex}`);
-                        if (kewarganegaraanTypeSelect && kewarganegaraanTypeSelect.value === 'Indonesia') {
-                            return; // Skip kewarganegaraan_asing when Indonesia is selected
+                        const kewarganegaraanAsingDiv = document.getElementById(`kewarganegaraan_asing_div_${memberIndex}`);
+                        if (kewarganegaraanAsingDiv && kewarganegaraanAsingDiv.style.display === 'none') {
+                            return; // Skip kewarganegaraan_asing when hidden
                         }
                     }
                     
@@ -894,6 +927,7 @@
                         if (!firstInvalidField) {
                             firstInvalidField = field;
                         }
+                        console.log('Invalid field:', field.id || field.name);
                     } else {
                         field.classList.remove('border-red-500', 'bg-red-50');
                     }
@@ -901,11 +935,14 @@
                 
                 if (!isValid) {
                     e.preventDefault();
+                    console.log('Form validation failed');
                     alert('Mohon lengkapi semua field yang wajib diisi (*)');
                     if (firstInvalidField) {
                         firstInvalidField.focus();
                         firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
+                } else {
+                    console.log('Form validation passed, submitting...');
                 }
             });
         });
