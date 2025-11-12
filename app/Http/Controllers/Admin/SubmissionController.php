@@ -53,7 +53,7 @@ class SubmissionController extends Controller
         if ($submission->reviewed_by_admin_id) {
             $submission->load('reviewedByAdmin');
         }
-        $submission->load('jenisKarya');
+        $submission->load(['jenisKarya', 'biodata']);
         
         // Get submissions with similar titles (case-insensitive)
         $similarTitles = $submission->getSimilarTitles();
@@ -78,6 +78,30 @@ class SubmissionController extends Controller
         $submission->save();
 
         return redirect()->route('admin.submissions.show', $submission)->with('success', 'Review tersimpan.');
+    }
+
+    // update review action: allow admin to change previous review decision
+    public function updateReview(ReviewSubmissionRequest $request, Submission $submission)
+    {
+        // only allow update review if submission has been reviewed before
+        if ($submission->status === 'pending') {
+            return back()->withErrors(['status' => 'Submission ini belum direview. Gunakan form review biasa.']);
+        }
+
+        // prevent update if user has already uploaded biodata
+        $biodata = $submission->biodata;
+        if ($biodata) {
+            return back()->withErrors(['status' => 'Tidak dapat mengubah review karena user sudah mengupload biodata. Untuk mencegah inkonsistensi data, silakan hubungi user untuk koordinasi lebih lanjut.']);
+        }
+
+        $validatedData = $request->validated();
+        $submission->status = $validatedData['status'];
+        $submission->reviewed_at = now();
+        $submission->reviewed_by_admin_id = session('admin_id');
+        $submission->rejection_reason = $validatedData['rejection_reason'] ?? null;
+        $submission->save();
+
+        return redirect()->route('admin.submissions.show', $submission)->with('success', 'Review berhasil diupdate.');
     }
 
     // download file - force download instead of opening in browser

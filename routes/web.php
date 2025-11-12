@@ -84,6 +84,7 @@ Route::prefix('admin')->group(function () {
         Route::get('submissions/{submission}', [AdminSubmissionController::class, 'show'])->name('admin.submissions.show');
         Route::get('submissions/{submission}/download', [AdminSubmissionController::class, 'download'])->name('admin.submissions.download');
         Route::post('submissions/{submission}/review', [AdminSubmissionController::class, 'review'])->name('admin.submissions.review');
+        Route::post('submissions/{submission}/update-review', [AdminSubmissionController::class, 'updateReview'])->name('admin.submissions.update-review');
 
         // Admin biodata routes  
         Route::get('biodata-pengaju', [\App\Http\Controllers\Admin\BiodataController::class, 'index'])->name('admin.biodata-pengaju.index');
