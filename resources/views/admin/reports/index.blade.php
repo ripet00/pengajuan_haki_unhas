@@ -58,80 +58,80 @@
                         </div>
 
                         <!-- Statistics Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-4 text-white">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-blue-100 text-sm font-medium uppercase">Total Biodata Approved</p>
-                                        <h3 class="text-4xl font-bold mt-2">{{ $totalApproved }}</h3>
+                                        <p class="text-blue-100 text-xs font-medium uppercase">Total Approved</p>
+                                        <h3 class="text-3xl font-bold mt-1">{{ $totalApproved }}</h3>
                                     </div>
-                                    <div class="bg-blue-400 bg-opacity-30 rounded-full p-4">
-                                        <i class="fas fa-check-double text-3xl"></i>
+                                    <div class="bg-blue-400 bg-opacity-30 rounded-full p-3">
+                                        <i class="fas fa-check-double text-2xl"></i>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg p-6 text-white">
+                            <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg p-4 text-white">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-yellow-100 text-sm font-medium uppercase">Menunggu Berkas</p>
-                                        <h3 class="text-4xl font-bold mt-2">{{ $documentPending }}</h3>
+                                        <p class="text-yellow-100 text-xs font-medium uppercase">Menunggu Berkas</p>
+                                        <h3 class="text-3xl font-bold mt-1">{{ $documentPending }}</h3>
                                     </div>
-                                    <div class="bg-yellow-400 bg-opacity-30 rounded-full p-4">
-                                        <i class="fas fa-clock text-3xl"></i>
+                                    <div class="bg-yellow-400 bg-opacity-30 rounded-full p-3">
+                                        <i class="fas fa-clock text-2xl"></i>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+                            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-4 text-white">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-green-100 text-sm font-medium uppercase">Berkas Disetor</p>
-                                        <h3 class="text-4xl font-bold mt-2">{{ $documentSubmitted }}</h3>
+                                        <p class="text-green-100 text-xs font-medium uppercase">Berkas Disetor</p>
+                                        <h3 class="text-3xl font-bold mt-1">{{ $documentSubmitted }}</h3>
                                     </div>
-                                    <div class="bg-green-400 bg-opacity-30 rounded-full p-4">
-                                        <i class="fas fa-file-check text-3xl"></i>
+                                    <div class="bg-green-400 bg-opacity-30 rounded-full p-3">
+                                        <i class="fas fa-file-check text-2xl"></i>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+                            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-4 text-white">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-purple-100 text-sm font-medium uppercase">Sertifikat Terbit</p>
-                                        <h3 class="text-4xl font-bold mt-2">{{ $certificateIssued }}</h3>
+                                        <p class="text-purple-100 text-xs font-medium uppercase">Sertifikat Terbit</p>
+                                        <h3 class="text-3xl font-bold mt-1">{{ $certificateIssued }}</h3>
                                     </div>
-                                    <div class="bg-purple-400 bg-opacity-30 rounded-full p-4">
-                                        <i class="fas fa-certificate text-3xl"></i>
+                                    <div class="bg-purple-400 bg-opacity-30 rounded-full p-3">
+                                        <i class="fas fa-certificate text-2xl"></i>
                                     </div>
                                 </div>
                             </div>
 
                             @if($documentOverdue > 0)
-                            <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-lg p-6 text-white">
+                            <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-lg p-4 text-white">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-red-100 text-sm font-medium uppercase">Berkas Terlambat</p>
-                                        <h3 class="text-4xl font-bold mt-2">{{ $documentOverdue }}</h3>
+                                        <p class="text-red-100 text-xs font-medium uppercase">Berkas Terlambat</p>
+                                        <h3 class="text-3xl font-bold mt-1">{{ $documentOverdue }}</h3>
                                         <p class="text-red-100 text-xs mt-1">Lewat 1 bulan</p>
                                     </div>
-                                    <div class="bg-red-400 bg-opacity-30 rounded-full p-4">
-                                        <i class="fas fa-exclamation-triangle text-3xl"></i>
+                                    <div class="bg-red-400 bg-opacity-30 rounded-full p-3">
+                                        <i class="fas fa-exclamation-triangle text-2xl"></i>
                                     </div>
                                 </div>
                             </div>
                             @endif
 
                             @if($certificateOverdue > 0)
-                            <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-6 text-white">
+                            <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-4 text-white">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-orange-100 text-sm font-medium uppercase">Sertifikat Terlambat</p>
-                                        <h3 class="text-4xl font-bold mt-2">{{ $certificateOverdue }}</h3>
+                                        <p class="text-orange-100 text-xs font-medium uppercase">Sertifikat Terlambat</p>
+                                        <h3 class="text-3xl font-bold mt-1">{{ $certificateOverdue }}</h3>
                                         <p class="text-orange-100 text-xs mt-1">Lewat 2 minggu</p>
                                     </div>
-                                    <div class="bg-orange-400 bg-opacity-30 rounded-full p-4">
-                                        <i class="fas fa-hourglass-end text-3xl"></i>
+                                    <div class="bg-orange-400 bg-opacity-30 rounded-full p-3">
+                                        <i class="fas fa-hourglass-end text-2xl"></i>
                                     </div>
                                 </div>
                             </div>
