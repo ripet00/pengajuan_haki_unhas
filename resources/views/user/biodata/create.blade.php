@@ -279,7 +279,7 @@
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2 space-y-2">
                         <p class="text-sm text-blue-800">
                             <i class="fas fa-info-circle mr-1"></i>
-                            <strong>Field Wajib Diisi: Semua field wajib diisi dan pastikan data sudah benar dan lengkap sebelum submit.</strong> 
+                            <strong>Field Wajib Diisi: Semua field dengan tanda bintang (*) wajib diisi dan pastikan data sudah benar dan lengkap sebelum submit.</strong> 
                         </p>
                         <p class="text-sm text-blue-800">
                             <i class="fas fa-exclamation-triangle mr-1"></i>
