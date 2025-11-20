@@ -160,12 +160,17 @@
 
                 <!-- Step 3: Upload Biodata -->
                 <div class="relative z-10 flex flex-col items-center">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $submission->biodata_status == 'approved' || $submission->biodata_status == 'rejected' || $submission->biodata_status == 'pending' ? ($submission->biodata_status == 'approved' ? 'bg-green-500 border-green-500' : ($submission->biodata_status == 'rejected' ? 'bg-red-500 border-red-500' : 'bg-yellow-500 border-yellow-500')) : ($submission->status == 'approved' ? 'bg-blue-500 border-blue-500' : 'bg-gray-200 border-gray-300') }}">
-                        @if($submission->biodata_status == 'approved')
+                    {{-- normalize checks to accept both 'rejected' and 'denied' values for biodata_status --}}
+                    @php
+                        $bStatus = $submission->biodata_status;
+                        $isBRejected = $bStatus === 'rejected' || $bStatus === 'denied';
+                    @endphp
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $bStatus == 'approved' || $isBRejected || $bStatus == 'pending' ? ($bStatus == 'approved' ? 'bg-green-500 border-green-500' : ($isBRejected ? 'bg-red-500 border-red-500' : 'bg-yellow-500 border-yellow-500')) : ($submission->status == 'approved' ? 'bg-blue-500 border-blue-500' : 'bg-gray-200 border-gray-300') }}">
+                        @if($bStatus == 'approved')
                             <i class="fas fa-check text-white"></i>
-                        @elseif($submission->biodata_status == 'rejected')
+                        @elseif($isBRejected)
                             <i class="fas fa-times text-white"></i>
-                        @elseif($submission->biodata_status == 'pending')
+                        @elseif($bStatus == 'pending')
                             <i class="fas fa-clock text-white"></i>
                         @elseif($submission->status == 'approved')
                             <i class="fas fa-user-plus text-white"></i>
@@ -173,7 +178,7 @@
                             <i class="fas fa-user-plus text-gray-400"></i>
                         @endif
                     </div>
-                    <span class="mt-2 text-xs text-center font-medium {{ $submission->biodata_status == 'approved' ? 'text-green-600' : ($submission->biodata_status == 'rejected' ? 'text-red-600' : ($submission->biodata_status == 'pending' ? 'text-yellow-600' : ($submission->status == 'approved' ? 'text-blue-600' : 'text-gray-400'))) }}">
+                    <span class="mt-2 text-xs text-center font-medium {{ $bStatus == 'approved' ? 'text-green-600' : ($isBRejected ? 'text-red-600' : ($bStatus == 'pending' ? 'text-yellow-600' : ($submission->status == 'approved' ? 'text-blue-600' : 'text-gray-400'))) }}">
                         Upload<br>Biodata
                     </span>
                 </div>
@@ -191,15 +196,19 @@
 
             <!-- Progress Description -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-                @if($submission->biodata_status == 'approved')
+                @php
+                    $bStatus = $submission->biodata_status;
+                    $isBRejected = $bStatus === 'rejected' || $bStatus === 'denied';
+                @endphp
+                @if($bStatus == 'approved')
                     <p class="text-sm text-green-700 font-medium">
                         <i class="fas fa-check-circle mr-2"></i>Pengajuan HKI Anda telah selesai diproses!
                     </p>
-                @elseif($submission->biodata_status == 'rejected')
+                @elseif($isBRejected)
                     <p class="text-sm text-red-700 font-medium">
                         <i class="fas fa-exclamation-triangle mr-2"></i>Biodata ditolak. Silakan upload ulang biodata yang sesuai.
                     </p>
-                @elseif($submission->biodata_status == 'pending')
+                @elseif($bStatus == 'pending')
                     <p class="text-sm text-yellow-700 font-medium">
                         <i class="fas fa-clock mr-2"></i>Biodata sedang direview oleh admin.
                     </p>
@@ -321,7 +330,7 @@
                             <div class="mb-2">
                                 <label class="block text-sm font-medium text-gray-500 mb-1">WhatsApp Pencipta</label>
                                 <div class="flex items-center space-x-2">
-                                    <p class="text-gray-900">{{ ($submission->creator_country_code ?? '+62') . ' ' . $submission->creator_whatsapp }}</p>
+                                    <p class="text-gray-900">({{ $submission->creator_country_code ?? '+62' }}) {{ $submission->creator_whatsapp }}</p>
                                     <a href="{{ generateWhatsAppUrl($submission->creator_whatsapp, $submission->creator_country_code ?? '+62') }}" 
                                        target="_blank"
                                        class="inline-flex items-center px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition duration-200">
@@ -392,14 +401,200 @@
                     </div>
                 </div>
 
-                <!-- Rejection Reason -->
+                <!-- Biodata Management Section -->
+                @if($submission->status == 'approved')
+                    @if($submission->biodata)
+                        <!-- Biodata exists - show biodata status and actions -->
+                        <div class="mt-6 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+                            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                                <h3 class="text-xl font-semibold text-gray-900 flex items-center">
+                                    <i class="fas fa-user-friends mr-3 text-blue-600"></i>
+                                    Status Biodata
+                                </h3>
+                            </div>
+                            
+                            <div class="p-6">
+                                <!-- Biodata Status Card -->
+                                <div class="flex items-start justify-between mb-6">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-3">
+                                            <h4 class="text-lg font-semibold text-gray-900 mr-3">
+                                                Biodata Pencipta
+                                            </h4>
+                                            @if($submission->biodata->status == 'approved')
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 border border-green-200">
+                                                    <i class="fas fa-check mr-1"></i>Disetujui
+                                                </span>
+                                            @elseif($submission->biodata->status == 'denied')
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 border border-red-200">
+                                                    <i class="fas fa-times mr-1"></i>Ditolak
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                                                    <i class="fas fa-clock mr-1"></i>Menunggu Review
+                                                </span>
+                                            @endif
+                                        </div>
+                                        
+                                        <p class="text-sm text-gray-600 mb-2">
+                                            Total Pencipta: <span class="font-semibold">{{ $submission->biodata->members->count() }} orang</span>
+                                        </p>
+                                        
+                                        @if($submission->biodata->created_at)
+                                            <p class="text-sm text-gray-600">
+                                                Dibuat: {{ $submission->biodata->created_at->format('d F Y, H:i') }} WITA
+                                            </p>
+                                        @endif
+                                        
+                                        @if($submission->biodata->status == 'denied' && $submission->biodata->rejection_reason)
+                                            <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                                <p class="text-sm font-medium text-red-800 mb-1">
+                                                    <i class="fas fa-exclamation-triangle mr-1"></i>Alasan Penolakan:
+                                                </p>
+                                                <p class="text-sm text-red-700">{{ $submission->biodata->rejection_reason }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    
+                                    <div class="flex-shrink-0 ml-6">
+                                        <a href="{{ route('user.biodata.show', [$submission, $submission->biodata]) }}" 
+                                           class="inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 shadow-sm hover:shadow-md">
+                                            <i class="fas fa-eye mr-2"></i>Lihat Detail
+                                        </a>
+                                    </div>
+                                </div>
+
+                                {{-- Error Flags Section --}}
+                                @php 
+                                    $biodata = $submission->biodata;
+                                    $biodataErrors = [];
+                                    if($biodata->error_tempat_ciptaan) $biodataErrors[] = 'Tempat Ciptaan';
+                                    if($biodata->error_tanggal_ciptaan) $biodataErrors[] = 'Tanggal Ciptaan';
+                                    if($biodata->error_uraian_singkat) $biodataErrors[] = 'Uraian Singkat';
+
+                                    $memberErrors = [];
+                                    foreach($biodata->members as $index => $member) {
+                                        $memberFieldErrors = [];
+                                        if($member->error_name) $memberFieldErrors[] = 'Nama';
+                                        if($member->error_nik) $memberFieldErrors[] = 'NIK';
+                                        if($member->error_pekerjaan) $memberFieldErrors[] = 'Pekerjaan';
+                                        if($member->error_universitas) $memberFieldErrors[] = 'Universitas';
+                                        if($member->error_fakultas) $memberFieldErrors[] = 'Fakultas';
+                                        if($member->error_program_studi) $memberFieldErrors[] = 'Program Studi';
+                                        if($member->error_alamat) $memberFieldErrors[] = 'Alamat';
+                                        if($member->error_kelurahan) $memberFieldErrors[] = 'Kelurahan';
+                                        if($member->error_kecamatan) $memberFieldErrors[] = 'Kecamatan';
+                                        if($member->error_kota_kabupaten) $memberFieldErrors[] = 'Kota/Kabupaten';
+                                        if($member->error_provinsi) $memberFieldErrors[] = 'Provinsi';
+                                        if($member->error_kode_pos) $memberFieldErrors[] = 'Kode Pos';
+                                        if($member->error_email) $memberFieldErrors[] = 'Email';
+                                        if($member->error_nomor_hp) $memberFieldErrors[] = 'Nomor HP';
+                                        if($member->error_kewarganegaraan) $memberFieldErrors[] = 'Kewarganegaraan';
+
+                                        if(count($memberFieldErrors) > 0) {
+                                            $memberErrors[] = [
+                                                'index' => $index + 1,
+                                                'name' => $member->name,
+                                                'fields' => $memberFieldErrors
+                                            ];
+                                        }
+                                    }
+                                @endphp
+
+                                @if(count($biodataErrors) > 0 || count($memberErrors) > 0)
+                                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                        <div class="flex items-center mb-3">
+                                            <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                                            <h5 class="font-semibold text-red-800">Perbaikan Diperlukan</h5>
+                                        </div>
+                                        
+                                        <p class="text-sm text-red-700 mb-4">
+                                            Admin telah menandai beberapa field yang perlu diperbaiki. Silakan klik "Lihat Detail" untuk memperbaiki data.
+                                        </p>
+
+                                        @if(count($biodataErrors) > 0)
+                                            <div class="mb-4">
+                                                <h6 class="font-medium text-red-800 mb-2">Kesalahan Biodata:</h6>
+                                                <div class="flex flex-wrap gap-2">
+                                                    @foreach($biodataErrors as $error)
+                                                        <span class="inline-flex items-center px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">
+                                                            <i class="fas fa-times-circle mr-1"></i>{{ $error }}
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        @if(count($memberErrors) > 0)
+                                            <div>
+                                                <h6 class="font-medium text-red-800 mb-2">Kesalahan Data Pencipta:</h6>
+                                                <div class="space-y-2">
+                                                    @foreach($memberErrors as $memberError)
+                                                        <div class="bg-red-100 rounded-lg p-3">
+                                                            <p class="font-medium text-red-800 text-sm mb-1">
+                                                                Pencipta {{ $memberError['index'] }}: {{ $memberError['name'] }}
+                                                            </p>
+                                                            <div class="flex flex-wrap gap-1">
+                                                                @foreach($memberError['fields'] as $field)
+                                                                    <span class="inline-flex items-center px-2 py-0.5 bg-red-200 text-red-800 text-xs rounded">
+                                                                        {{ $field }}
+                                                                    </span>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @else
+                        <!-- Biodata not created yet - show create biodata section -->
+                        <div class="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-lg overflow-hidden border border-blue-200">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-3">
+                                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                                <i class="fas fa-arrow-right text-blue-600 text-lg"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-xl font-semibold text-blue-900">Langkah Selanjutnya</h4>
+                                                <p class="text-sm text-blue-700">Dokumen telah disetujui</p>
+                                            </div>
+                                        </div>
+                                        <p class="text-blue-800 mb-4">
+                                            Selamat! Dokumen Anda telah disetujui oleh admin. Silakan lengkapi biodata pencipta untuk melanjutkan proses pengajuan HKI.
+                                        </p>
+                                        <div class="flex items-center text-sm text-blue-700">
+                                            <i class="fas fa-info-circle mr-2"></i>
+                                            <span>Biodata diperlukan untuk penyelesaian proses HKI</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex-shrink-0 ml-6">
+                                        <a href="{{ route('user.biodata.create', $submission) }}" 
+                                           class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                                            <i class="fas fa-plus mr-2"></i>Buat Biodata
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endif
+
+                <!-- Submission Rejection Section -->
                 @if($submission->status == 'rejected' && $submission->rejection_reason)
-                <div class="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <h4 class="text-sm font-semibold text-red-800 mb-2">
-                        <i class="fas fa-exclamation-triangle mr-1"></i>Alasan Penolakan
-                    </h4>
-                    <p class="text-sm text-red-700">{{ $submission->rejection_reason }}</p>
-                </div>
+                    <div class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                            <h4 class="font-semibold text-red-800">Dokumen Ditolak</h4>
+                        </div>
+                        <p class="text-sm text-red-700">{{ $submission->rejection_reason }}</p>
+                    </div>
                 @endif
 
                 <!-- Revision Section -->
@@ -573,6 +768,17 @@
                 @endif
             </div>
         </div>
+
+        <!-- Floating Next Button -->
+        @if($submission->status == 'approved' && !$submission->biodata)
+        <div class="fixed bottom-6 right-6 z-50">
+            <a href="{{ route('user.biodata.create', $submission) }}" 
+               class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition duration-200 transform hover:scale-105">
+                <span class="mr-2">Next</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        @endif
     </main>
 </body>
 </html>

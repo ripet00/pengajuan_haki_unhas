@@ -425,44 +425,56 @@ use Illuminate\Support\Facades\Storage;
                                         <i class="fas fa-edit mr-1"></i>Perlu mengubah keputusan review?
                                     </p>
                                     
-                                    <form method="POST" action="{{ route('admin.submissions.review', $submission) }}" class="space-y-4">
-                                        @csrf
-                                        
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-3">Ubah Keputusan:</label>
-                                            <div class="space-y-2">
-                                                <label class="flex items-center">
-                                                    <input type="radio" name="status" value="approved" {{ $submission->status == 'approved' ? 'checked' : '' }} required class="text-green-600 focus:ring-green-500 border-gray-300">
-                                                    <span class="ml-2 text-green-700 font-medium">
-                                                        <i class="fas fa-check-circle mr-1"></i>Setujui Pengajuan
-                                                    </span>
-                                                </label>
-                                                <label class="flex items-center">
-                                                    <input type="radio" name="status" value="rejected" {{ $submission->status == 'rejected' ? 'checked' : '' }} required class="text-red-600 focus:ring-red-500 border-gray-300">
-                                                    <span class="ml-2 text-red-700 font-medium">
-                                                        <i class="fas fa-times-circle mr-1"></i>Tolak Pengajuan
-                                                    </span>
-                                                </label>
+                                    @if($submission->biodata)
+                                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                                            <div class="flex items-start">
+                                                <i class="fas fa-lock text-yellow-600 mt-1 mr-2"></i>
+                                                <div>
+                                                    <p class="text-sm text-yellow-800 font-medium">Update Review Tidak Tersedia</p>
+                                                    <p class="text-xs text-yellow-700 mt-1">User sudah mengupload biodata. Untuk mencegah inkonsistensi data, perubahan review tidak diizinkan. Silakan hubungi user untuk koordinasi lebih lanjut.</p>
+                                                </div>
                                             </div>
                                         </div>
+                                    @else
+                                        <form method="POST" action="{{ route('admin.submissions.update-review', $submission) }}" class="space-y-4">
+                                            @csrf
+                                            
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-3">Ubah Keputusan:</label>
+                                                <div class="space-y-2">
+                                                    <label class="flex items-center">
+                                                        <input type="radio" name="status" value="approved" {{ $submission->status == 'approved' ? 'checked' : '' }} required class="text-green-600 focus:ring-green-500 border-gray-300">
+                                                        <span class="ml-2 text-green-700 font-medium">
+                                                            <i class="fas fa-check-circle mr-1"></i>Setujui Pengajuan
+                                                        </span>
+                                                    </label>
+                                                    <label class="flex items-center">
+                                                        <input type="radio" name="status" value="rejected" {{ $submission->status == 'rejected' ? 'checked' : '' }} required class="text-red-600 focus:ring-red-500 border-gray-300">
+                                                        <span class="ml-2 text-red-700 font-medium">
+                                                            <i class="fas fa-times-circle mr-1"></i>Tolak Pengajuan
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
 
-                                        <div>
-                                            <label for="rejection_reason_edit" class="block text-sm font-medium text-gray-700 mb-1">
-                                                Catatan/Alasan Penolakan:
-                                                <small class="text-gray-500">(Opsional untuk approval, wajib untuk rejection)</small>
-                                            </label>
-                                            <textarea 
-                                                id="rejection_reason_edit" 
-                                                name="rejection_reason" 
-                                                rows="3"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
-                                                placeholder="Tulis catatan atau alasan penolakan di sini...">{{ $submission->rejection_reason }}</textarea>
-                                        </div>
+                                            <div>
+                                                <label for="rejection_reason_edit" class="block text-sm font-medium text-gray-700 mb-1">
+                                                    Catatan/Alasan Penolakan:
+                                                    <small class="text-gray-500">(Opsional untuk approval, wajib untuk rejection)</small>
+                                                </label>
+                                                <textarea 
+                                                    id="rejection_reason_edit" 
+                                                    name="rejection_reason" 
+                                                    rows="3"
+                                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
+                                                    placeholder="Tulis catatan atau alasan penolakan di sini...">{{ $submission->rejection_reason }}</textarea>
+                                            </div>
 
-                                        <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
-                                            <i class="fas fa-edit mr-2"></i>UPDATE REVIEW
-                                        </button>
-                                    </form>
+                                            <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
+                                                <i class="fas fa-edit mr-2"></i>UPDATE REVIEW
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </div>
                         @endif

@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users_and_admins_tables', function (Blueprint $table) {
-            //
+        Schema::table('biodata_members', function (Blueprint $table) {
+            $table->enum('jenis_kelamin', ['Pria', 'Wanita'])->after('nik');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users_and_admins_tables', function (Blueprint $table) {
-            //
+        Schema::table('biodata_members', function (Blueprint $table) {
+            $table->dropColumn('jenis_kelamin');
         });
     }
 };

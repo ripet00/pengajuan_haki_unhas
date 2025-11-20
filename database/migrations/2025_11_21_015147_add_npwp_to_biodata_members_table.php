@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('submissions', function (Blueprint $table) {
-            //
+        Schema::table('biodata_members', function (Blueprint $table) {
+            $table->string('npwp')->nullable()->after('nik');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('submissions', function (Blueprint $table) {
-            //
+        Schema::table('biodata_members', function (Blueprint $table) {
+            $table->dropColumn('npwp');
         });
     }
 };

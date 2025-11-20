@@ -67,7 +67,14 @@ class SubmissionController extends Controller
             /** @var \Illuminate\Http\UploadedFile $file */
             $file = $request->file('document');
 
-            $path = $file->store('submissions', 'public');
+            // Generate unique filename with original extension
+            $originalName = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $fileName = pathinfo($originalName, PATHINFO_FILENAME);
+            $uniqueFileName = $fileName . '_' . time() . '.' . $extension;
+            
+            $path = $file->storeAs('submissions', $uniqueFileName, 'public');
+            
             $submission = Submission::create([
                 'user_id' => $user->id,
                 'title' => $request->input('title'),
@@ -161,7 +168,14 @@ class SubmissionController extends Controller
 
             /** @var \Illuminate\Http\UploadedFile $file */
             $file = $request->file('document');
-            $path = $file->store('submissions', 'public');
+            
+            // Generate unique filename with original extension
+            $originalName = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $fileName = pathinfo($originalName, PATHINFO_FILENAME);
+            $uniqueFileName = $fileName . '_' . time() . '.' . $extension;
+            
+            $path = $file->storeAs('submissions', $uniqueFileName, 'public');
 
             $submission->update([
                 'title' => $request->input('title'),
