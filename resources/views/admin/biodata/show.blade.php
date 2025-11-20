@@ -658,6 +658,186 @@
 
                         
 
+                        <!-- Document Tracking (Only for Approved Biodata) -->
+                        @if($biodata->status == 'approved')
+                        <div class="bg-white rounded-lg shadow p-6 mt-6 border-2 border-blue-200">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-clipboard-check mr-2 text-blue-600"></i>Tracking Dokumen & Sertifikat
+                            </h3>
+                            
+                            <!-- Document Submission Status -->
+                            <div class="mb-6 pb-6 border-b border-gray-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-semibold text-gray-800">
+                                        <i class="fas fa-file-upload mr-2 text-orange-500"></i>Status Penyetoran Berkas
+                                    </h4>
+                                    @if($biodata->document_submitted)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check mr-1"></i>Sudah Disetor
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            <i class="fas fa-clock mr-1"></i>Belum Disetor
+                                        </span>
+                                    @endif
+                                </div>
+
+                                @if($biodata->document_submitted)
+                                    <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
+                                        <p class="text-sm text-green-800">
+                                            <i class="fas fa-calendar-check mr-1"></i>
+                                            Disetor pada: <strong>{{ $biodata->document_submitted_at->format('d F Y, H:i') }} WITA</strong>
+                                        </p>
+                                        <p class="text-xs text-green-700 mt-1">
+                                            {{ $biodata->document_submitted_at->diffForHumans() }}
+                                        </p>
+                                    </div>
+                                @else
+                                    @php
+                                        $deadline = $biodata->getDocumentDeadline();
+                                        $daysRemaining = $biodata->getDaysUntilDocumentDeadline();
+                                        $isOverdue = $biodata->isDocumentOverdue();
+                                    @endphp
+                                    
+                                    @if($isOverdue)
+                                        <div class="bg-red-50 border border-red-300 rounded-lg p-3 mb-3">
+                                            <p class="text-sm font-semibold text-red-900">
+                                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                                TERLAMBAT! Deadline: {{ $deadline->format('d F Y') }}
+                                            </p>
+                                            <p class="text-xs text-red-700 mt-1">
+                                                Terlambat {{ abs($daysRemaining) }} hari
+                                            </p>
+                                        </div>
+                                    @elseif($daysRemaining <= 7)
+                                        <div class="bg-orange-50 border border-orange-300 rounded-lg p-3 mb-3">
+                                            <p class="text-sm font-semibold text-orange-900">
+                                                <i class="fas fa-hourglass-half mr-1"></i>
+                                                Deadline mendekat: {{ $deadline->format('d F Y') }}
+                                            </p>
+                                            <p class="text-xs text-orange-700 mt-1">
+                                                Sisa {{ $daysRemaining }} hari lagi
+                                            </p>
+                                        </div>
+                                    @else
+                                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                                            <p class="text-sm text-blue-800">
+                                                <i class="fas fa-calendar-alt mr-1"></i>
+                                                Deadline: {{ $deadline->format('d F Y') }}
+                                            </p>
+                                            <p class="text-xs text-blue-700 mt-1">
+                                                Sisa {{ $daysRemaining }} hari lagi
+                                            </p>
+                                        </div>
+                                    @endif
+                                @endif
+
+                                <!-- Mark as Submitted Form -->
+                                @if(!$biodata->document_submitted)
+                                    <form method="POST" action="{{ route('admin.biodata-pengaju.mark-document-submitted', $biodata) }}" class="mt-3">
+                                        @csrf
+                                        <button type="submit" 
+                                                onclick="return confirm('Apakah Anda yakin berkas telah disetor oleh user?')"
+                                                class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 text-sm">
+                                            <i class="fas fa-check-circle mr-2"></i>Tandai Berkas Sudah Disetor
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+
+                            <!-- Certificate Issue Status -->
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-semibold text-gray-800">
+                                        <i class="fas fa-certificate mr-2 text-blue-500"></i>Status Sertifikat HKI
+                                    </h4>
+                                    @if($biodata->certificate_issued)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <i class="fas fa-check-double mr-1"></i>Sudah Terbit
+                                        </span>
+                                    @elseif($biodata->document_submitted)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            <i class="fas fa-hourglass-half mr-1"></i>Dalam Proses
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            <i class="fas fa-minus-circle mr-1"></i>Menunggu Berkas
+                                        </span>
+                                    @endif
+                                </div>
+
+                                @if($biodata->certificate_issued)
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                                        <p class="text-sm text-blue-800">
+                                            <i class="fas fa-calendar-check mr-1"></i>
+                                            Terbit pada: <strong>{{ $biodata->certificate_issued_at->format('d F Y, H:i') }} WITA</strong>
+                                        </p>
+                                        <p class="text-xs text-blue-700 mt-1">
+                                            {{ $biodata->certificate_issued_at->diffForHumans() }}
+                                        </p>
+                                    </div>
+                                @elseif($biodata->document_submitted)
+                                    @php
+                                        $certDeadline = $biodata->getCertificateDeadline();
+                                        $certDaysRemaining = $biodata->getDaysUntilCertificateDeadline();
+                                        $isCertOverdue = $biodata->isCertificateOverdue();
+                                    @endphp
+                                    
+                                    @if($isCertOverdue)
+                                        <div class="bg-red-50 border border-red-300 rounded-lg p-3 mb-3">
+                                            <p class="text-sm font-semibold text-red-900">
+                                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                                TERLAMBAT! Estimasi selesai: {{ $certDeadline->format('d F Y') }}
+                                            </p>
+                                            <p class="text-xs text-red-700 mt-1">
+                                                Terlambat {{ abs($certDaysRemaining) }} hari. Segera proses penerbitan sertifikat!
+                                            </p>
+                                        </div>
+                                    @elseif($certDaysRemaining <= 5)
+                                        <div class="bg-orange-50 border border-orange-300 rounded-lg p-3 mb-3">
+                                            <p class="text-sm font-semibold text-orange-900">
+                                                <i class="fas fa-hourglass-half mr-1"></i>
+                                                Estimasi selesai: {{ $certDeadline->format('d F Y') }}
+                                            </p>
+                                            <p class="text-xs text-orange-700 mt-1">
+                                                Sisa {{ $certDaysRemaining }} hari lagi (2 minggu sejak berkas disetor)
+                                            </p>
+                                        </div>
+                                    @else
+                                        <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
+                                            <p class="text-sm text-green-800">
+                                                <i class="fas fa-calendar-alt mr-1"></i>
+                                                Estimasi selesai: {{ $certDeadline->format('d F Y') }}
+                                            </p>
+                                            <p class="text-xs text-green-700 mt-1">
+                                                Sisa {{ $certDaysRemaining }} hari lagi (2 minggu sejak berkas disetor)
+                                            </p>
+                                        </div>
+                                    @endif
+                                @else
+                                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-3">
+                                        <p class="text-sm text-gray-700">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Menunggu user menyetor berkas terlebih dahulu
+                                        </p>
+                                    </div>
+                                @endif
+
+                                <!-- Mark as Issued Form -->
+                                @if($biodata->document_submitted && !$biodata->certificate_issued)
+                                    <form method="POST" action="{{ route('admin.biodata-pengaju.mark-certificate-issued', $biodata) }}" class="mt-3">
+                                        @csrf
+                                        <button type="submit" 
+                                                onclick="return confirm('Apakah Anda yakin sertifikat HKI sudah terbit?')"
+                                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 text-sm">
+                                            <i class="fas fa-certificate mr-2"></i>Tandai Sertifikat Sudah Terbit
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
+
                         <!-- Quick Actions -->
                         <div class="bg-gray-50 rounded-lg p-6 mt-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">

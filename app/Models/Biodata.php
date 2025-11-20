@@ -22,11 +22,17 @@ class Biodata extends Model
         'error_tempat_ciptaan',
         'error_tanggal_ciptaan',
         'error_uraian_singkat',
+        'document_submitted',
+        'document_submitted_at',
+        'certificate_issued',
+        'certificate_issued_at',
     ];
 
     protected $casts = [
         'tanggal_ciptaan' => 'date',
         'reviewed_at' => 'datetime',
+        'document_submitted_at' => 'datetime',
+        'certificate_issued_at' => 'datetime',
     ];
 
     /**
@@ -107,5 +113,71 @@ class Biodata extends Model
     public function isDenied()
     {
         return $this->status === 'denied';
+    }
+
+    /**
+     * Get document submission deadline (1 month after biodata approval)
+     */
+    public function getDocumentDeadline()
+    {
+        if ($this->isApproved() && $this->reviewed_at) {
+            return $this->reviewed_at->addMonth();
+        }
+        return null;
+    }
+
+    /**
+     * Check if document submission is overdue
+     */
+    public function isDocumentOverdue()
+    {
+        if (!$this->document_submitted && $this->getDocumentDeadline()) {
+            return now()->isAfter($this->getDocumentDeadline());
+        }
+        return false;
+    }
+
+    /**
+     * Get certificate processing deadline (2 weeks after document submitted)
+     */
+    public function getCertificateDeadline()
+    {
+        if ($this->document_submitted && $this->document_submitted_at) {
+            return $this->document_submitted_at->addWeeks(2);
+        }
+        return null;
+    }
+
+    /**
+     * Check if certificate processing is overdue
+     */
+    public function isCertificateOverdue()
+    {
+        if (!$this->certificate_issued && $this->getCertificateDeadline()) {
+            return now()->isAfter($this->getCertificateDeadline());
+        }
+        return false;
+    }
+
+    /**
+     * Get days remaining until document deadline
+     */
+    public function getDaysUntilDocumentDeadline()
+    {
+        if ($this->getDocumentDeadline()) {
+            return (int) now()->diffInDays($this->getDocumentDeadline(), false);
+        }
+        return null;
+    }
+
+    /**
+     * Get days remaining until certificate deadline
+     */
+    public function getDaysUntilCertificateDeadline()
+    {
+        if ($this->getCertificateDeadline()) {
+            return (int) now()->diffInDays($this->getCertificateDeadline(), false);
+        }
+        return null;
     }
 }
