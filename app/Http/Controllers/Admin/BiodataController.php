@@ -98,6 +98,8 @@ class BiodataController extends Controller
                     $member->update([
                         'error_name' => isset($memberErrors['error_name']) ? (bool)$memberErrors['error_name'] : false,
                         'error_nik' => isset($memberErrors['error_nik']) ? (bool)$memberErrors['error_nik'] : false,
+                        'error_npwp' => isset($memberErrors['error_npwp']) ? (bool)$memberErrors['error_npwp'] : false,
+                        'error_jenis_kelamin' => isset($memberErrors['error_jenis_kelamin']) ? (bool)$memberErrors['error_jenis_kelamin'] : false,
                         'error_pekerjaan' => isset($memberErrors['error_pekerjaan']) ? (bool)$memberErrors['error_pekerjaan'] : false,
                         'error_universitas' => isset($memberErrors['error_universitas']) ? (bool)$memberErrors['error_universitas'] : false,
                         'error_fakultas' => isset($memberErrors['error_fakultas']) ? (bool)$memberErrors['error_fakultas'] : false,
@@ -176,6 +178,8 @@ class BiodataController extends Controller
                     $member->update([
                         'error_name' => isset($memberErrors['error_name']) ? (bool)$memberErrors['error_name'] : false,
                         'error_nik' => isset($memberErrors['error_nik']) ? (bool)$memberErrors['error_nik'] : false,
+                        'error_npwp' => isset($memberErrors['error_npwp']) ? (bool)$memberErrors['error_npwp'] : false,
+                        'error_jenis_kelamin' => isset($memberErrors['error_jenis_kelamin']) ? (bool)$memberErrors['error_jenis_kelamin'] : false,
                         'error_pekerjaan' => isset($memberErrors['error_pekerjaan']) ? (bool)$memberErrors['error_pekerjaan'] : false,
                         'error_universitas' => isset($memberErrors['error_universitas']) ? (bool)$memberErrors['error_universitas'] : false,
                         'error_fakultas' => isset($memberErrors['error_fakultas']) ? (bool)$memberErrors['error_fakultas'] : false,

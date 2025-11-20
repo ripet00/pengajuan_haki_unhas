@@ -135,6 +135,40 @@
             </div>
         </div>
 
+        <!-- Error Messages -->
+        @if($errors->any())
+            <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded mb-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-red-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">Terjadi kesalahan validasi:</h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <ul class="list-disc list-inside space-y-1">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded mb-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-red-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700">{{ session('error') }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Form Section -->
         <form method="POST" action="{{ route('user.biodata.store', $submission) }}" class="space-y-6">
             @csrf
@@ -364,6 +398,25 @@
                                    required>
                             <p class="text-xs text-gray-500 mt-1">
                                 <i class="fas fa-info-circle mr-1"></i>NIK harus 16 digit angka
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                NPWP
+                                ${member.error_npwp ? `
+                                    <span class="text-red-600 text-xs ml-1">
+                                        <i class="fas fa-exclamation-circle"></i> Admin menandai field ini perlu diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
+                            <input type="text" 
+                                   name="members[${index}][npwp]" 
+                                   value="${member.npwp || ''}"
+                                   placeholder="${member.error_npwp ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan NPWP (opsional)'}"
+                                   class="w-full px-3 py-2 border ${member.error_npwp ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>Opsional - Nomor Pokok Wajib Pajak
                             </p>
                         </div>
                     </div>
@@ -1082,7 +1135,7 @@
                         document.getElementById(`kecamatan_manual_${index}`).value = '';
                         document.getElementById(`kelurahan_manual_${index}`).value = '';
                         kewarganegaraanAsingInput.value = '';
-                    } else {
+                    } else if (this.value === 'Warga Negara Asing') {
                         // Hide wilayah dropdowns, show manual inputs
                         wilayahContainer.style.display = 'none';
                         nonWilayahContainer.style.display = 'contents';
@@ -1099,6 +1152,28 @@
                         document.getElementById(`kota_kabupaten_${index}`).value = '';
                         document.getElementById(`kecamatan_${index}`).value = '';
                         document.getElementById(`kelurahan_${index}`).value = '';
+                        
+                        // Clear final value until user fills in
+                        kewarganegaraanFinal.value = '';
+                    } else {
+                        // "Pilih Kewarganegaraan" selected - hide everything
+                        wilayahContainer.style.display = 'none';
+                        nonWilayahContainer.style.display = 'none';
+                        kewarganegaraanAsingDiv.style.display = 'none';
+                        
+                        // Clear final value
+                        kewarganegaraanFinal.value = '';
+                        
+                        // Clear all inputs
+                        kewarganegaraanAsingInput.value = '';
+                        document.getElementById(`provinsi_${index}`).value = '';
+                        document.getElementById(`kota_kabupaten_${index}`).value = '';
+                        document.getElementById(`kecamatan_${index}`).value = '';
+                        document.getElementById(`kelurahan_${index}`).value = '';
+                        document.getElementById(`provinsi_manual_${index}`).value = '';
+                        document.getElementById(`kota_manual_${index}`).value = '';
+                        document.getElementById(`kecamatan_manual_${index}`).value = '';
+                        document.getElementById(`kelurahan_manual_${index}`).value = '';
                     }
                 });
                 

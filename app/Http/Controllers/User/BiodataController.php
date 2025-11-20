@@ -48,6 +48,20 @@ class BiodataController extends Controller
 
         // Get existing members or create empty array
         $members = $biodata ? $biodata->members : collect();
+        
+        // If there's old input (validation failed), merge it with members
+        if (old('members')) {
+            $oldMembers = old('members');
+            $members = $members->map(function ($member, $index) use ($oldMembers) {
+                if (isset($oldMembers[$index])) {
+                    // Merge old input with existing member
+                    foreach ($oldMembers[$index] as $key => $value) {
+                        $member->$key = $value;
+                    }
+                }
+                return $member;
+            });
+        }
 
         return view('user.biodata.create', compact('submission', 'biodata', 'members', 'isEdit', 'canEdit'));
     }
@@ -76,6 +90,7 @@ class BiodataController extends Controller
             'members' => 'required|array|min:1|max:10',
             'members.*.name' => 'required|string|max:255',
             'members.*.nik' => 'required|digits:16',
+            'members.*.npwp' => 'nullable|string|max:255',
             'members.*.jenis_kelamin' => 'required|in:Pria,Wanita',
             'members.*.pekerjaan' => 'required|string|max:255',
             'members.*.universitas' => 'required|string|max:255',
@@ -97,6 +112,13 @@ class BiodataController extends Controller
 
         try {
             DB::beginTransaction();
+            
+            // Debug log
+            \Log::info('Biodata submission data:', [
+                'members' => $request->members,
+                'has_npwp' => isset($request->members[0]['npwp']),
+                'npwp_value' => $request->members[0]['npwp'] ?? 'not set'
+            ]);
 
             // Check if this is an edit/resubmit
             $isEdit = $submission->biodata !== null;
@@ -143,6 +165,7 @@ class BiodataController extends Controller
                     'biodata_id' => $biodata->id,
                     'name' => $memberData['name'],
                     'nik' => $memberData['nik'],
+                    'npwp' => $memberData['npwp'] ?? null,
                     'jenis_kelamin' => $memberData['jenis_kelamin'],
                     'pekerjaan' => $memberData['pekerjaan'],
                     'universitas' => $memberData['universitas'],
@@ -161,6 +184,8 @@ class BiodataController extends Controller
                     // Reset all error flags for new submission
                     'error_name' => false,
                     'error_nik' => false,
+                    'error_npwp' => false,
+                    'error_jenis_kelamin' => false,
                     'error_pekerjaan' => false,
                     'error_universitas' => false,
                     'error_fakultas' => false,

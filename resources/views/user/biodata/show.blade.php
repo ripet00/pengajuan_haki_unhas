@@ -248,6 +248,13 @@
                                     </div>
                                 @endif
                                 
+                                @if($member->npwp)
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-500">NPWP:</span>
+                                        <p class="text-gray-900">{{ $member->npwp }}</p>
+                                    </div>
+                                @endif
+                                
                                 @if($member->jenis_kelamin)
                                     <div>
                                         <span class="text-sm font-medium text-gray-500">Jenis Kelamin:</span>
