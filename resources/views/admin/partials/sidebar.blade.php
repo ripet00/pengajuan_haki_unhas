@@ -59,9 +59,14 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.reports.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.reports.*') ? 'sidebar-active' : '' }}">
+                <a href="{{ route('admin.reports.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.reports.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-chart-bar mr-3 {{ Request::routeIs('admin.reports.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
                     <span class="sidebar-text transition-opacity duration-300">Laporan</span>
+                    @if(isset($pendingCertificates) && $pendingCertificates > 0)
+                        <span class="sidebar-badge ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
+                            {{ $pendingCertificates }}
+                        </span>
+                    @endif
                 </a>
             </li>
             <li>
@@ -109,6 +114,27 @@
     .sidebar-collapsed #logo-text {
         opacity: 0;
         visibility: hidden;
+    }
+    .sidebar-collapsed .sidebar-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        margin-left: 0 !important;
+        min-width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 6px;
+    }
+    .sidebar-badge {
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 24px;
+        height: 24px;
+        line-height: 1;
     }
     .sidebar-collapsed .sidebar-header-content {
         justify-content: center;
