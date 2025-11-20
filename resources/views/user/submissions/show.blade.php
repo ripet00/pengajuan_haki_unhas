@@ -330,7 +330,7 @@
                             <div class="mb-2">
                                 <label class="block text-sm font-medium text-gray-500 mb-1">WhatsApp Pencipta</label>
                                 <div class="flex items-center space-x-2">
-                                    <p class="text-gray-900">{{ ($submission->creator_country_code ?? '+62') . ' ' . $submission->creator_whatsapp }}</p>
+                                    <p class="text-gray-900">({{ $submission->creator_country_code ?? '+62' }}) {{ $submission->creator_whatsapp }}</p>
                                     <a href="{{ generateWhatsAppUrl($submission->creator_whatsapp, $submission->creator_country_code ?? '+62') }}" 
                                        target="_blank"
                                        class="inline-flex items-center px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition duration-200">
