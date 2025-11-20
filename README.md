@@ -249,7 +249,9 @@ php artisan storage:link
 
 ## 👥 Team
 
-- **Developer**: Denzel
+- **Developers**: 
+  - Denzel Samuel Noah Simatupang
+  - Javahirul Rifat Khaidir
 - **Institution**: Universitas Hasanuddin
 - **Year**: 2025
 
