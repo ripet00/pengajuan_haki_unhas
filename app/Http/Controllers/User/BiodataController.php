@@ -143,6 +143,7 @@ class BiodataController extends Controller
                     'biodata_id' => $biodata->id,
                     'name' => $memberData['name'],
                     'nik' => $memberData['nik'],
+                    'npwp' => $memberData['npwp'] ?? null,
                     'jenis_kelamin' => $memberData['jenis_kelamin'],
                     'pekerjaan' => $memberData['pekerjaan'],
                     'universitas' => $memberData['universitas'],

@@ -274,6 +274,18 @@
 
                                             <div class="flex items-start justify-between">
                                                 <div class="pr-4 w-full">
+                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">NPWP</label>
+                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->npwp ?: '-' }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3">
+                                                    <span class="inline-flex items-center justify-center h-6 w-6">
+                                                        <i class="fas fa-info-circle text-gray-400" title="Field opsional"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-start justify-between">
+                                                <div class="pr-4 w-full">
                                                     <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Kelamin</label>
                                                     <p class="mt-1 text-sm text-gray-900">{{ $member->jenis_kelamin ?: '-' }}</p>
                                                 </div>
