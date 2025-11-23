@@ -9,6 +9,7 @@ use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BiodataController extends Controller
 {
@@ -114,7 +115,7 @@ class BiodataController extends Controller
             DB::beginTransaction();
             
             // Debug log
-            \Log::info('Biodata submission data:', [
+            Log::info('Biodata submission data:', [
                 'members' => $request->members,
                 'has_npwp' => isset($request->members[0]['npwp']),
                 'npwp_value' => $request->members[0]['npwp'] ?? 'not set'
