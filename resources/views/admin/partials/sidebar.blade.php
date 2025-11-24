@@ -46,9 +46,14 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.submissions.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.submissions.*') ? 'sidebar-active' : '' }}">
+                <a href="{{ route('admin.submissions.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.submissions.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-file-upload mr-3 {{ Request::routeIs('admin.submissions.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
                     <span class="sidebar-text transition-opacity duration-300">Pengajuan HKI</span>
+                    @if(isset($pendingSubmissions) && $pendingSubmissions > 0)
+                        <span class="sidebar-badge ml-auto bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
+                            {{ $pendingSubmissions }}
+                        </span>
+                    @endif
                 </a>
             </li>
             <li>
