@@ -219,81 +219,78 @@
                                 @foreach($biodatas as $biodata)
                                     <div class="bg-white rounded-lg shadow-lg overflow-hidden border-l-4 {{ $biodata->certificate_issued ? 'border-purple-500' : ($biodata->document_submitted ? 'border-green-500' : ($biodata->isDocumentOverdue() ? 'border-red-500' : 'border-yellow-500')) }}">
                                         <div class="p-6">
-                                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                                <!-- Left Column - Info -->
-                                                <div class="lg:col-span-2 space-y-4">
-                                                    <!-- Header -->
-                                                    <div class="flex items-start justify-between">
-                                                        <div class="flex-1">
-                                                            <h3 class="text-xl font-bold text-gray-900 mb-2">
-                                                                {{ $biodata->submission->title }}
-                                                            </h3>
-                                                            <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600">
-                                                                <span class="inline-flex items-center">
-                                                                    <i class="fas fa-user mr-1 text-blue-500"></i>
-                                                                    {{ $biodata->user->name }}
-                                                                </span>
-                                                                <span>•</span>
-                                                                <span class="inline-flex items-center">
-                                                                    <i class="fas fa-phone mr-1 text-green-500"></i>
-                                                                    {{ $biodata->user->phone_number }}
-                                                                </span>
-                                                                <span>•</span>
-                                                                <span class="inline-flex items-center">
-                                                                    <i class="fas fa-hashtag mr-1 text-gray-500"></i>
-                                                                    ID: {{ $biodata->id }}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Timeline Info -->
-                                                    <div class="bg-gray-50 rounded-lg p-4">
-                                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                                                            <div>
-                                                                <p class="text-gray-500 mb-1">Biodata Approved</p>
-                                                                <p class="font-semibold text-gray-900">
-                                                                    <i class="fas fa-calendar-check mr-1 text-green-500"></i>
-                                                                    {{ $biodata->reviewed_at->format('d M Y') }}
-                                                                </p>
-                                                            </div>
-                                                            
-                                                            @if($biodata->document_submitted)
-                                                            <div>
-                                                                <p class="text-gray-500 mb-1">Berkas Disetor</p>
-                                                                <p class="font-semibold text-gray-900">
-                                                                    <i class="fas fa-file-upload mr-1 text-green-500"></i>
-                                                                    {{ $biodata->document_submitted_at->format('d M Y') }}
-                                                                </p>
-                                                            </div>
-                                                            @endif
-
-                                                            @if($biodata->certificate_issued)
-                                                            <div>
-                                                                <p class="text-gray-500 mb-1">Sertifikat Terbit</p>
-                                                                <p class="font-semibold text-gray-900">
-                                                                    <i class="fas fa-certificate mr-1 text-purple-500"></i>
-                                                                    {{ $biodata->certificate_issued_at->format('d M Y') }}
-                                                                </p>
-                                                            </div>
-                                                            @endif
+                                            <div class="space-y-4">
+                                                <!-- Header Section -->
+                                                <div class="flex items-start justify-between">
+                                                    <div class="flex-1">
+                                                        <h3 class="text-xl font-bold text-gray-900 mb-2">
+                                                            {{ $biodata->submission->title }}
+                                                        </h3>
+                                                        <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                                                            <span class="inline-flex items-center">
+                                                                <i class="fas fa-user mr-1 text-blue-500"></i>
+                                                                {{ $biodata->user->name }}
+                                                            </span>
+                                                            <span>•</span>
+                                                            <span class="inline-flex items-center">
+                                                                <i class="fas fa-phone mr-1 text-green-500"></i>
+                                                                {{ $biodata->user->phone_number }}
+                                                            </span>
+                                                            <span>•</span>
+                                                            <span class="inline-flex items-center">
+                                                                <i class="fas fa-hashtag mr-1 text-gray-500"></i>
+                                                                ID: {{ $biodata->id }}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <!-- Right Column - Tracking Actions -->
-                                                <div class="lg:col-span-1 space-y-4">
+                                                <!-- Timeline Info -->
+                                                <div class="bg-gray-50 rounded-lg p-3">
+                                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                                                        <div>
+                                                            <p class="text-gray-500 text-xs mb-1">Biodata Approved</p>
+                                                            <p class="font-semibold text-gray-900">
+                                                                <i class="fas fa-calendar-check mr-1 text-green-500"></i>
+                                                                {{ $biodata->reviewed_at->format('d M Y') }}
+                                                            </p>
+                                                        </div>
+                                                        
+                                                        @if($biodata->document_submitted)
+                                                        <div>
+                                                            <p class="text-gray-500 text-xs mb-1">Berkas Disetor</p>
+                                                            <p class="font-semibold text-gray-900">
+                                                                <i class="fas fa-file-upload mr-1 text-green-500"></i>
+                                                                {{ $biodata->document_submitted_at->format('d M Y') }}
+                                                            </p>
+                                                        </div>
+                                                        @endif
+
+                                                        @if($biodata->certificate_issued)
+                                                        <div>
+                                                            <p class="text-gray-500 text-xs mb-1">Sertifikat Terbit</p>
+                                                            <p class="font-semibold text-gray-900">
+                                                                <i class="fas fa-certificate mr-1 text-purple-500"></i>
+                                                                {{ $biodata->certificate_issued_at->format('d M Y') }}
+                                                            </p>
+                                                        </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
+                                                <!-- Tracking Actions Grid -->
+                                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                                                     <!-- Document Tracking -->
-                                                    <div class="bg-gray-50 rounded-lg p-4">
-                                                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                                    <div class="bg-gray-50 rounded-lg p-3">
+                                                        <h4 class="font-semibold text-gray-900 text-sm mb-2 flex items-center">
                                                             <i class="fas fa-file-alt mr-2 text-orange-500"></i>
                                                             Penyetoran Berkas
                                                         </h4>
                                                         
                                                         @if($biodata->document_submitted)
                                                             <div class="flex items-center text-green-700 mb-2">
-                                                                <i class="fas fa-check-circle mr-2"></i>
-                                                                <span class="text-sm font-medium">Sudah Disetor</span>
+                                                                <i class="fas fa-check-circle mr-1"></i>
+                                                                <span class="text-xs font-medium">Sudah Disetor</span>
                                                             </div>
                                                             <p class="text-xs text-gray-600">
                                                                 {{ $biodata->document_submitted_at->diffForHumans() }}
@@ -306,20 +303,17 @@
                                                             @endphp
                                                             
                                                             @if($isOverdue)
-                                                                <div class="bg-red-100 border border-red-300 rounded p-2 mb-3">
+                                                                <div class="bg-red-100 border border-red-300 rounded p-2 mb-2">
                                                                     <p class="text-xs font-semibold text-red-900">
                                                                         <i class="fas fa-exclamation-triangle mr-1"></i>
                                                                         TERLAMBAT {{ abs($daysRemaining) }} hari!
                                                                     </p>
                                                                 </div>
                                                             @else
-                                                                <div class="bg-yellow-50 border border-yellow-200 rounded p-2 mb-3">
+                                                                <div class="bg-yellow-50 border border-yellow-200 rounded p-2 mb-2">
                                                                     <p class="text-xs text-yellow-800">
                                                                         <i class="fas fa-clock mr-1"></i>
                                                                         Sisa {{ $daysRemaining }} hari
-                                                                    </p>
-                                                                    <p class="text-xs text-yellow-700 mt-1">
-                                                                        Deadline: {{ $deadline->format('d M Y') }}
                                                                     </p>
                                                                 </div>
                                                             @endif
@@ -328,7 +322,7 @@
                                                                 @csrf
                                                                 <button type="submit" 
                                                                         onclick="return confirm('Tandai berkas sudah disetor?')"
-                                                                        class="w-full bg-orange-600 hover:bg-orange-700 text-white text-sm font-semibold py-2 rounded transition duration-200">
+                                                                        class="w-full bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold py-2 px-3 rounded transition duration-200">
                                                                     <i class="fas fa-check mr-1"></i>Tandai Disetor
                                                                 </button>
                                                             </form>
@@ -336,16 +330,16 @@
                                                     </div>
 
                                                     <!-- Certificate Tracking -->
-                                                    <div class="bg-gray-50 rounded-lg p-4">
-                                                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                                    <div class="bg-gray-50 rounded-lg p-3">
+                                                        <h4 class="font-semibold text-gray-900 text-sm mb-2 flex items-center">
                                                             <i class="fas fa-certificate mr-2 text-blue-500"></i>
                                                             Sertifikat HKI
                                                         </h4>
                                                         
                                                         @if($biodata->certificate_issued)
                                                             <div class="flex items-center text-blue-700 mb-2">
-                                                                <i class="fas fa-check-double mr-2"></i>
-                                                                <span class="text-sm font-medium">Sudah Terbit</span>
+                                                                <i class="fas fa-check-double mr-1"></i>
+                                                                <span class="text-xs font-medium">Sudah Terbit</span>
                                                             </div>
                                                             <p class="text-xs text-gray-600">
                                                                 {{ $biodata->certificate_issued_at->diffForHumans() }}
@@ -358,20 +352,17 @@
                                                             @endphp
                                                             
                                                             @if($isCertOverdue)
-                                                                <div class="bg-orange-100 border border-orange-300 rounded p-2 mb-3">
+                                                                <div class="bg-orange-100 border border-orange-300 rounded p-2 mb-2">
                                                                     <p class="text-xs font-semibold text-orange-900">
                                                                         <i class="fas fa-exclamation-triangle mr-1"></i>
                                                                         TERLAMBAT {{ abs($certDays) }} hari!
                                                                     </p>
                                                                 </div>
                                                             @else
-                                                                <div class="bg-blue-50 border border-blue-200 rounded p-2 mb-3">
+                                                                <div class="bg-blue-50 border border-blue-200 rounded p-2 mb-2">
                                                                     <p class="text-xs text-blue-800">
                                                                         <i class="fas fa-hourglass-half mr-1"></i>
                                                                         Sisa {{ $certDays }} hari
-                                                                    </p>
-                                                                    <p class="text-xs text-blue-700 mt-1">
-                                                                        Estimasi: {{ $certDeadline->format('d M Y') }}
                                                                     </p>
                                                                 </div>
                                                             @endif
@@ -380,21 +371,69 @@
                                                                 @csrf
                                                                 <button type="submit" 
                                                                         onclick="return confirm('Tandai sertifikat sudah terbit?')"
-                                                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 rounded transition duration-200">
+                                                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 px-3 rounded transition duration-200">
                                                                     <i class="fas fa-certificate mr-1"></i>Tandai Terbit
                                                                 </button>
                                                             </form>
                                                         @else
-                                                            <div class="text-center text-gray-500 text-sm py-2">
+                                                            <div class="text-center text-gray-500 text-xs py-2">
                                                                 <i class="fas fa-lock mr-1"></i>
                                                                 Menunggu berkas disetor
                                                             </div>
                                                         @endif
                                                     </div>
 
-                                                    <!-- Quick Action -->
+                                                    <!-- Contact & Reminders Combined -->
+                                                    <div class="space-y-3">
+                                                        <!-- WhatsApp Contact -->
+                                                        @if($biodata->user->phone_number)
+                                                            <a href="{{ generateWhatsAppUrl($biodata->user->phone_number) }}" 
+                                                               target="_blank"
+                                                               class="block text-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded transition duration-200">
+                                                                <i class="fab fa-whatsapp mr-1"></i>
+                                                                Hubungi via WhatsApp
+                                                            </a>
+                                                        @endif
+
+                                                        <!-- Reminders -->
+                                                        @if(!$biodata->document_submitted || $biodata->certificate_issued || ($biodata->document_submitted && !$biodata->certificate_issued))
+                                                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
+                                                                <p class="text-xs font-semibold text-yellow-900 mb-1.5">
+                                                                    <i class="fas fa-bell mr-1"></i>Pengingat:
+                                                                </p>
+                                                                <ul class="text-xs text-yellow-800 space-y-1">
+                                                                    @if(!$biodata->document_submitted)
+                                                                        <li class="flex items-start">
+                                                                            <i class="fas fa-file-upload mr-1 mt-0.5 flex-shrink-0 text-yellow-600"></i>
+                                                                            <span>Ingatkan user <strong>setor berkas</strong> ke kantor HKI</span>
+                                                                        </li>
+                                                                    @endif
+                                                                    @if($biodata->certificate_issued)
+                                                                        <li class="flex items-start">
+                                                                            <i class="fas fa-certificate mr-1 mt-0.5 flex-shrink-0 text-yellow-600"></i>
+                                                                            <span>Hubungi pengaju terkait <strong>sertifikat HKI</strong></span>
+                                                                        </li>
+                                                                    @endif
+                                                                    @if($biodata->document_submitted && !$biodata->certificate_issued)
+                                                                        <li class="flex items-start">
+                                                                            <i class="fas fa-tasks mr-1 mt-0.5 flex-shrink-0 text-yellow-600"></i>
+                                                                            <span>Update & selesaikan <strong>progress sertifikat</strong></span>
+                                                                        </li>
+                                                                        <li class="flex items-start">
+                                                                            <i class="fas fa-money-bill-wave mr-1 mt-0.5 flex-shrink-0 text-yellow-600"></i>
+                                                                            <span>Ingatkan pengaju terkait <strong>pembayaran</strong></span>
+                                                                        </li>
+                                                                    @endif
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
+                                                <!-- Quick Action Button -->
+                                                <div class="pt-2">
                                                     <a href="{{ route('admin.biodata-pengaju.show', $biodata) }}" 
-                                                       class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded transition duration-200">
+                                                       class="block text-center px-4 py-2.5 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded transition duration-200">
                                                         <i class="fas fa-eye mr-2"></i>Lihat Detail
                                                     </a>
                                                 </div>
