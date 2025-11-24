@@ -230,7 +230,7 @@
 
         <!-- Back Button -->
         <div class="mb-6">
-            <a href="{{ route('user.dashboard') }}" class="inline-flex items-center text-gray-600 hover:text-gray-800 transition duration-200">
+            <a href="{{ route('user.dashboard') }}" class="inline-flex items-center px-5 py-3 bg-white hover:bg-gray-50 text-gray-800 hover:text-gray-900 border-2 border-gray-500 hover:border-gray-700 rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Kembali ke Dashboard
             </a>
