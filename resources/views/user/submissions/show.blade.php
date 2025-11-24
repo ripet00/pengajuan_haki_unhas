@@ -464,89 +464,168 @@
                                     </div>
                                 </div>
 
-                                {{-- Error Flags Section --}}
+                                {{-- Status Information and Error Flags Section --}}
                                 @php 
                                     $biodata = $submission->biodata;
-                                    $biodataErrors = [];
-                                    if($biodata->error_tempat_ciptaan) $biodataErrors[] = 'Tempat Ciptaan';
-                                    if($biodata->error_tanggal_ciptaan) $biodataErrors[] = 'Tanggal Ciptaan';
-                                    if($biodata->error_uraian_singkat) $biodataErrors[] = 'Uraian Singkat';
-
-                                    $memberErrors = [];
-                                    foreach($biodata->members as $index => $member) {
-                                        $memberFieldErrors = [];
-                                        if($member->error_name) $memberFieldErrors[] = 'Nama';
-                                        if($member->error_nik) $memberFieldErrors[] = 'NIK';
-                                        if($member->error_pekerjaan) $memberFieldErrors[] = 'Pekerjaan';
-                                        if($member->error_universitas) $memberFieldErrors[] = 'Universitas';
-                                        if($member->error_fakultas) $memberFieldErrors[] = 'Fakultas';
-                                        if($member->error_program_studi) $memberFieldErrors[] = 'Program Studi';
-                                        if($member->error_alamat) $memberFieldErrors[] = 'Alamat';
-                                        if($member->error_kelurahan) $memberFieldErrors[] = 'Kelurahan';
-                                        if($member->error_kecamatan) $memberFieldErrors[] = 'Kecamatan';
-                                        if($member->error_kota_kabupaten) $memberFieldErrors[] = 'Kota/Kabupaten';
-                                        if($member->error_provinsi) $memberFieldErrors[] = 'Provinsi';
-                                        if($member->error_kode_pos) $memberFieldErrors[] = 'Kode Pos';
-                                        if($member->error_email) $memberFieldErrors[] = 'Email';
-                                        if($member->error_nomor_hp) $memberFieldErrors[] = 'Nomor HP';
-                                        if($member->error_kewarganegaraan) $memberFieldErrors[] = 'Kewarganegaraan';
-
-                                        if(count($memberFieldErrors) > 0) {
-                                            $memberErrors[] = [
-                                                'index' => $index + 1,
-                                                'name' => $member->name,
-                                                'fields' => $memberFieldErrors
-                                            ];
-                                        }
-                                    }
                                 @endphp
 
-                                @if(count($biodataErrors) > 0 || count($memberErrors) > 0)
-                                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                                        <div class="flex items-center mb-3">
-                                            <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
-                                            <h5 class="font-semibold text-red-800">Perbaikan Diperlukan</h5>
+                                {{-- Show different messages based on biodata status --}}
+                                @if($biodata->status == 'approved')
+                                    {{-- Biodata approved - check document submission status --}}
+                                    @if($biodata->certificate_issued)
+                                        {{-- Certificate already issued --}}
+                                        <div class="bg-green-50 border-2 border-green-300 rounded-lg p-4">
+                                            <div class="flex items-start">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-certificate text-3xl text-green-600"></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <h5 class="font-semibold text-green-800 mb-2">
+                                                        <i class="fas fa-check-double mr-1"></i>Sertifikat HKI Telah Terbit
+                                                    </h5>
+                                                    <p class="text-sm text-green-700">
+                                                        Selamat! Sertifikat HKI untuk karya cipta Anda telah diterbitkan. Silakan klik "Lihat Detail" untuk informasi lebih lanjut mengenai pengambilan sertifikat.
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </div>
-                                        
-                                        <p class="text-sm text-red-700 mb-4">
-                                            Admin telah menandai beberapa field yang perlu diperbaiki. Silakan klik "Lihat Detail" untuk memperbaiki data.
+                                    @elseif($biodata->document_submitted)
+                                        {{-- Document submitted, waiting for certificate --}}
+                                        <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
+                                            <div class="flex items-start">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-hourglass-half text-2xl text-blue-600"></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <h5 class="font-semibold text-blue-800 mb-2">
+                                                        <i class="fas fa-check-circle mr-1"></i>Terima Kasih Telah Mengumpulkan Berkas HKI
+                                                    </h5>
+                                                    <p class="text-sm text-blue-700 mb-2">
+                                                        Berkas HKI Anda telah diterima pada <strong>{{ $biodata->document_submitted_at->format('d F Y') }}</strong>.
+                                                    </p>
+                                                    <p class="text-sm text-blue-700">
+                                                        Silakan tunggu informasi dari admin terkait sertifikat HKI. Klik "Lihat Detail" untuk informasi lebih lanjut.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        {{-- Biodata approved but document not submitted yet --}}
+                                        <div class="bg-orange-50 border-2 border-orange-300 rounded-lg p-4">
+                                            <div class="flex items-start">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-file-download text-2xl text-orange-600"></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <h5 class="font-semibold text-orange-800 mb-2">
+                                                        <i class="fas fa-arrow-right mr-1"></i>Langkah Selanjutnya: Download & Setor Formulir
+                                                    </h5>
+                                                    <p class="text-sm text-orange-700 mb-2">
+                                                        Biodata telah disetujui! Silakan klik <strong>"Lihat Detail"</strong> untuk mendownload formulir pendaftaran HKI dan melihat panduan penyetoran berkas ke kantor HKI Unhas.
+                                                    </p>
+                                                    <p class="text-sm text-orange-700">
+                                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                                        <strong>Penting:</strong> Anda memiliki waktu 1 bulan untuk menyetor berkas.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @elseif($biodata->status == 'pending')
+                                    {{-- Biodata pending review --}}
+                                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                        <div class="flex items-center mb-2">
+                                            <i class="fas fa-clock text-yellow-500 mr-2"></i>
+                                            <h5 class="font-semibold text-yellow-800">Biodata Sedang Direview</h5>
+                                        </div>
+                                        <p class="text-sm text-yellow-700">
+                                            Biodata Anda sedang dalam proses review oleh admin. Silakan tunggu konfirmasi lebih lanjut.
                                         </p>
-
-                                        @if(count($biodataErrors) > 0)
-                                            <div class="mb-4">
-                                                <h6 class="font-medium text-red-800 mb-2">Kesalahan Biodata:</h6>
-                                                <div class="flex flex-wrap gap-2">
-                                                    @foreach($biodataErrors as $error)
-                                                        <span class="inline-flex items-center px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">
-                                                            <i class="fas fa-times-circle mr-1"></i>{{ $error }}
-                                                        </span>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                        @if(count($memberErrors) > 0)
-                                            <div>
-                                                <h6 class="font-medium text-red-800 mb-2">Kesalahan Data Pencipta:</h6>
-                                                <div class="space-y-2">
-                                                    @foreach($memberErrors as $memberError)
-                                                        <div class="bg-red-100 rounded-lg p-3">
-                                                            <p class="font-medium text-red-800 text-sm mb-1">
-                                                                Pencipta {{ $memberError['index'] }}: {{ $memberError['name'] }}
-                                                            </p>
-                                                            <div class="flex flex-wrap gap-1">
-                                                                @foreach($memberError['fields'] as $field)
-                                                                    <span class="inline-flex items-center px-2 py-0.5 bg-red-200 text-red-800 text-xs rounded">
-                                                                        {{ $field }}
-                                                                    </span>
-                                                                @endforeach
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endif
                                     </div>
+                                @else
+                                    {{-- Biodata denied - show error flags --}}
+                                    @php 
+                                        $biodataErrors = [];
+                                        if($biodata->error_tempat_ciptaan) $biodataErrors[] = 'Tempat Ciptaan';
+                                        if($biodata->error_tanggal_ciptaan) $biodataErrors[] = 'Tanggal Ciptaan';
+                                        if($biodata->error_uraian_singkat) $biodataErrors[] = 'Uraian Singkat';
+
+                                        $memberErrors = [];
+                                        foreach($biodata->members as $index => $member) {
+                                            $memberFieldErrors = [];
+                                            if($member->error_name) $memberFieldErrors[] = 'Nama';
+                                            if($member->error_nik) $memberFieldErrors[] = 'NIK';
+                                            if($member->error_pekerjaan) $memberFieldErrors[] = 'Pekerjaan';
+                                            if($member->error_universitas) $memberFieldErrors[] = 'Universitas';
+                                            if($member->error_fakultas) $memberFieldErrors[] = 'Fakultas';
+                                            if($member->error_program_studi) $memberFieldErrors[] = 'Program Studi';
+                                            if($member->error_alamat) $memberFieldErrors[] = 'Alamat';
+                                            if($member->error_kelurahan) $memberFieldErrors[] = 'Kelurahan';
+                                            if($member->error_kecamatan) $memberFieldErrors[] = 'Kecamatan';
+                                            if($member->error_kota_kabupaten) $memberFieldErrors[] = 'Kota/Kabupaten';
+                                            if($member->error_provinsi) $memberFieldErrors[] = 'Provinsi';
+                                            if($member->error_kode_pos) $memberFieldErrors[] = 'Kode Pos';
+                                            if($member->error_email) $memberFieldErrors[] = 'Email';
+                                            if($member->error_nomor_hp) $memberFieldErrors[] = 'Nomor HP';
+                                            if($member->error_kewarganegaraan) $memberFieldErrors[] = 'Kewarganegaraan';
+
+                                            if(count($memberFieldErrors) > 0) {
+                                                $memberErrors[] = [
+                                                    'index' => $index + 1,
+                                                    'name' => $member->name,
+                                                    'fields' => $memberFieldErrors
+                                                ];
+                                            }
+                                        }
+                                    @endphp
+
+                                    @if(count($biodataErrors) > 0 || count($memberErrors) > 0)
+                                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                            <div class="flex items-center mb-3">
+                                                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                                                <h5 class="font-semibold text-red-800">Perbaikan Diperlukan</h5>
+                                            </div>
+                                            
+                                            <p class="text-sm text-red-700 mb-4">
+                                                Admin telah menandai beberapa field yang perlu diperbaiki. Silakan klik "Lihat Detail" untuk memperbaiki data.
+                                            </p>
+
+                                            @if(count($biodataErrors) > 0)
+                                                <div class="mb-4">
+                                                    <h6 class="font-medium text-red-800 mb-2">Kesalahan Biodata:</h6>
+                                                    <div class="flex flex-wrap gap-2">
+                                                        @foreach($biodataErrors as $error)
+                                                            <span class="inline-flex items-center px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">
+                                                                <i class="fas fa-times-circle mr-1"></i>{{ $error }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            @if(count($memberErrors) > 0)
+                                                <div>
+                                                    <h6 class="font-medium text-red-800 mb-2">Kesalahan Data Pencipta:</h6>
+                                                    <div class="space-y-2">
+                                                        @foreach($memberErrors as $memberError)
+                                                            <div class="bg-red-100 rounded-lg p-3">
+                                                                <p class="font-medium text-red-800 text-sm mb-1">
+                                                                    Pencipta {{ $memberError['index'] }}: {{ $memberError['name'] }}
+                                                                </p>
+                                                                <div class="flex flex-wrap gap-1">
+                                                                    @foreach($memberError['fields'] as $field)
+                                                                        <span class="inline-flex items-center px-2 py-0.5 bg-red-200 text-red-800 text-xs rounded">
+                                                                            {{ $field }}
+                                                                        </span>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
                                 @endif
                             </div>
                         </div>
