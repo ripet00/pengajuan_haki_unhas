@@ -35,10 +35,14 @@ class AppServiceProvider extends ServiceProvider
             // Count pending HKI submissions (pengajuan dengan status pending)
             $pendingSubmissions = \App\Models\Submission::where('status', 'pending')->count();
             
+            // Count pending biodatas (biodata dengan status pending)
+            $pendingBiodatas = Biodata::where('status', 'pending')->count();
+            
             $view->with([
                 'pendingCertificates' => $pendingCertificates,
                 'pendingUsers' => $pendingUsers,
                 'pendingSubmissions' => $pendingSubmissions,
+                'pendingBiodatas' => $pendingBiodatas,
             ]);
         });
     }
