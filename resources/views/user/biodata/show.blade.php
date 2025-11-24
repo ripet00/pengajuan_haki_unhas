@@ -263,7 +263,7 @@
                                         <li><strong>Tanda tangani</strong> formulir pada bagian yang telah disediakan</li>
                                         <li class="text-red-700 font-semibold">
                                             <i class="fas fa-stamp mr-1"></i>
-                                            Siapkan <strong>3 materai</strong> - Ada 3 bagian tanda tangan yang harus di atas materai
+                                            Siapkan <strong>3 materai Rp10.000</strong> - Ada 3 bagian tanda tangan yang harus di atas materai
                                         </li>
                                         <li><strong>Siapkan hard copy</strong> dari karya cipta Anda</li>
                                         <li><strong>Setor berkas</strong> ke kantor HKI Unhas</li>
