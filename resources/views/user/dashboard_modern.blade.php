@@ -186,17 +186,17 @@
                             <span class="text-blue-600 text-xs font-semibold">1</span>
                         </div>
                         <div>
-                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Upload Dokumen HKI</h4>
-                            <p class="text-xs sm:text-sm text-gray-600">Upload file PDF dokumen pendukung HKI</p>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Upload Dokumen</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Upload file PDF/MP4 dan tunggu review admin</p>
                         </div>
                     </div>
                     <div class="flex items-start">
-                        <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
-                            <span class="text-blue-600 text-xs font-semibold">2</span>
+                        <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                            <span class="text-purple-600 text-xs font-semibold">2</span>
                         </div>
                         <div>
-                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Review Dokumen</h4>
-                            <p class="text-xs sm:text-sm text-gray-600">Admin review dan approval dokumen HKI</p>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Upload Biodata</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Isi biodata pencipta setelah dokumen disetujui</p>
                         </div>
                     </div>
                     <div class="flex items-start">
@@ -204,8 +204,8 @@
                             <span class="text-orange-600 text-xs font-semibold">3</span>
                         </div>
                         <div>
-                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Upload Biodata</h4>
-                            <p class="text-xs sm:text-sm text-gray-600">Upload biodata lengkap setelah dokumen disetujui</p>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Setor Berkas</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Download & setor form ke kantor (maks 1 bulan)</p>
                         </div>
                     </div>
                     <div class="flex items-start">
@@ -213,8 +213,8 @@
                             <span class="text-green-600 text-xs font-semibold">4</span>
                         </div>
                         <div>
-                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Finalisasi</h4>
-                            <p class="text-xs sm:text-sm text-gray-600">Review biodata dan penyelesaian proses HKI</p>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Terima Sertifikat</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Sertifikat HKI diterbitkan (estimasi 2 minggu)</p>
                         </div>
                     </div>
                 </div>
