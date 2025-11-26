@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpWord\TemplateProcessor;
 
 class BiodataController extends Controller
 {
@@ -244,5 +245,184 @@ class BiodataController extends Controller
         $biodata->load('members', 'reviewedBy');
 
         return view('user.biodata.show', compact('submission', 'biodata'));
+    }
+
+    /**
+     * Generate and download Word document from template
+     */
+    public function downloadFormulir(Biodata $biodata)
+    {
+        // 1. CEK AUTHORIZATION - hanya user pemilik
+        if (Auth::id() !== $biodata->submission->user_id) {
+            abort(403, 'Unauthorized access');
+        }
+        
+        // 2. CEK STATUS - hanya biodata yang sudah ACC
+        if ($biodata->status !== 'approved') {
+            return back()->with('error', 'Biodata harus di-ACC oleh admin terlebih dahulu');
+        }
+        
+        // 3. LOAD TEMPLATE berdasarkan kategori submission
+        $category = strtolower($biodata->submission->categories ?? 'umum');
+        $category = str_replace(' ', '_', $category); // ganti spasi dengan underscore
+        
+        $templateFileName = "{$category}_formulir_hki.docx";
+        $templatePath = public_path("templates/{$templateFileName}");
+        
+        // Fallback ke template default jika template kategori tidak ditemukan
+        if (!file_exists($templatePath)) {
+            $templatePath = public_path('templates/formulir_hki_template.docx');
+            
+            if (!file_exists($templatePath)) {
+                return back()->with('error', "Template dokumen untuk kategori '{$biodata->submission->categories}' tidak ditemukan. Silakan hubungi administrator.");
+            }
+        }
+        
+        try {
+            $templateProcessor = new TemplateProcessor($templatePath);
+            
+            // 4. LOAD RELATIONSHIPS
+            $biodata->load(['members', 'submission.jenisKarya']);
+            
+            // 5. SET SINGLE VALUES (data umum yang tidak perlu di-clone)
+            // Tanggal download (kapan user klik tombol download) - format: "26 November 2025"
+            // Set timezone ke Asia/Makassar (WITA - Waktu Indonesia Tengah)
+            $templateProcessor->setValue('tanggal_download', 
+                \Carbon\Carbon::now('Asia/Makassar')->locale('id')->isoFormat('D MMMM Y'));
+            
+            $templateProcessor->setValue('tanggal_pengajuan', 
+                \Carbon\Carbon::parse($biodata->created_at)->locale('id')->isoFormat('D MMMM Y'));
+            
+            // Data Submission
+            $templateProcessor->setValue('title', 
+                $biodata->submission->title ?? '-');
+            $templateProcessor->setValue('judul_karya', 
+                $biodata->submission->title ?? '-');
+            
+            // Jenis karya - ambil nama dari relasi, bukan ID
+            $templateProcessor->setValue('jenis_karya_id', 
+                $biodata->submission->jenisKarya->nama ?? '-');
+            $templateProcessor->setValue('jenis_karya', 
+                $biodata->submission->jenisKarya->nama ?? '-');
+            
+            // Data Biodata (tempat, tanggal, uraian ciptaan)
+            $templateProcessor->setValue('tempat_ciptaan', 
+                $biodata->tempat_ciptaan ?? '-');
+            $templateProcessor->setValue('tanggal_ciptaan', 
+                $biodata->tanggal_ciptaan ? \Carbon\Carbon::parse($biodata->tanggal_ciptaan)->locale('id')->isoFormat('D MMMM Y') : '-');
+            $templateProcessor->setValue('uraian_singkat', 
+                $biodata->uraian_singkat ?? '-');
+            
+            // 6. CLONE BLOCK untuk SEMUA MEMBERS (termasuk leader)
+            $allMembers = $biodata->members; // Ambil semua members (leader + anggota)
+            $memberCount = $allMembers->count();
+            
+            // Gabungkan semua nama member untuk ditampilkan dalam 1 baris (dipisah dengan '; ')
+            $allMemberNames = $allMembers->pluck('name')->implode(' ; ');
+            $templateProcessor->setValue('all_member_names', $allMemberNames ?: '-');
+            
+            if ($memberCount > 0) {
+                // Clone block sebanyak jumlah member (termasuk leader)
+                $templateProcessor->cloneBlock('member', $memberCount, true, true);
+                
+                // Loop dan set value per member (leader akan jadi member pertama)
+                foreach ($allMembers as $index => $member) {
+                    $num = $index + 1; // untuk numbering (#1, #2, #3, dst)
+                    
+                    // Basic info
+                    $templateProcessor->setValue("member_no#$num", $num);
+                    $templateProcessor->setValue("member_name#$num", $member->name);
+                    $templateProcessor->setValue("member_nik#$num", $member->nik ?? '-');
+                    $templateProcessor->setValue("member_npwp#$num", $member->npwp ?? '-');
+                    $templateProcessor->setValue("member_jenis_kelamin#$num", $member->jenis_kelamin ?? '-');
+                    $templateProcessor->setValue("member_kewarganegaraan#$num", $member->kewarganegaraan ?? '-');
+                    $templateProcessor->setValue("member_pekerjaan#$num", $member->pekerjaan ?? '-');
+                    $templateProcessor->setValue("member_universitas#$num", $member->universitas ?? '-');
+                    $templateProcessor->setValue("member_fakultas#$num", $member->fakultas ?? '-');
+                    $templateProcessor->setValue("member_program_studi#$num", $member->program_studi ?? '-');
+                    
+                    // Alamat lengkap - Format simple
+                    $alamatLengkap = collect([
+                        $member->alamat,
+                        $member->kelurahan,
+                        'Kec. ' . $member->kecamatan,
+                        $member->kota_kabupaten,
+                        $member->provinsi,
+                        $member->kode_pos
+                    ])->filter()->implode(', ');
+                    
+                    // Set alamat dengan berbagai alias placeholder
+                    $templateProcessor->setValue("alamat#$num", $alamatLengkap ?: '-');
+                    $templateProcessor->setValue("member_alamat#$num", $alamatLengkap ?: '-');
+                    
+                    // Individual address components
+                    $templateProcessor->setValue("member_kelurahan#$num", $member->kelurahan ?? '-');
+                    $templateProcessor->setValue("member_kecamatan#$num", $member->kecamatan ?? '-');
+                    $templateProcessor->setValue("member_kota_kabupaten#$num", $member->kota_kabupaten ?? '-');
+                    $templateProcessor->setValue("member_provinsi#$num", $member->provinsi ?? '-');
+                    $templateProcessor->setValue("member_kode_pos#$num", $member->kode_pos ?? '-');
+                    
+                    // Contact info
+                    $templateProcessor->setValue("member_email#$num", $member->email ?? '-');
+                    $templateProcessor->setValue("member_nomor_hp#$num", $member->nomor_hp ?? '-');
+                    
+                    // Jika ini adalah leader (member pertama), set juga placeholder khusus untuk backward compatibility
+                    if ($member->is_leader) {
+                        $templateProcessor->setValue('name', $member->name);
+                        $templateProcessor->setValue('alamat', $alamatLengkap ?: '-');
+                        $templateProcessor->setValue('leader_name', $member->name);
+                        $templateProcessor->setValue('leader_alamat', $alamatLengkap ?: '-');
+                        $templateProcessor->setValue('leader_nik', $member->nik ?? '-');
+                        $templateProcessor->setValue('leader_npwp', $member->npwp ?? '-');
+                        $templateProcessor->setValue('leader_email', $member->email ?? '-');
+                        $templateProcessor->setValue('leader_nomor_hp', $member->nomor_hp ?? '-');
+                    }
+                }
+            } else {
+                // Jika tidak ada member sama sekali, hapus block
+                $templateProcessor->deleteBlock('member');
+            }
+            
+            // 7. CLONE ROW TABEL untuk TANDA TANGAN dengan 2 kolom (kiri-kanan-turun)
+            // Hanya jalankan jika template punya placeholder ${name} di tabel
+            if ($memberCount > 0) {
+                try {
+                    // Cek apakah template punya placeholder 'name' untuk cloneRow
+                    $rowsNeeded = ceil($memberCount / 2);
+                    
+                    // Clone row tabel tanda tangan
+                    $templateProcessor->cloneRow('name', $rowsNeeded);
+                    
+                    // Loop dan set value per row (2 nama per row)
+                    foreach ($allMembers as $index => $member) {
+                        $placeholderNum = $index + 1;
+                        $templateProcessor->setValue("name#$placeholderNum", $member->name);
+                    }
+                    
+                    // Jika jumlah member ganjil, set kolom terakhir jadi kosong
+                    if ($memberCount % 2 !== 0) {
+                        $lastPlaceholder = $memberCount + 1;
+                        $templateProcessor->setValue("name#$lastPlaceholder", '');
+                    }
+                } catch (\Exception $e) {
+                    // Template tidak punya tabel dengan placeholder ${name}
+                    // Skip cloneRow, user bisa isi manual atau pakai block cloning ${member}
+                    Log::info("Template tidak punya tabel tanda tangan dengan placeholder 'name': " . $e->getMessage());
+                }
+            }
+            
+            // 9. SAVE FILE
+            $fileName = 'Formulir_HAKI_' . $biodata->id . '_' . time() . '.docx';
+            $outputPath = storage_path('app/public/generated_documents/' . $fileName);
+            
+            $templateProcessor->saveAs($outputPath);
+            
+            // 10. DOWNLOAD FILE dan hapus setelah download
+            return response()->download($outputPath, $fileName)->deleteFileAfterSend(true);
+            
+        } catch (\Exception $e) {
+            Log::error('Error generating Word document: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat generate dokumen: ' . $e->getMessage());
+        }
     }
 }
