@@ -491,66 +491,100 @@ class BiodataController extends Controller
                 $templateProcessor->deleteBlock('member');
             }
             
-            // 7. CLONE ROW TABEL untuk TANDA TANGAN dengan 2 kolom (kiri-kanan-turun) - HALAMAN LAIN
-            // INI UNTUK HALAMAN BERBEDA (bukan SURAT PENGALIHAN HAK CIPTA)
-            // Hanya jalankan jika template punya placeholder ${name} di tabel
-            // SKIP jika template tidak punya placeholder 'name' (untuk menghindari konflik)
+            // 7. CLONE ROW TABEL untuk TANDA TANGAN dengan 2 kolom TERPISAH - HALAMAN 3
+            // STRATEGI BARU: Gunakan placeholder berbeda untuk kiri dan kanan
+            // Format: ${pencipta_kiri} | ${pencipta_kanan}
+            // Template harus punya 2 placeholder berbeda di 1 row
             if ($memberCount > 0) {
+                // Hitung jumlah row yang dibutuhkan (2 member per row)
+                $rowsNeeded = ceil($memberCount / 2);
+                
+                Log::info("Attempting to clone signature table for HALAMAN 3 with separate left/right placeholders", [
+                    'member_count' => $memberCount,
+                    'rows_needed' => $rowsNeeded,
+                ]);
+                
+                // Try dengan placeholder terpisah: pencipta_kiri dan pencipta_kanan
                 try {
-                    // Cek apakah template punya placeholder 'name' untuk cloneRow
-                    // Untuk tabel 2 kolom: 1 row = 2 nama (kiri-kanan, turun, kiri-kanan)
-                    $rowsNeeded = ceil($memberCount / 2);
+                    // Clone row berdasarkan placeholder di kolom kiri
+                    $templateProcessor->cloneRow('pencipta_kiri', $rowsNeeded);
+                    Log::info("CloneRow 'pencipta_kiri' success - cloned {$rowsNeeded} rows");
                     
-                    Log::info("Attempting to clone signature table with placeholder 'name' (for other pages, not SURAT PENGALIHAN)", [
-                        'member_count' => $memberCount,
-                        'rows_needed' => $rowsNeeded,
-                    ]);
-                    
-                    // Clone row tabel tanda tangan (hanya jika ada di halaman lain)
-                    $templateProcessor->cloneRow('name', $rowsNeeded);
-                    
-                    Log::info("CloneRow 'name' success for other signature table");
-                    
-                    // PENTING: PHPWord numbering untuk tabel 2 kolom adalah per row (kiri, kanan, turun)
-                    // Row 1: name#1 (kiri), name#2 (kanan)
-                    // Row 2: name#3 (kiri), name#4 (kanan)
-                    
+                    // Set values untuk setiap row
                     $memberIndex = 0;
-                    
                     for ($row = 1; $row <= $rowsNeeded; $row++) {
-                        // Kolom kiri (odd number: 1, 3, 5, ...)
-                        $leftNum = ($row - 1) * 2 + 1;
-                        // Kolom kanan (even number: 2, 4, 6, ...)
-                        $rightNum = ($row - 1) * 2 + 2;
-                        
-                        // Set kolom kiri
+                        // Kolom KIRI (member index: 0, 2, 4, ... = ganjil dalam urutan 1-based)
                         if ($memberIndex < $memberCount) {
                             $member = $allMembers[$memberIndex];
-                            $templateProcessor->setValue("name#$leftNum", $member->name);
+                            // Tambahkan tanda kurung di code, jadi template tidak perlu kurung
+                            $templateProcessor->setValue("pencipta_kiri#$row", '(' . $member->name . ')');
                             
-                            // CATATAN: Materai untuk placeholder 'name' tidak perlu diset di sini
-                            // karena akan di-handle oleh section 8 (SURAT PENGALIHAN)
-                            
-                            Log::info("Set name#{$leftNum} (left) = {$member->name}");
+                            // Materai hanya untuk member pertama
+                            if ($memberIndex === 0) {
+                                try {
+                                    $templateProcessor->setValue("materai_kiri#$row", 'MATERAI');
+                                    Log::info("Set pencipta_kiri#{$row} = ({$member->name}) WITH MATERAI");
+                                } catch (\Exception $e) {
+                                    Log::info("Set pencipta_kiri#{$row} = ({$member->name})");
+                                }
+                            } else {
+                                try {
+                                    $templateProcessor->setValue("materai_kiri#$row", '');
+                                } catch (\Exception $e) {}
+                                Log::info("Set pencipta_kiri#{$row} = ({$member->name})");
+                            }
                             $memberIndex++;
                         } else {
-                            $templateProcessor->setValue("name#$leftNum", '');
+                            // Cell kosong - tanpa kurung
+                            $templateProcessor->setValue("pencipta_kiri#$row", '');
+                            try {
+                                $templateProcessor->setValue("materai_kiri#$row", '');
+                            } catch (\Exception $e) {}
                         }
                         
-                        // Set kolom kanan
+                        // Kolom KANAN (member index: 1, 3, 5, ... = genap dalam urutan 1-based)
                         if ($memberIndex < $memberCount) {
                             $member = $allMembers[$memberIndex];
-                            $templateProcessor->setValue("name#$rightNum", $member->name);
-                            Log::info("Set name#{$rightNum} (right) = {$member->name}");
+                            // Tambahkan tanda kurung di code
+                            $templateProcessor->setValue("pencipta_kanan#$row", '(' . $member->name . ')');
+                            Log::info("Set pencipta_kanan#{$row} = ({$member->name})");
                             $memberIndex++;
                         } else {
-                            $templateProcessor->setValue("name#$rightNum", '');
+                            // Cell kosong - tanpa kurung
+                            $templateProcessor->setValue("pencipta_kanan#$row", '');
                         }
                     }
                 } catch (\Exception $e) {
-                    // Template tidak punya tabel dengan placeholder ${name}
-                    // Skip cloneRow - ini normal jika hanya ada SURAT PENGALIHAN
-                    Log::info("Template tidak punya tabel tanda tangan dengan placeholder 'name' (OK if only SURAT PENGALIHAN): " . $e->getMessage());
+                    Log::info("CloneRow 'pencipta_kiri' failed, trying fallback 'name': " . $e->getMessage());
+                    
+                    // Fallback: Try dengan placeholder 'name' (old method)
+                    try {
+                        $templateProcessor->cloneRow('name', $rowsNeeded);
+                        Log::info("Fallback: CloneRow 'name' success");
+                        
+                        $memberIndex = 0;
+                        for ($row = 1; $row <= $rowsNeeded; $row++) {
+                            $leftNum = ($row - 1) * 2 + 1;
+                            $rightNum = ($row - 1) * 2 + 2;
+                            
+                            if ($memberIndex < $memberCount) {
+                                $member = $allMembers[$memberIndex];
+                                $templateProcessor->setValue("name#$leftNum", $member->name);
+                                if ($memberIndex === 0) {
+                                    try { $templateProcessor->setValue("materai_name#$leftNum", 'MATERAI'); } catch (\Exception $e2) {}
+                                }
+                                $memberIndex++;
+                            }
+                            
+                            if ($memberIndex < $memberCount) {
+                                $member = $allMembers[$memberIndex];
+                                $templateProcessor->setValue("name#$rightNum", $member->name);
+                                $memberIndex++;
+                            }
+                        }
+                    } catch (\Exception $e2) {
+                        Log::info("All clone attempts failed for HALAMAN 3: " . $e2->getMessage());
+                    }
                 }
             }
             
