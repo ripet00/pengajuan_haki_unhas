@@ -241,7 +241,7 @@
 
                                 <!-- Download Button -->
                                 <div class="mb-4">
-                                    <a href="#" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                                    <a href="{{ route('user.biodata.download-formulir', $biodata->id) }}" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-200 shadow-md hover:shadow-lg">
                                         <i class="fas fa-file-download mr-2"></i>
                                         Download Formulir Pendaftaran HKI
                                     </a>
