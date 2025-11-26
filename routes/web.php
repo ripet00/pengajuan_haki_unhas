@@ -51,6 +51,7 @@ Route::prefix('users')->middleware('auth')->group(function () {
     Route::get('submissions/{submission}/biodata/create', [App\Http\Controllers\User\BiodataController::class, 'create'])->name('user.biodata.create');
     Route::post('submissions/{submission}/biodata', [App\Http\Controllers\User\BiodataController::class, 'store'])->name('user.biodata.store');
     Route::get('submissions/{submission}/biodata/{biodata}', [App\Http\Controllers\User\BiodataController::class, 'show'])->name('user.biodata.show');
+    Route::get('biodata/{biodata}/download-formulir', [App\Http\Controllers\User\BiodataController::class, 'downloadFormulir'])->name('user.biodata.download-formulir');
     
     // Wilayah API routes
     Route::get('api/wilayah/provinces', [App\Http\Controllers\Api\WilayahController::class, 'getProvinces'])->name('api.wilayah.provinces');
