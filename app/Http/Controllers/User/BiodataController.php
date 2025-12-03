@@ -412,6 +412,40 @@ class BiodataController extends Controller
                     Log::info("cloneBlock 'pencipta_block' not found in template", ['error' => $e->getMessage()]);
                 }
                 
+                // CLONE untuk PEMEGANG HAK CIPTA (bagian II) - menggunakan placeholder berbeda
+                try {
+                    Log::info("Attempting to clone row 'pemegang_no' for PEMEGANG HAK CIPTA section", [
+                        'member_count' => $memberCount,
+                    ]);
+                    
+                    $templateProcessor->cloneRow('pemegang_no', $memberCount);
+                    Log::info("SUCCESS: Row 'pemegang_no' cloned for PEMEGANG HAK CIPTA");
+                    
+                    // Set values untuk pemegang hak cipta (sama dengan pencipta)
+                    foreach ($allMembers as $index => $member) {
+                        $num = $index + 1;
+                        $alamatLengkap = collect([
+                            $member->alamat,
+                            $member->kelurahan,
+                            'Kec. ' . $member->kecamatan,
+                            $member->kota_kabupaten,
+                            $member->provinsi,
+                            $member->kode_pos
+                        ])->filter()->implode(', ');
+                        
+                        $templateProcessor->setValue("pemegang_no#$num", $num . ')');
+                        $templateProcessor->setValue("pemegang_name#$num", $member->name);
+                        $templateProcessor->setValue("pemegang_kewarganegaraan#$num", $member->kewarganegaraan ?? '-');
+                        $templateProcessor->setValue("pemegang_alamat#$num", $alamatLengkap);
+                        $templateProcessor->setValue("pemegang_nomor_hp#$num", $member->nomor_hp ?? '-');
+                        $templateProcessor->setValue("pemegang_email#$num", $member->email ?? '-');
+                        
+                        Log::info("Set pemegang_hak #{$num}: {$member->name}");
+                    }
+                } catch (\Exception $e) {
+                    Log::info("cloneRow 'pemegang_no' not found, skipping PEMEGANG HAK CIPTA cloning", ['error' => $e->getMessage()]);
+                }
+                
                 // Loop dan set value per member (leader akan jadi member pertama)
                 foreach ($allMembers as $index => $member) {
                     $num = $index + 1; // untuk numbering (#1, #2, #3, dst)
@@ -615,11 +649,21 @@ class BiodataController extends Controller
                         // Template punya: (${signature_name})
                         $templateProcessor->setValue("signature_name#$num", $member->name);
                         
-                        // Materai: Hanya muncul untuk member pertama
-                        if ($num === 1) {
+                        // Materai: 
+                        // - Kategori UMUM: Semua member dapat materai
+                        // - Kategori UNIVERSITAS: Hanya member pertama dapat materai
+                        if ($category === 'umum') {
                             $templateProcessor->setValue("materai#$num", 'MATERAI');
+                            Log::info("Set signature_name#{$num} = {$member->name}, materai = MATERAI (kategori umum - all members)");
                         } else {
-                            $templateProcessor->setValue("materai#$num", '');
+                            // Kategori universitas atau lainnya
+                            if ($num === 1) {
+                                $templateProcessor->setValue("materai#$num", 'MATERAI');
+                                Log::info("Set signature_name#{$num} = {$member->name}, materai = MATERAI (first member only)");
+                            } else {
+                                $templateProcessor->setValue("materai#$num", '');
+                                Log::info("Set signature_name#{$num} = {$member->name}, materai = kosong");
+                            }
                         }
                         
                         // Kolom Kiri: Pemegang Hak Cipta hanya di row pertama (dengan tanda kurung)
@@ -628,8 +672,6 @@ class BiodataController extends Controller
                         } else {
                             $templateProcessor->setValue("pemegang_hak#$num", '');
                         }
-                        
-                        Log::info("Set signature_name#{$num} = {$member->name}, materai = " . ($num === 1 ? 'MATERAI' : 'kosong'));
                     }
                 } catch (\Exception $e) {
                     Log::info("cloneRow 'signature_name' for SURAT PENGALIHAN not found: " . $e->getMessage());
