@@ -230,9 +230,9 @@
 
         <!-- Back Button -->
         <div class="mb-6">
-            <a href="{{ route('user.dashboard') }}" class="inline-flex items-center px-5 py-3 bg-white hover:bg-gray-50 text-gray-800 hover:text-gray-900 border-2 border-gray-500 hover:border-gray-700 rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
+            <a href="{{ route('user.submissions.index') }}" class="inline-flex items-center px-5 py-3 bg-white hover:bg-gray-50 text-gray-800 hover:text-gray-900 border-2 border-gray-500 hover:border-gray-700 rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
                 <i class="fas fa-arrow-left mr-2"></i>
-                Kembali ke Dashboard
+                Kembali ke Daftar Pengajuan
             </a>
         </div>
 
