@@ -497,14 +497,28 @@
                                                     <i class="fas fa-hourglass-half text-2xl text-blue-600"></i>
                                                 </div>
                                                 <div class="ml-4">
-                                                    <h5 class="font-semibold text-blue-800 mb-2">
+                                                    <h5 class="font-semibold text-blue-800 mb-3">
                                                         <i class="fas fa-check-circle mr-1"></i>Terima Kasih Telah Mengumpulkan Berkas HKI
                                                     </h5>
-                                                    <p class="text-sm text-blue-700 mb-2">
+                                                    <p class="text-sm text-blue-700 mb-3">
                                                         Berkas HKI Anda telah diterima pada <strong>{{ $biodata->document_submitted_at->format('d F Y') }}</strong>.
                                                     </p>
-                                                    <p class="text-sm text-blue-700">
-                                                        Silakan tunggu informasi dari admin terkait sertifikat HKI. Klik "Lihat Detail" untuk informasi lebih lanjut.
+                                                    
+                                                    <div class="bg-blue-100 border border-blue-200 rounded-lg p-3 mb-3">
+                                                        <p class="text-sm text-blue-800 font-medium mb-2">
+                                                            <i class="fas fa-info-circle mr-1"></i>Informasi Penting:
+                                                        </p>
+                                                        <ul class="text-sm text-blue-700 space-y-2 ml-5 list-disc">
+                                                            <li>Silakan tunggu informasi <strong>kode billing pembayaran</strong> dari admin</li>
+                                                            <li>Admin akan menghubungi <strong>pencipta pertama</strong> lewat <strong>WhatsApp</strong></li>
+                                                            <li>Batas waktu pembayaran adalah pukul <strong>23.59 WIB</strong> pada hari yang sama kode billing terbit</li>
+                                                            <li>Jika kode billing tidak dibayarkan, maka admin akan mendaftarkan kembali dalam jangka waktu <strong>2 minggu</strong> sejak kode billing hangus</li>
+                                                        </ul>
+                                                    </div>
+                                                    
+                                                    <p class="text-sm text-blue-600 italic">
+                                                        <i class="fas fa-mouse-pointer mr-1"></i>
+                                                        Klik <strong>"Lihat Detail"</strong> untuk informasi lebih lanjut.
                                                     </p>
                                                 </div>
                                             </div>
