@@ -373,5 +373,7 @@
             </main>
         </div>
     </div>
+
+    @include('admin.partials.sidebar-script')
 </body>
 </html>
