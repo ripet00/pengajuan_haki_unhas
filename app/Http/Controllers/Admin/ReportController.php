@@ -237,29 +237,21 @@ class ReportController extends Controller
             $memberCount = $allMembers->count();
             
             if ($memberCount > 0) {
-                // Gunakan cloneRow untuk tabel member
+                // Gunakan cloneBlock untuk clone seluruh tabel (termasuk multi-row)
                 try {
-                    Log::info("Cloning row 'member_no' for admin template", ['count' => $memberCount]);
-                    $templateProcessor->cloneRow('member_no', $memberCount);
+                    Log::info("Attempting cloneBlock 'member' for admin template", ['count' => $memberCount]);
+                    $templateProcessor->cloneBlock('member', $memberCount, true, true);
+                    Log::info("CloneBlock 'member' SUCCESS - entire table cloned {$memberCount} times");
                     
-                    // Set values untuk setiap member
+                    // Set values untuk setiap member dengan numbering
                     foreach ($allMembers as $index => $member) {
                         $num = $index + 1;
-                        
-                        // Alamat lengkap (tanpa prefix "Kec.")
-                        $alamatLengkap = collect([
-                            $member->alamat,
-                            $member->kelurahan,
-                            $member->kecamatan,
-                            $member->kota_kabupaten,
-                            $member->provinsi,
-                            $member->kode_pos
-                        ])->filter()->implode(', ');
                         
                         // Set all member fields
                         $templateProcessor->setValue("member_no#$num", $num);
                         $templateProcessor->setValue("member_name#$num", $member->name ?? '-');
                         $templateProcessor->setValue("member_nik#$num", $member->nik ?? '-');
+                        $templateProcessor->setValue("member_npwp#$num", $member->npwp ?? '-');
                         $templateProcessor->setValue("member_pekerjaan#$num", $member->pekerjaan ?? '-');
                         $templateProcessor->setValue("member_universitas#$num", $member->universitas ?? '-');
                         $templateProcessor->setValue("member_fakultas#$num", $member->fakultas ?? '-');
@@ -273,14 +265,22 @@ class ReportController extends Controller
                         $templateProcessor->setValue("member_email#$num", $member->email ?? '-');
                         $templateProcessor->setValue("member_nomor_hp#$num", $member->nomor_hp ?? '-');
                         $templateProcessor->setValue("member_kewarganegaraan#$num", $member->kewarganegaraan ?? '-');
-                        $templateProcessor->setValue("member_npwp#$num", $member->npwp ?? '-');
                         
-                        Log::info("Set member #{$num} data", ['name' => $member->name]);
+                        Log::info("Set member #{$num} data for admin", [
+                            'name' => $member->name,
+                            'nik' => $member->nik,
+                            'email' => $member->email
+                        ]);
                     }
+                    
+                    Log::info("All {$memberCount} member values set successfully for admin template");
+                    
                 } catch (\Exception $e) {
-                    Log::error("Failed to clone row: " . $e->getMessage());
-                    return back()->with('error', 'Gagal memproses data pencipta. Error: ' . $e->getMessage());
+                    Log::error("Failed to cloneBlock 'member' for admin template: " . $e->getMessage());
+                    return back()->with('error', 'Template harus memiliki ${member} di atas tabel dan ${/member} di bawah tabel. Error: ' . $e->getMessage());
                 }
+            } else {
+                Log::warning("No members found for biodata", ['biodata_id' => $biodata->id]);
             }
             
             // SAVE AND DOWNLOAD
