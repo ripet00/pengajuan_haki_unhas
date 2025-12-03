@@ -698,7 +698,7 @@ class BiodataController extends Controller
             }
             
             // 9. SAVE FILE
-            $fileName = 'Formulir_HAKI_' . $biodata->id . '_' . time() . '.docx';
+            $fileName = 'Formulir_HKI_' . $category . '_' . $biodata->id . '_' . time() . '.docx';
             $outputPath = storage_path('app/public/generated_documents/' . $fileName);
             
             $templateProcessor->saveAs($outputPath);
