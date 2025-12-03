@@ -99,7 +99,8 @@ Route::prefix('admin')->group(function () {
         Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.reports.index');
         Route::post('reports/{biodata}/mark-document-submitted', [\App\Http\Controllers\Admin\ReportController::class, 'markDocumentSubmitted'])->name('admin.reports.mark-document-submitted');
         Route::post('reports/{biodata}/mark-certificate-issued', [\App\Http\Controllers\Admin\ReportController::class, 'markCertificateIssued'])->name('admin.reports.mark-certificate-issued');
-        
+        Route::get('reports/{biodata}/download-kelengkapan', [\App\Http\Controllers\Admin\ReportController::class, 'downloadKelengkapan'])->name('admin.reports.download-kelengkapan');
+
         // Jenis Karya management routes
         Route::resource('jenis-karyas', \App\Http\Controllers\Admin\JenisKaryaController::class)->names([
             'index' => 'admin.jenis-karyas.index',
