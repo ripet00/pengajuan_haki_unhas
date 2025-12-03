@@ -46,15 +46,59 @@
                     @endif
 
                     <div class="space-y-6">
-                        <!-- Page Header -->
+                        <!-- Page Header with Search & Filter -->
                         <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-2">
-                                <i class="fas fa-clipboard-check mr-3 text-blue-600"></i>
-                                Laporan & Tracking HKI
-                            </h2>
-                            <p class="text-gray-600">
-                                Monitor status penyetoran berkas dan penerbitan sertifikat HKI yang telah disetujui
-                            </p>
+                            <div class="mb-4">
+                                <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                                    <i class="fas fa-clipboard-check mr-3 text-blue-600"></i>
+                                    Laporan & Tracking HKI
+                                </h2>
+                                <p class="text-gray-600">
+                                    Monitor status penyetoran berkas dan penerbitan sertifikat HKI yang telah disetujui
+                                </p>
+                            </div>
+
+                            <!-- Filters & Search -->
+                            <div class="border-t pt-4">
+                                <form method="GET" action="{{ route('admin.reports.index') }}" class="space-y-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Cari</label>
+                                            <input type="text" 
+                                                   id="search" 
+                                                   name="search" 
+                                                   value="{{ request('search') }}"
+                                                   placeholder="Nama user, judul karya, atau nomor HP..."
+                                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+
+                                        <div>
+                                            <label for="tracking_status" class="block text-sm font-medium text-gray-700 mb-2">Status Tracking</label>
+                                            <select id="tracking_status" 
+                                                    name="tracking_status"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                <option value="">Semua Status</option>
+                                                <option value="document_pending" {{ request('tracking_status') == 'document_pending' ? 'selected' : '' }}>Menunggu Berkas</option>
+                                                <option value="document_overdue" {{ request('tracking_status') == 'document_overdue' ? 'selected' : '' }}>Berkas Terlambat</option>
+                                                <option value="document_submitted" {{ request('tracking_status') == 'document_submitted' ? 'selected' : '' }}>Berkas Sertifikat (Pendaftaran ke DJKI)</option>
+                                                <option value="certificate_overdue" {{ request('tracking_status') == 'certificate_overdue' ? 'selected' : '' }}>Berkas Diproses Kembali (Pendaftaran ke DJKI)</option>
+                                                <option value="certificate_issued" {{ request('tracking_status') == 'certificate_issued' ? 'selected' : '' }}>Sertifikat Terbit</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-end space-x-3">
+                                        <a href="{{ route('admin.reports.index') }}" 
+                                           class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg transition duration-200">
+                                            <i class="fas fa-redo mr-2"></i>Reset
+                                        </a>
+                                        <button type="submit" 
+                                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200">
+                                            <i class="fas fa-search mr-2"></i>Cari
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
 
                         <!-- Statistics Cards -->
@@ -190,48 +234,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Filters & Search -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <form method="GET" action="{{ route('admin.reports.index') }}" class="space-y-4">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Cari</label>
-                                        <input type="text" 
-                                               id="search" 
-                                               name="search" 
-                                               value="{{ request('search') }}"
-                                               placeholder="Nama user, judul karya, atau nomor HP..."
-                                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    </div>
-
-                                    <div>
-                                        <label for="tracking_status" class="block text-sm font-medium text-gray-700 mb-2">Status Tracking</label>
-                                        <select id="tracking_status" 
-                                                name="tracking_status"
-                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                            <option value="">Semua Status</option>
-                                            <option value="document_pending" {{ request('tracking_status') == 'document_pending' ? 'selected' : '' }}>Menunggu Berkas</option>
-                                            <option value="document_overdue" {{ request('tracking_status') == 'document_overdue' ? 'selected' : '' }}>Berkas Terlambat</option>
-                                            <option value="document_submitted" {{ request('tracking_status') == 'document_submitted' ? 'selected' : '' }}>Berkas Sertifikat (Pendaftaran ke DJKI)</option>
-                                            <option value="certificate_overdue" {{ request('tracking_status') == 'certificate_overdue' ? 'selected' : '' }}>Berkas Diproses Kembali (Pendaftaran ke DJKI)</option>
-                                            <option value="certificate_issued" {{ request('tracking_status') == 'certificate_issued' ? 'selected' : '' }}>Sertifikat Terbit</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="flex justify-end space-x-3">
-                                    <a href="{{ route('admin.reports.index') }}" 
-                                       class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg transition duration-200">
-                                        <i class="fas fa-redo mr-2"></i>Reset
-                                    </a>
-                                    <button type="submit" 
-                                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200">
-                                        <i class="fas fa-search mr-2"></i>Cari
-                                    </button>
-                                </div>
-                            </form>
                         </div>
 
                         <!-- Active Filters -->
