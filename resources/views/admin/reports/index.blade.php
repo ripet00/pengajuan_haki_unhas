@@ -391,13 +391,27 @@
                                                             <i class="fas fa-file-download mr-1"></i>
                                                             Download Kelengkapan Pendaftaran HKI
                                                         </a>
-                                                        <!-- WhatsApp Contact -->
+                                                        
+                                                        <!-- WhatsApp Contact Buttons -->
+                                                        @php
+                                                            $firstMember = $biodata->members->first();
+                                                        @endphp
+                                                        
                                                         @if($biodata->user->phone_number)
                                                             <a href="{{ generateWhatsAppUrl($biodata->user->phone_number) }}" 
                                                                target="_blank"
                                                                class="block text-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded transition duration-200">
                                                                 <i class="fab fa-whatsapp mr-1"></i>
-                                                                Hubungi via WhatsApp
+                                                                Hubungi Pengaju ({{ $biodata->user->name }})
+                                                            </a>
+                                                        @endif
+                                                        
+                                                        @if($firstMember && $firstMember->nomor_hp)
+                                                            <a href="{{ generateWhatsAppUrl($firstMember->nomor_hp) }}" 
+                                                               target="_blank"
+                                                               class="block text-center px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded transition duration-200">
+                                                                <i class="fab fa-whatsapp mr-1"></i>
+                                                                Hubungi Pencipta Pertama ({{ $firstMember->name }})
                                                             </a>
                                                         @endif
 
@@ -411,13 +425,13 @@
                                                                     @if(!$biodata->document_submitted)
                                                                         <li class="flex items-start">
                                                                             <i class="fas fa-file-upload mr-1 mt-0.5 flex-shrink-0 text-yellow-600"></i>
-                                                                            <span>Ingatkan user <strong>setor berkas</strong> ke kantor HKI</span>
+                                                                            <span>Ingatkan pengaju <strong>setor berkas</strong> ke kantor HKI</span>
                                                                         </li>
                                                                     @endif
                                                                     @if($biodata->certificate_issued)
                                                                         <li class="flex items-start">
                                                                             <i class="fas fa-certificate mr-1 mt-0.5 flex-shrink-0 text-yellow-600"></i>
-                                                                            <span>Hubungi pengaju terkait <strong>sertifikat HKI</strong></span>
+                                                                            <span>Hubungi pencipta pertama terkait <strong>sertifikat HKI</strong></span>
                                                                         </li>
                                                                     @endif
                                                                     @if($biodata->document_submitted && !$biodata->certificate_issued)
@@ -427,7 +441,7 @@
                                                                         </li>
                                                                         <li class="flex items-start">
                                                                             <i class="fas fa-money-bill-wave mr-1 mt-0.5 flex-shrink-0 text-yellow-600"></i>
-                                                                            <span>Ingatkan pengaju terkait <strong>pembayaran</strong></span>
+                                                                            <span>Ingatkan pencipta pertama terkait <strong>pembayaran</strong></span>
                                                                         </li>
                                                                     @endif
                                                                 </ul>
