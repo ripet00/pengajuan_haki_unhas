@@ -160,8 +160,8 @@
                                             <option value="">Semua Status</option>
                                             <option value="document_pending" {{ request('tracking_status') == 'document_pending' ? 'selected' : '' }}>Menunggu Berkas</option>
                                             <option value="document_overdue" {{ request('tracking_status') == 'document_overdue' ? 'selected' : '' }}>Berkas Terlambat</option>
-                                            <option value="document_submitted" {{ request('tracking_status') == 'document_submitted' ? 'selected' : '' }}>Berkas Disetor (Proses Sertifikat)</option>
-                                            <option value="certificate_overdue" {{ request('tracking_status') == 'certificate_overdue' ? 'selected' : '' }}>Sertifikat Terlambat</option>
+                                            <option value="document_submitted" {{ request('tracking_status') == 'document_submitted' ? 'selected' : '' }}>Berkas Sertifikat (Pendaftaran ke DJKI)</option>
+                                            <option value="certificate_overdue" {{ request('tracking_status') == 'certificate_overdue' ? 'selected' : '' }}>Berkas Diproses Kembali (Pendaftaran ke DJKI)</option>
                                             <option value="certificate_issued" {{ request('tracking_status') == 'certificate_issued' ? 'selected' : '' }}>Sertifikat Terbit</option>
                                         </select>
                                     </div>
