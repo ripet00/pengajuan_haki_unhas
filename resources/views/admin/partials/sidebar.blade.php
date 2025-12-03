@@ -84,12 +84,6 @@
                     @endif
                 </a>
             </li>
-            <li>
-                <a href="#" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group">
-                    <i class="fas fa-cog mr-3 text-gray-500"></i>
-                    <span class="sidebar-text transition-opacity duration-300">Pengaturan</span>
-                </a>
-            </li>
         </ul>
     </nav>
 
