@@ -385,6 +385,12 @@
 
                                                     <!-- Contact & Reminders Combined -->
                                                     <div class="space-y-3">
+                                                        <!-- Download Kelengkapan Button -->
+                                                        <a href="{{ route('admin.reports.download-kelengkapan', $biodata) }}" 
+                                                           class="block text-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded transition duration-200">
+                                                            <i class="fas fa-file-download mr-1"></i>
+                                                            Download Kelengkapan Pendaftaran HKI
+                                                        </a>
                                                         <!-- WhatsApp Contact -->
                                                         @if($biodata->user->phone_number)
                                                             <a href="{{ generateWhatsAppUrl($biodata->user->phone_number) }}" 
