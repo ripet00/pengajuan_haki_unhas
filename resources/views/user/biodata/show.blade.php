@@ -258,15 +258,15 @@
                                     </h5>
                                     
                                     <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
-                                        <li><strong>Download</strong> formulir pendaftaran HKI menggunakan tombol di atas</li>
-                                        <li><strong>Print</strong> formulir yang telah didownload</li>
-                                        <li><strong>Tanda tangani</strong> formulir pada bagian yang telah disediakan</li>
+                                        <li>Silakan <strong>mendownload</strong> formulir pendaftaran HKI menggunakan tombol di atas</li>
+                                        <li>Silakan <strong>print</strong> dokumen HKI yang telah didownload</li>
+                                        <li>Silakan semua pencipta <strong>bertandatangan</strong> di atas dokumen tersebut. <strong>Pencipta 1 bertandatangan di atas materai Rp10.000</strong></li>
                                         <li class="text-red-700 font-semibold">
                                             <i class="fas fa-stamp mr-1"></i>
                                             Siapkan <strong>3 materai Rp10.000</strong> - Ada 3 bagian tanda tangan yang harus di atas materai
                                         </li>
                                         <li><strong>Siapkan hard copy</strong> dari karya cipta Anda</li>
-                                        <li><strong>Setor berkas</strong> ke kantor HKI Unhas</li>
+                                        <li>Silakan <strong>menyetor berkas</strong> ke kantor HKI Unhas</li>
                                     </ol>
 
                                     <div class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
