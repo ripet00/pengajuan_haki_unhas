@@ -90,7 +90,7 @@
                                         <h3 class="text-3xl font-bold mt-1">{{ $documentSubmitted }}</h3>
                                     </div>
                                     <div class="bg-green-400 bg-opacity-30 rounded-full p-3">
-                                        <i class="fas fa-file-check text-2xl"></i>
+                                        <i class="fas fa-check-circle text-2xl"></i>
                                     </div>
                                 </div>
                             </div>
