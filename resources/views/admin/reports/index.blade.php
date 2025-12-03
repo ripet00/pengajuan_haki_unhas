@@ -138,6 +138,60 @@
                             @endif
                         </div>
 
+                        <!-- Status Color Legend -->
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg shadow p-5">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-info-circle text-blue-600 text-2xl"></i>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h3 class="text-base font-bold text-gray-900 mb-3">
+                                        Keterangan Warna Status Card Biodata
+                                    </h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        <!-- Yellow Border Info -->
+                                        <div class="flex items-start space-x-2">
+                                            <div class="flex-shrink-0 w-1 h-16 bg-yellow-500 rounded"></div>
+                                            <div>
+                                                <p class="text-sm font-semibold text-gray-900 mb-1">
+                                                    <i class="fas fa-square text-yellow-500 mr-1"></i>Warna Kuning
+                                                </p>
+                                                <p class="text-xs text-gray-700">
+                                                    <strong>Tahap Review:</strong> Biodata menunggu penyetoran berkas ke kantor HKI
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Green Border Info -->
+                                        <div class="flex items-start space-x-2">
+                                            <div class="flex-shrink-0 w-1 h-16 bg-green-500 rounded"></div>
+                                            <div>
+                                                <p class="text-sm font-semibold text-gray-900 mb-1">
+                                                    <i class="fas fa-square text-green-500 mr-1"></i>Warna Hijau
+                                                </p>
+                                                <p class="text-xs text-gray-700">
+                                                    <strong>Tahap Pendaftaran:</strong> TTD pimpinan, pendaftaran ke DJKI, dan menghubungi pengusul terkait pembayaran kode billing
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Purple Border Info -->
+                                        <div class="flex items-start space-x-2">
+                                            <div class="flex-shrink-0 w-1 h-16 bg-purple-500 rounded"></div>
+                                            <div>
+                                                <p class="text-sm font-semibold text-gray-900 mb-1">
+                                                    <i class="fas fa-square text-purple-500 mr-1"></i>Warna Ungu
+                                                </p>
+                                                <p class="text-xs text-gray-700">
+                                                    <strong>Tahap Selesai:</strong> Pengiriman sertifikat HKI ke pencipta pertama
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Filters & Search -->
                         <div class="bg-white rounded-lg shadow p-6">
                             <form method="GET" action="{{ route('admin.reports.index') }}" class="space-y-4">
