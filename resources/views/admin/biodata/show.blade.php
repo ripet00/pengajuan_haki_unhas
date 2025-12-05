@@ -198,17 +198,17 @@
                             <div class="p-6">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Tempat Ciptaan</label>
+                                        <label class="block text-sm font-bold text-gray-600">Tempat Ciptaan</label>
                                         <p class="mt-1 text-sm text-gray-900">{{ $biodata->tempat_ciptaan ?: '-' }}</p>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Tanggal Ciptaan</label>
+                                        <label class="block text-sm font-bold text-gray-600">Tanggal Ciptaan</label>
                                         <p class="mt-1 text-sm text-gray-900">
                                             {{ $biodata->tanggal_ciptaan ? $biodata->tanggal_ciptaan->format('d M Y') : '-' }}
                                         </p>
                                     </div>
                                     <div class="md:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700">Uraian Singkat</label>
+                                        <label class="block text-sm font-bold text-gray-600">Uraian Singkat</label>
                                         <p class="mt-1 text-sm text-gray-900">{{ $biodata->uraian_singkat ?: '-' }}</p>
                                     </div>
                                 </div>
