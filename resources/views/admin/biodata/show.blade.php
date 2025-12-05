@@ -57,6 +57,37 @@
                             </a>
                         </div>
 
+                        <!-- Admin Instruction Note -->
+                        @if($biodata->status === 'pending')
+                        <div class="bg-blue-500 text-white rounded-lg p-6 shadow-lg border-l-4 border-yellow-400">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-info-circle text-yellow-300 text-3xl"></i>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h3 class="text-lg font-bold mb-2 flex items-center">
+                                        <i class="fas fa-clipboard-list mr-2"></i>Petunjuk Review Biodata
+                                    </h3>
+                                    <div class="text-sm space-y-2">
+                                        <p class="font-medium">Silakan ikuti langkah-langkah berikut untuk melakukan review:</p>
+                                        <ol class="list-decimal list-inside space-y-1.5 ml-2">
+                                            <li><strong>Periksa Detail Biodata</strong> - Pastikan informasi tempat ciptaan, tanggal, dan uraian singkat sudah benar</li>
+                                            <li><strong>Periksa Data Pencipta</strong> - Review data <strong>semua {{ $biodata->members->count() }} pencipta</strong> secara menyeluruh (nama, NIK, NPWP, alamat, dll)</li>
+                                            <li><strong>Tandai Field yang Error</strong> - Buka toggle "Tandai Field Error" pada setiap pencipta untuk menandai field yang bermasalah</li>
+                                            <li><strong>Submit Review di Bagian Bawah</strong> - Scroll ke bawah halaman untuk memberikan keputusan review (setujui/tolak)</li>
+                                        </ol>
+                                        <div class="mt-3 pt-3 border-t border-blue-400">
+                                            <p class="text-xs italic flex items-center">
+                                                <i class="fas fa-lightbulb mr-2 text-yellow-300"></i>
+                                                <span>Field yang ditandai error akan ditampilkan dengan <span class="bg-red-200 text-red-900 px-1 rounded font-semibold">highlight merah</span> kepada user untuk mempermudah perbaikan.</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                         <!-- Main Content Grid -->
                         @if($biodata->status === 'pending')
                             <!-- Wrap entire content in review form for pending biodata -->
