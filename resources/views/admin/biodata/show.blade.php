@@ -860,6 +860,40 @@
                     });
                 }
             }
+
+            // Add form submit validation
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const rejectRadio = form.querySelector('input[value="reject"]');
+                    const rejectionTextarea = form.querySelector('textarea[name="rejection_reason"]');
+                    
+                    // Check if reject is selected
+                    if (rejectRadio && rejectRadio.checked) {
+                        const rejectionText = rejectionTextarea.value.trim();
+                        
+                        // If rejection reason is empty
+                        if (rejectionText === '') {
+                            e.preventDefault(); // Stop form submission
+                            
+                            // Show alert
+                            alert('⚠️ PERINGATAN!\n\nAnda memilih untuk MENOLAK biodata ini.\nHarap isi Catatan/Alasan Penolakan terlebih dahulu sebelum submit review.\n\nCatatan penolakan wajib diisi agar user mengetahui alasan penolakan dan dapat memperbaiki data yang bermasalah.');
+                            
+                            // Focus on textarea and highlight it
+                            rejectionTextarea.focus();
+                            rejectionTextarea.style.borderColor = '#ef4444';
+                            rejectionTextarea.style.borderWidth = '2px';
+                            
+                            // Remove highlight after 3 seconds
+                            setTimeout(function() {
+                                rejectionTextarea.style.borderColor = '';
+                                rejectionTextarea.style.borderWidth = '';
+                            }, 3000);
+                            
+                            return false;
+                        }
+                    }
+                });
+            }
         }
         
         // Setup validation for both forms
