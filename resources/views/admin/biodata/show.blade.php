@@ -59,14 +59,13 @@
 
                         <!-- Main Content Grid -->
                         @if($biodata->status === 'pending')
-                            <!-- Wrap entire grid in review form for pending biodata -->
+                            <!-- Wrap entire content in review form for pending biodata -->
                             <form id="pendingReviewForm" method="POST" action="{{ route('admin.biodata-pengaju.review', $biodata) }}">
                                 @csrf
                         @endif
                         
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <!-- Left Column - Main Content -->
-                            <div class="lg:col-span-2 space-y-6">
+                        <!-- Single Column Layout -->
+                        <div class="space-y-6">
 
                         <!-- Header Card -->
                         <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -221,7 +220,7 @@
                         <div class="bg-white rounded-lg shadow overflow-hidden">
                             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                                 <h3 class="text-lg font-semibold text-gray-900 flex items-center justify-between">
-                                    <span><i class="fas fa-users mr-2 text-purple-600"></i>Pencipta ({{ $biodata->members->count() }})</span>
+                                    <span><i class="fas fa-users mr-2 text-purple-600"></i>Pencipta ({{ $biodata->members->count() }} Orang)</span>
                                 </h3>
                             </div>
                             <div class="p-6 space-y-8">
@@ -455,11 +454,8 @@
                             </div>
                         </div>
                         @endif
-                            </div>
-                            <!-- End Left Column -->
 
-                    <!-- Review Panel -->
-                    <div class="lg:col-span-1">
+                        <!-- Review Panel (Full Width) -->
                         @if($biodata->status === 'pending')
                             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-6 shadow-lg">
                                 <h3 class="text-xl font-bold text-blue-900 mb-4 flex items-center">
@@ -473,37 +469,39 @@
                                     </p>
                                 </div>
                         @else
-                            <div class="bg-gray-50 rounded-lg p-6">
+                            <div class="bg-gray-50 rounded-lg p-6 shadow">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                                     <i class="fas fa-gavel mr-2 text-red-600"></i>Panel Review
                                 </h3>
                         @endif
                             
                             @if($biodata->status === 'pending')
-                                <!-- Review controls are part of the main form wrapping the left column -->
-                                <div class="space-y-4">
-                                    <!-- Warning before review decision -->
-                                    <div class="bg-orange-50 border-l-4 border-orange-400 p-4 rounded">
-                                        <div class="flex">
-                                            <div class="flex-shrink-0">
-                                                <i class="fas fa-exclamation-triangle text-orange-600"></i>
-                                            </div>
-                                            <div class="ml-3">
-                                                <p class="text-sm font-semibold text-orange-800 mb-2">
-                                                    <i class="fas fa-clipboard-check mr-1"></i>Peringatan Penting Sebelum Review:
-                                                </p>
-                                                <ul class="text-xs text-orange-700 space-y-1 list-disc list-inside">
-                                                    <li>Pastikan Anda sudah memeriksa <strong>semua {{ $biodata->members->count() }} pencipta</strong> yang terdaftar</li>
-                                                    <li>Jika ada data yang bermasalah, <strong>wajib tandai field dengan error</strong> pada tombol toggle di setiap pencipta</li>
-                                                    <li>Field yang ditandai error akan ditampilkan dengan latar belakang merah untuk memudahkan user memperbaiki</li>
-                                                    <li>Review yang menyeluruh akan mempercepat proses persetujuan HKI</li>
-                                                </ul>
+                                <!-- Review controls -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="md:col-span-2">
+                                        <!-- Warning before review decision -->
+                                        <div class="bg-orange-50 border-l-4 border-orange-400 p-4 rounded mb-6">
+                                            <div class="flex">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-exclamation-triangle text-orange-600"></i>
+                                                </div>
+                                                <div class="ml-3">
+                                                    <p class="text-sm font-semibold text-orange-800 mb-2">
+                                                        <i class="fas fa-clipboard-check mr-1"></i>Peringatan Penting Sebelum Review:
+                                                    </p>
+                                                    <ul class="text-xs text-orange-700 space-y-1 list-disc list-inside">
+                                                        <li>Pastikan Anda sudah memeriksa <strong>semua {{ $biodata->members->count() }} pencipta</strong> yang terdaftar</li>
+                                                        <li>Jika ada data yang bermasalah, <strong>wajib tandai field dengan error</strong> pada tombol toggle di setiap pencipta</li>
+                                                        <li>Field yang ditandai error akan ditampilkan dengan latar belakang merah untuk memudahkan user memperbaiki</li>
+                                                        <li>Review yang menyeluruh akan mempercepat proses persetujuan HKI</li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-3">Keputusan Review:</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-3"><strong>Keputusan Review:</strong></label>
                                         <div class="space-y-2">
                                             <label class="flex items-center">
                                                 <input type="radio" name="action" value="approve" required class="text-green-600 focus:ring-green-500 border-gray-300">
@@ -522,7 +520,7 @@
 
                                     <div>
                                         <label for="rejection_reason" class="block text-sm font-medium text-gray-700 mb-1">
-                                            Catatan/Alasan Penolakan:
+                                            <strong>Catatan/Alasan Penolakan:</strong>
                                             <small class="text-gray-500">(Opsional untuk approval, wajib untuk rejection)</small>
                                         </label>
                                         <textarea 
@@ -533,9 +531,11 @@
                                             placeholder="Tulis catatan atau alasan penolakan di sini..."></textarea>
                                     </div>
 
-                                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg">
-                                        <i class="fas fa-gavel mr-2"></i>SUBMIT REVIEW
-                                    </button>
+                                    <div class="md:col-span-2">
+                                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg">
+                                            <i class="fas fa-gavel mr-2"></i>SUBMIT REVIEW
+                                        </button>
+                                    </div>
                                 </div>
                             @else
                                 <div class="mb-6">
@@ -613,11 +613,9 @@
                             @endif
                         </div>
 
-                        
-
                         <!-- Document Tracking (Only for Approved Biodata) -->
                         @if($biodata->status == 'approved')
-                        <div class="bg-white rounded-lg shadow p-6 mt-6 border-2 border-blue-200">
+                        <div class="bg-white rounded-lg shadow p-6 border-2 border-blue-200">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                                 <i class="fas fa-clipboard-check mr-2 text-blue-600"></i>Tracking Dokumen & Sertifikat
                             </h3>
@@ -795,23 +793,23 @@
                         </div>
                         @endif
 
-                        <!-- Quick Actions -->
-                        <div class="bg-gray-50 rounded-lg p-6 mt-6">
+                        <!-- Quick Actions (Full Width) -->
+                        <div class="bg-gray-50 rounded-lg p-6 shadow">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                                 <i class="fas fa-tools mr-2 text-red-600"></i>Aksi Cepat
                             </h3>
                             
-                            <div class="space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                 <a href="{{ route('admin.submissions.show', $biodata->submission) }}" 
                                    target="_blank"
-                                   class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                   class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                     <i class="fas fa-file-alt mr-2"></i>Lihat Submission
                                 </a>
                                 
                                 @if(function_exists('generateWhatsAppUrl'))
                                 <a href="{{ generateWhatsAppUrl($biodata->user->phone_number, $biodata->user->country_code ?? '+62', 'Halo ' . $biodata->user->name . ', terkait biodata pengajuan HKI #' . $biodata->submission->id) }}" 
                                    target="_blank"
-                                   class="w-full inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                   class="inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                     <i class="fab fa-whatsapp mr-2"></i>Hubungi Pengaju
                                 </a>
                                 
@@ -821,17 +819,13 @@
                                 @if($leaderMember && $leaderMember->nomor_hp && function_exists('generateWhatsAppUrl'))
                                 <a href="{{ generateWhatsAppUrl($leaderMember->nomor_hp, '+62', 'Halo ' . $leaderMember->name . ', terkait biodata pengajuan HKI #' . $biodata->submission->id . ' sebagai Pencipta 1 (Ketua)') }}" 
                                    target="_blank"
-                                   class="w-full inline-flex items-center justify-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                   class="inline-flex items-center justify-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                     <i class="fab fa-whatsapp mr-2"></i>Hubungi Pencipta 1
                                 </a>
                                 @endif
                                 @endif
                             </div>
                         </div>
-                    </div>
-                    <!-- End Review Panel -->
-                    </div>
-                    <!-- End Grid -->
                     
                     @if($biodata->status === 'pending')
                         </form>
