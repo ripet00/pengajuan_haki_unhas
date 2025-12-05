@@ -338,9 +338,24 @@
         // Existing members data from server
         const existingMembers = @json($members ? $members->toArray() : []);
         
+        // Check if this is first time submit (for auto-fill feature)
+        const isFirstTimeSubmit = @json($isFirstTimeSubmit ?? false);
+        
+        // User data for auto-fill (only used for first time)
+        const userData = {
+            name: @json($user->name ?? ''),
+            phone: @json($user->phone_number ?? '')
+        };
+        
         function createMemberForm(index, memberData = {}) {
             const isLeader = index === 0;
             const member = memberData || {};
+            
+            // Auto-fill for first member (Pencipta 1) only on first time submit
+            if (isLeader && isFirstTimeSubmit && !memberData.name && !memberData.nomor_hp) {
+                member.name = userData.name;
+                member.nomor_hp = userData.phone;
+            }
             
             // Check if fakultas is a predefined option or custom
             const predefinedFakultas = [
@@ -401,7 +416,7 @@
                                    class="w-full px-3 py-2 border ${member.error_name ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
                             <p class="text-xs text-gray-500 mt-1">
-                                <i class="fas fa-info-circle mr-1"></i>Isi dengan nama lengkap beserta gelar (jika ada)
+                                <i class="fas fa-info-circle mr-1"></i>${isLeader && isFirstTimeSubmit && member.name ? '✓ Terisi otomatis dari data submission (dapat diedit). Pastikan nama dan gelar sudah benar.' : 'Isi dengan nama lengkap beserta gelar (jika ada)'}
                             </p>
                         </div>
                         
@@ -817,9 +832,12 @@
                             <input type="text" 
                                    name="members[${index}][nomor_hp]" 
                                    value="${member.nomor_hp || ''}"
-                                   placeholder="${member.error_nomor_hp ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan nomor HP'}"
+                                   placeholder="${member.error_nomor_hp ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan nomor HP aktif'}"
                                    class="w-full px-3 py-2 border ${member.error_nomor_hp ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>${isLeader && isFirstTimeSubmit && member.nomor_hp ? '✓ Terisi otomatis dari data submission (dapat diedit). Pastikan nomor Whatsapp sudah benar.' : 'Nomor HP harus aktif dan dapat dihubungi'}
+                            </p>
                         </div>
                     </div>
                 </div>

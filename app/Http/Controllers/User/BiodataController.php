@@ -51,6 +51,12 @@ class BiodataController extends Controller
         // Get existing members or create empty array
         $members = $biodata ? $biodata->members : collect();
         
+        // Check if this is first time submitting (no members exist yet)
+        $isFirstTimeSubmit = $members->isEmpty();
+        
+        // Get user data for auto-fill
+        $user = Auth::user();
+        
         // If there's old input (validation failed), merge it with members
         if (old('members')) {
             $oldMembers = old('members');
@@ -65,7 +71,7 @@ class BiodataController extends Controller
             });
         }
 
-        return view('user.biodata.create', compact('submission', 'biodata', 'members', 'isEdit', 'canEdit'));
+        return view('user.biodata.create', compact('submission', 'biodata', 'members', 'isEdit', 'canEdit', 'isFirstTimeSubmit', 'user'));
     }
 
     /**
