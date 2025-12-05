@@ -1019,5 +1019,7 @@
         handleErrorCheckboxes();
     });
     </script>
+
+    @include('admin.partials.sidebar-script')
 </body>
 </html>
