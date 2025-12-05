@@ -482,6 +482,26 @@
                             @if($biodata->status === 'pending')
                                 <!-- Review controls are part of the main form wrapping the left column -->
                                 <div class="space-y-4">
+                                    <!-- Warning before review decision -->
+                                    <div class="bg-orange-50 border-l-4 border-orange-400 p-4 rounded">
+                                        <div class="flex">
+                                            <div class="flex-shrink-0">
+                                                <i class="fas fa-exclamation-triangle text-orange-600"></i>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-semibold text-orange-800 mb-2">
+                                                    <i class="fas fa-clipboard-check mr-1"></i>Peringatan Penting Sebelum Review:
+                                                </p>
+                                                <ul class="text-xs text-orange-700 space-y-1 list-disc list-inside">
+                                                    <li>Pastikan Anda sudah memeriksa <strong>semua {{ $biodata->members->count() }} pencipta</strong> yang terdaftar</li>
+                                                    <li>Jika ada data yang bermasalah, <strong>wajib tandai field dengan error</strong> pada tombol toggle di setiap pencipta</li>
+                                                    <li>Field yang ditandai error akan ditampilkan dengan latar belakang merah untuk memudahkan user memperbaiki</li>
+                                                    <li>Review yang menyeluruh akan mempercepat proses persetujuan HKI</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-3">Keputusan Review:</label>
                                         <div class="space-y-2">
