@@ -166,7 +166,8 @@
                             </div>
                             @endif
 
-                            @if($certificateOverdue > 0)
+                            {{-- commented sertifikat terlambat card --}}
+                            {{-- @if($certificateOverdue > 0)
                             <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-4 text-white">
                                 <div class="flex items-center justify-between">
                                     <div>
@@ -179,7 +180,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @endif
+                            @endif --}}
                         </div>
 
                         <!-- Status Color Legend -->
