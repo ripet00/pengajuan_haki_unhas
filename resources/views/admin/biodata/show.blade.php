@@ -51,7 +51,7 @@
                     <div class="space-y-6">
                         <!-- Back Button -->
                         <div>
-                            <a href="{{ route('admin.biodata-pengaju.index') }}" class="inline-flex items-center text-gray-600 hover:text-gray-800 transition duration-200">
+                            <a href="{{ route('admin.biodata-pengaju.index') }}" class="inline-flex items-center px-5 py-3 bg-white hover:bg-gray-50 text-gray-800 hover:text-gray-900 border-2 border-gray-500 hover:border-gray-700 rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
                                 <i class="fas fa-arrow-left mr-2"></i>
                                 Kembali ke Daftar Biodata
                             </a>
@@ -224,295 +224,232 @@
                                     <span><i class="fas fa-users mr-2 text-purple-600"></i>Pencipta ({{ $biodata->members->count() }})</span>
                                 </h3>
                             </div>
-                            <div class="p-6">
+                            <div class="p-6 space-y-8">
                                 @foreach($biodata->members->sortBy('is_leader', SORT_REGULAR, true) as $index => $member)
-                                <div class="mb-6 {{ !$loop->last ? 'border-b border-gray-200 pb-6' : '' }}">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $member->is_leader ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800' }}">
-                                            <i class="fas fa-user mr-1"></i>
-                                            Pencipta {{ $index + 1 }}
+                                <div class="bg-gray-50 rounded-lg p-6 {{ !$loop->last ? 'mb-6' : '' }}">
+                                    <!-- Member Header -->
+                                    <div class="flex items-center justify-between mb-6 pb-4 border-b-2 border-gray-300">
+                                        <span class="inline-flex items-center px-4 py-2 rounded-full text-base font-bold {{ $member->is_leader ? 'bg-blue-600 text-white' : 'bg-gray-700 text-white' }}">
+                                            <i class="fas fa-user mr-2"></i>
+                                            Pencipta {{ $index + 1 }}{{ $member->is_leader ? ' (Ketua)' : '' }}
                                         </span>
                                     </div>
                                     
                                     <!-- Hidden fields for member ID -->
                                     <input type="hidden" name="members[{{ $member->id }}][id]" value="{{ $member->id }}">
 
-                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <!-- Member Information Grid - Clean Display -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-5 mb-6">
                                         @php $mid = $member->id; @endphp
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Lengkap</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->name ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer relative">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_name]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_name]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Nama salah" {{ $member->error_name ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
-                                                            <i class="fas fa-times {{ $member->error_name ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <!-- Clean display fields -->
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Nama Lengkap</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_name ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->name ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">NIK</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->nik ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer relative">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_nik]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_nik]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai NIK salah" {{ $member->error_nik ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
-                                                            <i class="fas fa-times {{ $member->error_nik ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">NIK</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_nik ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->nik ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">NPWP</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->npwp ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer relative">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_npwp]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_npwp]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai NPWP salah" {{ $member->error_npwp ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
-                                                            <i class="fas fa-times {{ $member->error_npwp ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">NPWP</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_npwp ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->npwp ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Kelamin</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->jenis_kelamin ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer relative">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_jenis_kelamin]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_jenis_kelamin]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Jenis Kelamin salah" {{ $member->error_jenis_kelamin ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
-                                                            <i class="fas fa-times {{ $member->error_jenis_kelamin ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Jenis Kelamin</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_jenis_kelamin ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->jenis_kelamin ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Pekerjaan</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->pekerjaan ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer relative">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_pekerjaan]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_pekerjaan]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Pekerjaan salah" {{ $member->error_pekerjaan ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
-                                                            <i class="fas fa-times {{ $member->error_pekerjaan ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Pekerjaan</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_pekerjaan ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->pekerjaan ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Universitas</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->universitas ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer relative">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_universitas]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_universitas]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Universitas salah" {{ $member->error_universitas ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
-                                                            <i class="fas fa-times {{ $member->error_universitas ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Universitas</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_universitas ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->universitas ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Fakultas</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->fakultas ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer relative">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_fakultas]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_fakultas]" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Fakultas salah" {{ $member->error_fakultas ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 relative">
-                                                            <i class="fas fa-times {{ $member->error_fakultas ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Fakultas</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_fakultas ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->fakultas ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Program Studi</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->program_studi ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_program_studi]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_program_studi]" value="1" class="peer hidden" aria-label="Tandai Program Studi salah" {{ $member->error_program_studi ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
-                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Program Studi</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_program_studi ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->program_studi ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="md:col-span-2 flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->alamat ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_alamat]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_alamat]" value="1" class="peer hidden" aria-label="Tandai Alamat salah" {{ $member->error_alamat ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
-                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Kewarganegaraan</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_kewarganegaraan ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->kewarganegaraan ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kecamatan</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->kecamatan ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_kecamatan]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_kecamatan]" value="1" class="peer hidden" aria-label="Tandai Kecamatan salah" {{ $member->error_kecamatan ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
-                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div class="lg:col-span-3">
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Alamat</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_alamat ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->alamat ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kelurahan</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->kelurahan ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_kelurahan]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_kelurahan]" value="1" class="peer hidden" aria-label="Tandai Kelurahan salah" {{ $member->error_kelurahan ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
-                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Kelurahan</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_kelurahan ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->kelurahan ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kota/Kabupaten</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->kota_kabupaten ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_kota_kabupaten]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_kota_kabupaten]" value="1" class="peer hidden" aria-label="Tandai Kota/Kabupaten salah" {{ $member->error_kota_kabupaten ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
-                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Kecamatan</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_kecamatan ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->kecamatan ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Provinsi</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->provinsi ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_provinsi]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_provinsi]" value="1" class="peer hidden" aria-label="Tandai Provinsi salah" {{ $member->error_provinsi ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
-                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Kota/Kabupaten</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_kota_kabupaten ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->kota_kabupaten ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Pos</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->kode_pos ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_kode_pos]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_kode_pos]" value="1" class="peer hidden" aria-label="Tandai Kode Pos salah" {{ $member->error_kode_pos ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
-                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Provinsi</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_provinsi ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->provinsi ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Email</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->email ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_email]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_email]" value="1" class="peer hidden" aria-label="Tandai Email salah" {{ $member->error_email ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
-                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Kode Pos</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_kode_pos ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->kode_pos ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor HP</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->nomor_hp ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_nomor_hp]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_nomor_hp]" value="1" class="peer hidden" aria-label="Tandai Nomor HP salah" {{ $member->error_nomor_hp ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
-                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Email</label>
+                                            <p class="text-sm text-gray-900 break-all {{ $member->error_email ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->email ?: '-' }}</p>
+                                        </div>
 
-                                            <div class="flex items-start justify-between">
-                                                <div class="pr-4 w-full">
-                                                    <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Kewarganegaraan</label>
-                                                    <p class="mt-1 text-sm text-gray-900">{{ $member->kewarganegaraan ?: '-' }}</p>
-                                                </div>
-                                                <div class="flex-shrink-0 ml-3">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input type="hidden" name="members[{{ $mid }}][error_kewarganegaraan]" value="0">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_kewarganegaraan]" value="1" class="peer hidden" aria-label="Tandai Kewarganegaraan salah" {{ $member->error_kewarganegaraan ? 'checked' : '' }}>
-                                                        <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600">
-                                                            <i class="fas fa-times opacity-0 peer-checked:opacity-100 transition-opacity duration-150"></i>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Nomor HP</label>
+                                            <p class="text-sm text-gray-900 {{ $member->error_nomor_hp ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->nomor_hp ?: '-' }}</p>
                                         </div>
                                     </div>
+
+                                    <!-- Error Checkboxes Section (Collapsible) -->
+                                    <div class="mt-6 border-t-2 border-gray-300 pt-4">
+                                        <details class="group">
+                                            @php
+                                                // Color variations for each member (only background colors)
+                                                $bgColors = ['bg-blue-100', 'bg-purple-100', 'bg-green-100', 'bg-orange-100', 'bg-pink-100', 'bg-indigo-100', 'bg-teal-100', 'bg-red-100'];
+                                                $bgHoverColors = ['hover:bg-blue-200', 'hover:bg-purple-200', 'hover:bg-green-200', 'hover:bg-orange-200', 'hover:bg-pink-200', 'hover:bg-indigo-200', 'hover:bg-teal-200', 'hover:bg-red-200'];
+                                                $colorIndex = $index % 8;
+                                            @endphp
+                                            <summary class="cursor-pointer list-none flex items-center justify-between p-4 rounded-lg border-2 border-gray-300 {{ $bgColors[$colorIndex] }} {{ $bgHoverColors[$colorIndex] }} transition-all shadow-sm">
+                                                <span class="font-bold text-gray-800 flex items-center">
+                                                    <i class="fas fa-exclamation-triangle mr-2 text-orange-600"></i>
+                                                    Tandai Field dengan Error untuk Pencipta {{ $index + 1 }} (Klik untuk expand)
+                                                </span>
+                                                <i class="fas fa-chevron-down group-open:rotate-180 transition-transform text-gray-600"></i>
+                                            </summary>
+                                            
+                                            <div class="mt-4 p-5 bg-white rounded-lg border-2 border-gray-200 shadow-inner">
+                                                <p class="text-sm text-gray-600 mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
+                                                    <i class="fas fa-info-circle mr-1"></i>
+                                                    <strong>Petunjuk:</strong> Centang field yang memiliki kesalahan data. Field yang ditandai akan ditampilkan dengan latar belakang merah.
+                                                </p>
+                                                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                                                    <!-- Hidden inputs for unchecked state -->
+                                                    <input type="hidden" name="members[{{ $mid }}][error_name]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_nik]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_npwp]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_jenis_kelamin]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_pekerjaan]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_universitas]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_fakultas]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_program_studi]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_alamat]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_kecamatan]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_kelurahan]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_kota_kabupaten]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_provinsi]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_kode_pos]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_email]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_nomor_hp]" value="0">
+                                                    <input type="hidden" name="members[{{ $mid }}][error_kewarganegaraan]" value="0">
+                                                    
+                                                    <!-- Checkboxes -->
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_name]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_name ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Nama</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_nik]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_nik ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">NIK</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_npwp]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_npwp ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">NPWP</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_jenis_kelamin]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_jenis_kelamin ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Jenis Kelamin</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_pekerjaan]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_pekerjaan ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Pekerjaan</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_universitas]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_universitas ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Universitas</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_fakultas]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_fakultas ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Fakultas</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_program_studi]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_program_studi ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Program Studi</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_alamat]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_alamat ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Alamat</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_kelurahan]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_kelurahan ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Kelurahan</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_kecamatan]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_kecamatan ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Kecamatan</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_kota_kabupaten]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_kota_kabupaten ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Kota/Kabupaten</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_provinsi]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_provinsi ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Provinsi</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_kode_pos]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_kode_pos ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Kode Pos</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_email]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_email ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Email</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_nomor_hp]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_nomor_hp ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Nomor HP</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
+                                                        <input type="checkbox" name="members[{{ $mid }}][error_kewarganegaraan]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_kewarganegaraan ? 'checked' : '' }}>
+                                                        <span class="text-gray-700">Kewarganegaraan</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </details>
+                                    </div>
+
+                                    <!-- Separator between members -->
+                                    @if(!$loop->last)
+                                        <div class="mt-8 mb-2 border-t-4 border-gray-400 relative">
+                                        </div>
+                                    @endif
                                 </div>
                                 @endforeach
                             </div>
