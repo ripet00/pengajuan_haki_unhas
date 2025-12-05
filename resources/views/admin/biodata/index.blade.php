@@ -179,7 +179,7 @@
                         </div>
 
                         <!-- Overdue Warnings -->
-                        @if($documentOverdue > 0 || $certificateOverdue > 0)
+                        {{-- @if($documentOverdue > 0 || $certificateOverdue > 0)
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             @if($documentOverdue > 0)
                             <div class="bg-red-50 border-2 border-red-300 rounded-lg shadow-lg p-6">
@@ -203,9 +203,9 @@
                                     </div>
                                 </div>
                             </div>
-                            @endif
+                            @endif --}}
 
-                            @if($certificateOverdue > 0)
+                            {{-- @if($certificateOverdue > 0)
                             <div class="bg-orange-50 border-2 border-orange-300 rounded-lg shadow-lg p-6">
                                 <div class="flex items-start">
                                     <div class="flex-shrink-0">
@@ -229,7 +229,7 @@
                             </div>
                             @endif
                         </div>
-                        @endif
+                        @endif --}}
 
                         @if($biodatas->count() > 0)
                             <!-- Biodata Table -->
