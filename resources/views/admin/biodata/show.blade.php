@@ -60,7 +60,7 @@
                         <!-- Main Content Grid -->
                         @if($biodata->status === 'pending')
                             <!-- Wrap entire grid in review form for pending biodata -->
-                            <form method="POST" action="{{ route('admin.biodata-pengaju.review', $biodata) }}">
+                            <form id="pendingReviewForm" method="POST" action="{{ route('admin.biodata-pengaju.review', $biodata) }}">
                                 @csrf
                         @endif
                         
@@ -570,7 +570,7 @@
                                             <i class="fas fa-edit mr-1"></i>Perlu mengubah keputusan review?
                                         </p>
                                         
-                                        <form method="POST" action="{{ route('admin.biodata-pengaju.review', $biodata) }}" class="space-y-4">
+                                        <form id="editReviewForm" method="POST" action="{{ route('admin.biodata-pengaju.review', $biodata) }}" class="space-y-4">
                                             @csrf
                                             
                                             <div>
@@ -836,8 +836,8 @@
     // Auto-require rejection reason when reject is selected
     document.addEventListener('DOMContentLoaded', function() {
         // Handle both forms - pending review and edit review
-        function setupFormValidation(formSelector) {
-            const form = document.querySelector(formSelector);
+        function setupFormValidation(formId) {
+            const form = document.getElementById(formId);
             if (!form) return;
             
             const rejectedRadio = form.querySelector('input[value="reject"]');
@@ -862,42 +862,80 @@
             }
 
             // Add form submit validation
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    const rejectRadio = form.querySelector('input[value="reject"]');
-                    const rejectionTextarea = form.querySelector('textarea[name="rejection_reason"]');
+            form.addEventListener('submit', function(e) {
+                const approveRadio = form.querySelector('input[value="approve"]');
+                const rejectRadio = form.querySelector('input[value="reject"]');
+                const rejectionTextarea = form.querySelector('textarea[name="rejection_reason"]');
+                
+                // Check if reject is selected
+                if (rejectRadio && rejectRadio.checked) {
+                    const rejectionText = rejectionTextarea.value.trim();
                     
-                    // Check if reject is selected
-                    if (rejectRadio && rejectRadio.checked) {
-                        const rejectionText = rejectionTextarea.value.trim();
+                    // If rejection reason is empty
+                    if (rejectionText === '') {
+                        e.preventDefault(); // Stop form submission
                         
-                        // If rejection reason is empty
-                        if (rejectionText === '') {
-                            e.preventDefault(); // Stop form submission
-                            
-                            // Show alert
-                            alert('⚠️ PERINGATAN!\n\nAnda memilih untuk MENOLAK biodata ini.\nHarap isi Catatan/Alasan Penolakan terlebih dahulu sebelum submit review.\n\nCatatan penolakan wajib diisi agar user mengetahui alasan penolakan dan dapat memperbaiki data yang bermasalah.');
-                            
-                            // Focus on textarea and highlight it
-                            rejectionTextarea.focus();
-                            rejectionTextarea.style.borderColor = '#ef4444';
-                            rejectionTextarea.style.borderWidth = '2px';
-                            
-                            // Remove highlight after 3 seconds
-                            setTimeout(function() {
-                                rejectionTextarea.style.borderColor = '';
-                                rejectionTextarea.style.borderWidth = '';
-                            }, 3000);
-                            
-                            return false;
-                        }
+                        // Show alert
+                        alert('⚠️ PERINGATAN!\n\nAnda memilih untuk MENOLAK biodata ini.\nHarap isi Catatan/Alasan Penolakan terlebih dahulu sebelum submit review.\n\nCatatan penolakan wajib diisi agar user mengetahui alasan penolakan dan dapat memperbaiki data yang bermasalah.');
+                        
+                        // Focus on textarea and highlight it
+                        rejectionTextarea.focus();
+                        rejectionTextarea.style.borderColor = '#ef4444';
+                        rejectionTextarea.style.borderWidth = '2px';
+                        
+                        // Remove highlight after 3 seconds
+                        setTimeout(function() {
+                            rejectionTextarea.style.borderColor = '';
+                            rejectionTextarea.style.borderWidth = '';
+                        }, 3000);
+                        
+                        return false;
                     }
-                });
-            }
+                    
+                    // Show confirmation for rejection
+                    e.preventDefault();
+                    const confirmReject = confirm(
+                        '🚫 KONFIRMASI PENOLAKAN BIODATA\n\n' +
+                        '⚠️ Apakah Anda yakin ingin MENOLAK biodata ini?\n\n' +
+                        'Pastikan:\n' +
+                        '✓ Anda sudah menandai SEMUA field data pencipta yang bermasalah\n' +
+                        '✓ Alasan penolakan sudah jelas dan spesifik\n' +
+                        '✓ User dapat memahami kesalahan dan memperbaikinya\n\n' +
+                        'Klik OK untuk melanjutkan penolakan, atau Cancel untuk kembali.'
+                    );
+                    
+                    if (confirmReject) {
+                        form.submit();
+                    }
+                    return false;
+                }
+                
+                // Check if approve is selected
+                if (approveRadio && approveRadio.checked) {
+                    e.preventDefault();
+                    const confirmApprove = confirm(
+                        '✅ KONFIRMASI PERSETUJUAN BIODATA\n\n' +
+                        '⚠️ Apakah Anda yakin ingin MENYETUJUI biodata ini?\n\n' +
+                        'Pastikan:\n' +
+                        '✓ Semua data pencipta sudah diperiksa dengan teliti\n' +
+                        '✓ Tidak ada kesalahan data pada semua field\n' +
+                        '✓ Data sudah sesuai dengan dokumen yang diajukan\n' +
+                        '✓ Biodata siap diproses ke tahap selanjutnya\n\n' +
+                        'Setelah disetujui, user dapat melanjutkan ke proses penyetoran berkas.\n\n' +
+                        'Klik OK untuk menyetujui, atau Cancel untuk kembali memeriksa.'
+                    );
+                    
+                    if (confirmApprove) {
+                        form.submit();
+                    }
+                    return false;
+                }
+            });
         }
         
-        // Setup validation for both forms
-        setupFormValidation('form'); // This will handle all forms on the page
+        // Setup validation for both forms with specific IDs
+        setupFormValidation('pendingReviewForm');
+        setupFormValidation('editReviewForm');
         
         // Handle error flag checkboxes for biodata level
         function handleErrorCheckboxes() {
