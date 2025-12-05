@@ -814,6 +814,17 @@
                                    class="w-full inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                     <i class="fab fa-whatsapp mr-2"></i>Hubungi Pengaju
                                 </a>
+                                
+                                @php
+                                    $leaderMember = $biodata->members->firstWhere('is_leader', true);
+                                @endphp
+                                @if($leaderMember && $leaderMember->nomor_hp && function_exists('generateWhatsAppUrl'))
+                                <a href="{{ generateWhatsAppUrl($leaderMember->nomor_hp, '+62', 'Halo ' . $leaderMember->name . ', terkait biodata pengajuan HKI #' . $biodata->submission->id . ' sebagai Pencipta 1 (Ketua)') }}" 
+                                   target="_blank"
+                                   class="w-full inline-flex items-center justify-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                    <i class="fab fa-whatsapp mr-2"></i>Hubungi Pencipta 1
+                                </a>
+                                @endif
                                 @endif
                             </div>
                         </div>
