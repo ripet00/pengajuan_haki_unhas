@@ -87,7 +87,7 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Back Button -->
         <div class="mb-6">
-            <a href="{{ route('user.submissions.show', $submission) }}" class="inline-flex items-center text-gray-600 hover:text-gray-800 transition duration-200">
+            <a href="{{ route('user.submissions.show', $submission) }}" class="inline-flex items-center px-5 py-3 bg-white hover:bg-gray-50 text-gray-800 hover:text-gray-900 border-2 border-gray-500 hover:border-gray-700 rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Kembali ke Detail Submission
             </a>
@@ -338,9 +338,50 @@
         // Existing members data from server
         const existingMembers = @json($members ? $members->toArray() : []);
         
+        // Check if this is first time submit (for auto-fill feature)
+        const isFirstTimeSubmit = @json($isFirstTimeSubmit ?? false);
+        
+        // User data for auto-fill (only used for first time)
+        const userData = {
+            name: @json($user->name ?? ''),
+            phone: @json($user->phone_number ?? '')
+        };
+        
         function createMemberForm(index, memberData = {}) {
             const isLeader = index === 0;
             const member = memberData || {};
+            
+            // Auto-fill for first member (Pencipta 1) only on first time submit
+            if (isLeader && isFirstTimeSubmit && !memberData.name && !memberData.nomor_hp) {
+                member.name = userData.name;
+                member.nomor_hp = userData.phone;
+            }
+            
+            // Check if fakultas is a predefined option or custom
+            const predefinedFakultas = [
+                'Umum',
+                'Fakultas Ekonomi dan Bisnis',
+                'Fakultas Hukum',
+                'Fakultas Kedokteran',
+                'Fakultas Teknik',
+                'Fakultas Ilmu Sosial dan Ilmu Politik',
+                'Fakultas Ilmu Budaya',
+                'Fakultas Pertanian',
+                'Fakultas Matematika dan Ilmu Pengetahuan Alam',
+                'Fakultas Peternakan',
+                'Fakultas Kedokteran Gigi',
+                'Fakultas Kesehatan Masyarakat',
+                'Fakultas Ilmu Kelautan dan Perikanan',
+                'Fakultas Kehutanan',
+                'Fakultas Farmasi',
+                'Fakultas Keperawatan',
+                'Fakultas Vokasi',
+                'Fakultas Teknologi Pertanian',
+                'Sekolah Pascasarjana'
+            ];
+            
+            const isFakultasCustom = member.fakultas && !predefinedFakultas.includes(member.fakultas);
+            const fakultasTypeValue = isFakultasCustom ? 'Isi Sendiri' : (member.fakultas || '');
             
             return `
                 <div class="member-form p-6" data-member-index="${index}">
@@ -375,7 +416,7 @@
                                    class="w-full px-3 py-2 border ${member.error_name ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
                             <p class="text-xs text-gray-500 mt-1">
-                                <i class="fas fa-info-circle mr-1"></i>Isi dengan nama lengkap beserta gelar (jika ada)
+                                <i class="fas fa-info-circle mr-1"></i>${isLeader && isFirstTimeSubmit && member.name ? '✓ Terisi otomatis dari data submission (dapat diedit). Pastikan nama dan gelar sudah benar.' : 'Isi dengan nama lengkap beserta gelar (jika ada)'}
                             </p>
                         </div>
                         
@@ -419,19 +460,19 @@
                                 <i class="fas fa-info-circle mr-1"></i>Opsional - Nomor Pokok Wajib Pajak
                             </p>
                         </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Jenis Kelamin *
-                        </label>
-                        <select name="members[${index}][jenis_kelamin]" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                required>
-                            <option value="">Pilih Jenis Kelamin</option>
-                            <option value="Pria" ${member.jenis_kelamin === 'Pria' ? 'selected' : ''}>Pria</option>
-                            <option value="Wanita" ${member.jenis_kelamin === 'Wanita' ? 'selected' : ''}>Wanita</option>
-                        </select>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Jenis Kelamin *
+                            </label>
+                            <select name="members[${index}][jenis_kelamin]" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required>
+                                <option value="">Pilih Jenis Kelamin</option>
+                                <option value="Pria" ${member.jenis_kelamin === 'Pria' ? 'selected' : ''}>Pria</option>
+                                <option value="Wanita" ${member.jenis_kelamin === 'Wanita' ? 'selected' : ''}>Wanita</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -478,13 +519,56 @@
                                     </span>
                                 ` : ''}
                             </label>
-                            <input type="text" 
-                                   name="members[${index}][fakultas]" 
-                                   value="${member.fakultas || ''}"
-                                   placeholder="${member.error_fakultas ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan fakultas'}"
-                                   class="w-full px-3 py-2 border ${member.error_fakultas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   required>
+                            <select name="members[${index}][fakultas_type]" 
+                                    id="fakultas_type_${index}"
+                                    data-member-index="${index}"
+                                    class="fakultas-type-select w-full px-3 py-2 border ${member.error_fakultas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required>
+                                <option value="">Pilih Fakultas</option>
+                                <option value="Umum" ${fakultasTypeValue === 'Umum' ? 'selected' : ''}>Umum</option>
+                                <option value="Fakultas Ekonomi dan Bisnis" ${fakultasTypeValue === 'Fakultas Ekonomi dan Bisnis' ? 'selected' : ''}>Fakultas Ekonomi dan Bisnis</option>
+                                <option value="Fakultas Hukum" ${fakultasTypeValue === 'Fakultas Hukum' ? 'selected' : ''}>Fakultas Hukum</option>
+                                <option value="Fakultas Kedokteran" ${fakultasTypeValue === 'Fakultas Kedokteran' ? 'selected' : ''}>Fakultas Kedokteran</option>
+                                <option value="Fakultas Teknik" ${fakultasTypeValue === 'Fakultas Teknik' ? 'selected' : ''}>Fakultas Teknik</option>
+                                <option value="Fakultas Ilmu Sosial dan Ilmu Politik" ${fakultasTypeValue === 'Fakultas Ilmu Sosial dan Ilmu Politik' ? 'selected' : ''}>Fakultas Ilmu Sosial dan Ilmu Politik</option>
+                                <option value="Fakultas Ilmu Budaya" ${fakultasTypeValue === 'Fakultas Ilmu Budaya' ? 'selected' : ''}>Fakultas Ilmu Budaya</option>
+                                <option value="Fakultas Pertanian" ${fakultasTypeValue === 'Fakultas Pertanian' ? 'selected' : ''}>Fakultas Pertanian</option>
+                                <option value="Fakultas Matematika dan Ilmu Pengetahuan Alam" ${fakultasTypeValue === 'Fakultas Matematika dan Ilmu Pengetahuan Alam' ? 'selected' : ''}>Fakultas Matematika dan Ilmu Pengetahuan Alam</option>
+                                <option value="Fakultas Peternakan" ${fakultasTypeValue === 'Fakultas Peternakan' ? 'selected' : ''}>Fakultas Peternakan</option>
+                                <option value="Fakultas Kedokteran Gigi" ${fakultasTypeValue === 'Fakultas Kedokteran Gigi' ? 'selected' : ''}>Fakultas Kedokteran Gigi</option>
+                                <option value="Fakultas Kesehatan Masyarakat" ${fakultasTypeValue === 'Fakultas Kesehatan Masyarakat' ? 'selected' : ''}>Fakultas Kesehatan Masyarakat</option>
+                                <option value="Fakultas Ilmu Kelautan dan Perikanan" ${fakultasTypeValue === 'Fakultas Ilmu Kelautan dan Perikanan' ? 'selected' : ''}>Fakultas Ilmu Kelautan dan Perikanan</option>
+                                <option value="Fakultas Kehutanan" ${fakultasTypeValue === 'Fakultas Kehutanan' ? 'selected' : ''}>Fakultas Kehutanan</option>
+                                <option value="Fakultas Farmasi" ${fakultasTypeValue === 'Fakultas Farmasi' ? 'selected' : ''}>Fakultas Farmasi</option>
+                                <option value="Fakultas Keperawatan" ${fakultasTypeValue === 'Fakultas Keperawatan' ? 'selected' : ''}>Fakultas Keperawatan</option>
+                                <option value="Fakultas Vokasi" ${fakultasTypeValue === 'Fakultas Vokasi' ? 'selected' : ''}>Fakultas Vokasi</option>
+                                <option value="Fakultas Teknologi Pertanian" ${fakultasTypeValue === 'Fakultas Teknologi Pertanian' ? 'selected' : ''}>Fakultas Teknologi Pertanian</option>
+                                <option value="Sekolah Pascasarjana" ${fakultasTypeValue === 'Sekolah Pascasarjana' ? 'selected' : ''}>Sekolah Pascasarjana</option>
+                                <option value="Isi Sendiri" ${fakultasTypeValue === 'Isi Sendiri' ? 'selected' : ''}>Isi Sendiri</option>
+                            </select>
                         </div>
+                        
+                        <div id="fakultas_manual_div_${index}" class="fakultas-manual-container" style="display: ${isFakultasCustom ? 'block' : 'none'}">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Nama Fakultas *
+                                ${member.error_fakultas ? `
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
+                                    </span>
+                                ` : ''}
+                            </label>
+                            <input type="text" 
+                                   id="fakultas_manual_${index}"
+                                   value="${isFakultasCustom ? member.fakultas : ''}"
+                                   placeholder="Masukkan nama fakultas"
+                                   class="fakultas-manual-input w-full px-3 py-2 border ${member.error_fakultas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>Isi manual jika fakultas tidak ada di daftar
+                            </p>
+                        </div>
+                        
+                        <!-- Hidden input to store final fakultas value -->
+                        <input type="hidden" name="members[${index}][fakultas]" id="fakultas_final_${index}" value="${member.fakultas || ''}">
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -748,9 +832,12 @@
                             <input type="text" 
                                    name="members[${index}][nomor_hp]" 
                                    value="${member.nomor_hp || ''}"
-                                   placeholder="${member.error_nomor_hp ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan nomor HP'}"
+                                   placeholder="${member.error_nomor_hp ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan nomor HP aktif'}"
                                    class="w-full px-3 py-2 border ${member.error_nomor_hp ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>${isLeader && isFirstTimeSubmit && member.nomor_hp ? '✓ Terisi otomatis dari data submission (dapat diedit). Pastikan nomor Whatsapp sudah benar.' : 'Nomor HP harus aktif dan dapat dihubungi'}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -1014,6 +1101,35 @@
                     }
                 });
                 
+                // Handle fakultas_final for all members
+                document.querySelectorAll('.fakultas-type-select').forEach((fakultasTypeSelect, idx) => {
+                    const memberIndex = fakultasTypeSelect.id.replace('fakultas_type_', '');
+                    const fakultasFinal = document.getElementById(`fakultas_final_${memberIndex}`);
+                    const fakultasManualInput = document.getElementById(`fakultas_manual_${memberIndex}`);
+                    
+                    if (fakultasTypeSelect.value === 'Isi Sendiri') {
+                        // Validate fakultas_manual is filled when visible
+                        const fakultasManualDiv = document.getElementById(`fakultas_manual_div_${memberIndex}`);
+                        if (fakultasManualDiv && fakultasManualDiv.style.display !== 'none') {
+                            if (!fakultasManualInput || !fakultasManualInput.value.trim()) {
+                                e.preventDefault();
+                                alert('Mohon isi Nama Fakultas pada anggota ke-' + (parseInt(memberIndex) + 1));
+                                fakultasManualInput.focus();
+                                fakultasManualInput.classList.add('border-red-500', 'bg-red-50');
+                                return false;
+                            }
+                        }
+                        
+                        // Update final fakultas value from manual input
+                        if (fakultasManualInput && fakultasManualInput.value) {
+                            fakultasFinal.value = fakultasManualInput.value;
+                        }
+                    } else if (fakultasTypeSelect.value) {
+                        // Use selected fakultas from dropdown
+                        fakultasFinal.value = fakultasTypeSelect.value;
+                    }
+                });
+                
                 const requiredFields = form.querySelectorAll('input[required], textarea[required], select[required]');
                 let isValid = true;
                 let firstInvalidField = null;
@@ -1052,6 +1168,15 @@
                         const kewarganegaraanAsingDiv = document.getElementById(`kewarganegaraan_asing_div_${memberIndex}`);
                         if (kewarganegaraanAsingDiv && kewarganegaraanAsingDiv.style.display === 'none') {
                             return; // Skip kewarganegaraan_asing when hidden
+                        }
+                    }
+                    
+                    // Skip fakultas_manual field if "Isi Sendiri" is not selected
+                    if (field.id && field.id.includes('fakultas_manual_')) {
+                        const memberIndex = field.id.replace('fakultas_manual_', '');
+                        const fakultasManualDiv = document.getElementById(`fakultas_manual_div_${memberIndex}`);
+                        if (fakultasManualDiv && fakultasManualDiv.style.display === 'none') {
+                            return; // Skip fakultas_manual when hidden
                         }
                     }
                     
@@ -1183,6 +1308,36 @@
                     kewarganegaraanAsingInput.addEventListener('input', function() {
                         const kewarganegaraanFinal = document.getElementById(`kewarganegaraan_final_${index}`);
                         kewarganegaraanFinal.value = this.value;
+                    });
+                }
+            }
+            
+            // Fakultas type change handler
+            const fakultasTypeSelect = document.getElementById(`fakultas_type_${index}`);
+            if (fakultasTypeSelect) {
+                fakultasTypeSelect.addEventListener('change', function() {
+                    const fakultasManualDiv = document.getElementById(`fakultas_manual_div_${index}`);
+                    const fakultasFinal = document.getElementById(`fakultas_final_${index}`);
+                    const fakultasManualInput = document.getElementById(`fakultas_manual_${index}`);
+                    
+                    if (this.value === 'Isi Sendiri') {
+                        // Show manual input field
+                        fakultasManualDiv.style.display = 'block';
+                        fakultasFinal.value = '';
+                    } else {
+                        // Hide manual input field and set final value
+                        fakultasManualDiv.style.display = 'none';
+                        fakultasFinal.value = this.value;
+                        fakultasManualInput.value = '';
+                    }
+                });
+                
+                // Fakultas manual input handler
+                const fakultasManualInput = document.getElementById(`fakultas_manual_${index}`);
+                if (fakultasManualInput) {
+                    fakultasManualInput.addEventListener('input', function() {
+                        const fakultasFinal = document.getElementById(`fakultas_final_${index}`);
+                        fakultasFinal.value = this.value;
                     });
                 }
             }

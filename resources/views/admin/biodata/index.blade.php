@@ -178,6 +178,59 @@
                             </div>
                         </div>
 
+                        <!-- Overdue Warnings -->
+                        {{-- @if($documentOverdue > 0 || $certificateOverdue > 0)
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            @if($documentOverdue > 0)
+                            <div class="bg-red-50 border-2 border-red-300 rounded-lg shadow-lg p-6">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="p-3 rounded-full bg-red-200">
+                                            <i class="fas fa-exclamation-triangle text-red-700 text-2xl"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <h3 class="text-lg font-bold text-red-900 mb-2">
+                                            <i class="fas fa-file-upload mr-2"></i>Penyetoran Berkas Terlambat
+                                        </h3>
+                                        <p class="text-sm text-red-800 mb-2">
+                                            <strong class="text-2xl">{{ $documentOverdue }}</strong> biodata sudah melewati deadline 1 bulan untuk penyetoran berkas!
+                                        </p>
+                                        <p class="text-xs text-red-700">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Segera hubungi user terkait untuk konfirmasi status penyetoran berkas.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif --}}
+
+                            {{-- @if($certificateOverdue > 0)
+                            <div class="bg-orange-50 border-2 border-orange-300 rounded-lg shadow-lg p-6">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="p-3 rounded-full bg-orange-200">
+                                            <i class="fas fa-certificate text-orange-700 text-2xl"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <h3 class="text-lg font-bold text-orange-900 mb-2">
+                                            <i class="fas fa-hourglass-end mr-2"></i>Penerbitan Sertifikat Terlambat
+                                        </h3>
+                                        <p class="text-sm text-orange-800 mb-2">
+                                            <strong class="text-2xl">{{ $certificateOverdue }}</strong> sertifikat sudah melewati estimasi 2 minggu sejak berkas disetor!
+                                        </p>
+                                        <p class="text-xs text-orange-700">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Segera proses penerbitan sertifikat HKI untuk biodata terkait.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                        @endif --}}
+
                         @if($biodatas->count() > 0)
                             <!-- Biodata Table -->
                             <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -188,8 +241,8 @@
                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengaju</th>
                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul Karya</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis File</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Review</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tracking</th>
                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Submit</th>
                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                                             </tr>
@@ -214,15 +267,6 @@
                                                     </div>
                                                 </td>
                                                 <td class="px-6 py-4">
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $biodata->submission->file_type === 'video' ? 'bg-purple-100 text-purple-800' : 'bg-red-100 text-red-800' }}">
-                                                        @if($biodata->submission->file_type === 'video')
-                                                            <i class="fas fa-video mr-1"></i>Video
-                                                        @else
-                                                            <i class="fas fa-file-pdf mr-1"></i>PDF
-                                                        @endif
-                                                    </span>
-                                                </td>
-                                                <td class="px-6 py-4">
                                                     @php
                                                         $status = $biodata->status;
                                                         $statusClasses = [
@@ -242,6 +286,43 @@
                                                         <i class="{{ $statusIcons[$status] ?? 'fas fa-question' }} mr-1"></i>
                                                         {{ ucfirst($status) }}
                                                     </span>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    @if($biodata->status == 'approved')
+                                                        <div class="space-y-1">
+                                                            <!-- Document Status -->
+                                                            @if($biodata->document_submitted)
+                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+                                                                    <i class="fas fa-check-circle mr-1"></i>Berkas ✓
+                                                                </span>
+                                                            @elseif($biodata->isDocumentOverdue())
+                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
+                                                                    <i class="fas fa-exclamation-triangle mr-1"></i>Terlambat!
+                                                                </span>
+                                                            @else
+                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                                    <i class="fas fa-clock mr-1"></i>Menunggu
+                                                                </span>
+                                                            @endif
+                                                            
+                                                            <!-- Certificate Status -->
+                                                            @if($biodata->certificate_issued)
+                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                                                    <i class="fas fa-certificate mr-1"></i>Sertifikat ✓
+                                                                </span>
+                                                            @elseif($biodata->document_submitted && $biodata->isCertificateOverdue())
+                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-800">
+                                                                    <i class="fas fa-hourglass-end mr-1"></i>Proses Telat
+                                                                </span>
+                                                            @elseif($biodata->document_submitted)
+                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700">
+                                                                    <i class="fas fa-hourglass-half mr-1"></i>Proses...
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                    @else
+                                                        <span class="text-xs text-gray-500">-</span>
+                                                    @endif
                                                 </td>
                                                 <td class="px-6 py-4 text-sm text-gray-500">
                                                     {{ $biodata->created_at->format('d M Y H:i') }}
@@ -292,5 +373,7 @@
             </main>
         </div>
     </div>
+
+    @include('admin.partials.sidebar-script')
 </body>
 </html>

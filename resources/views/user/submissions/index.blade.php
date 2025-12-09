@@ -88,11 +88,11 @@
     <main class="max-w-7xl mx-auto py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
         <!-- Back Button and Actions -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-3 sm:space-y-0">
-            <a href="{{ route('user.dashboard') }}" class="inline-flex items-center text-gray-600 hover:text-gray-800 transition duration-200">
+            <a href="{{ route('user.dashboard') }}" class="inline-flex items-center px-5 py-3 bg-white hover:bg-gray-50 text-gray-800 hover:text-gray-900 border-2 border-gray-500 hover:border-gray-700 rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Kembali ke Dashboard
             </a>
-            <a href="{{ route('user.submissions.create') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
+            <a href="{{ route('user.submissions.create') }}" class="bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-lg font-bold transition duration-200 shadow-md hover:shadow-xl">
                 <i class="fas fa-plus mr-2"></i>Pengajuan Baru
             </a>
         </div>

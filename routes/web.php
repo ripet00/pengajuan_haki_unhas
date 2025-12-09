@@ -51,6 +51,7 @@ Route::prefix('users')->middleware('auth')->group(function () {
     Route::get('submissions/{submission}/biodata/create', [App\Http\Controllers\User\BiodataController::class, 'create'])->name('user.biodata.create');
     Route::post('submissions/{submission}/biodata', [App\Http\Controllers\User\BiodataController::class, 'store'])->name('user.biodata.store');
     Route::get('submissions/{submission}/biodata/{biodata}', [App\Http\Controllers\User\BiodataController::class, 'show'])->name('user.biodata.show');
+    Route::get('biodata/{biodata}/download-formulir', [App\Http\Controllers\User\BiodataController::class, 'downloadFormulir'])->name('user.biodata.download-formulir');
     
     // Wilayah API routes
     Route::get('api/wilayah/provinces', [App\Http\Controllers\Api\WilayahController::class, 'getProvinces'])->name('api.wilayah.provinces');
@@ -90,8 +91,16 @@ Route::prefix('admin')->group(function () {
         Route::get('biodata-pengaju', [\App\Http\Controllers\Admin\BiodataController::class, 'index'])->name('admin.biodata-pengaju.index');
         Route::get('biodata-pengaju/{biodata}', [\App\Http\Controllers\Admin\BiodataController::class, 'show'])->name('admin.biodata-pengaju.show');
         Route::post('biodata-pengaju/{biodata}/review', [\App\Http\Controllers\Admin\BiodataController::class, 'review'])->name('admin.biodata-pengaju.review');
-    Route::post('biodata-pengaju/{biodata}/update-errors', [\App\Http\Controllers\Admin\BiodataController::class, 'updateErrorFlags'])->name('admin.biodata-pengaju.update-errors');
+        Route::post('biodata-pengaju/{biodata}/update-errors', [\App\Http\Controllers\Admin\BiodataController::class, 'updateErrorFlags'])->name('admin.biodata-pengaju.update-errors');
+        Route::post('biodata-pengaju/{biodata}/mark-document-submitted', [\App\Http\Controllers\Admin\BiodataController::class, 'markDocumentSubmitted'])->name('admin.biodata-pengaju.mark-document-submitted');
+        Route::post('biodata-pengaju/{biodata}/mark-certificate-issued', [\App\Http\Controllers\Admin\BiodataController::class, 'markCertificateIssued'])->name('admin.biodata-pengaju.mark-certificate-issued');
         
+        // Admin reports routes
+        Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.reports.index');
+        Route::post('reports/{biodata}/mark-document-submitted', [\App\Http\Controllers\Admin\ReportController::class, 'markDocumentSubmitted'])->name('admin.reports.mark-document-submitted');
+        Route::post('reports/{biodata}/mark-certificate-issued', [\App\Http\Controllers\Admin\ReportController::class, 'markCertificateIssued'])->name('admin.reports.mark-certificate-issued');
+        Route::get('reports/{biodata}/download-kelengkapan', [\App\Http\Controllers\Admin\ReportController::class, 'downloadKelengkapan'])->name('admin.reports.download-kelengkapan');
+
         // Jenis Karya management routes
         Route::resource('jenis-karyas', \App\Http\Controllers\Admin\JenisKaryaController::class)->names([
             'index' => 'admin.jenis-karyas.index',

@@ -90,7 +90,7 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Back Button -->
         <div class="mb-6">
-            <a href="{{ route('user.submissions.show', $biodata->submission) }}" class="inline-flex items-center text-gray-600 hover:text-gray-800 transition duration-200">
+            <a href="{{ route('user.submissions.show', $biodata->submission) }}" class="inline-flex items-center px-5 py-3 bg-white hover:bg-gray-50 text-gray-800 hover:text-gray-900 border-2 border-gray-500 hover:border-gray-700 rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Kembali ke Detail Submission
             </a>
@@ -146,17 +146,150 @@
                         </p>
                     </div>
                 @elseif($biodata->status == 'approved')
-                    <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <h4 class="text-sm font-semibold text-green-800 mb-2">
-                            <i class="fas fa-check-circle mr-1"></i>Biodata Disetujui
-                        </h4>
-                        <p class="text-sm text-green-700">
-                            Biodata telah disetujui oleh admin. Proses pengajuan HKI dapat dilanjutkan.
-                        </p>
-                        @if($biodata->reviewed_at && $biodata->reviewedBy)
-                            <p class="text-sm text-green-600 mt-2">
-                                Disetujui oleh: {{ $biodata->reviewedBy->name }} pada {{ $biodata->reviewed_at->format('d M Y H:i') }}
+                    <div class="space-y-4">
+                        <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <h4 class="text-sm font-semibold text-green-800 mb-2">
+                                <i class="fas fa-check-circle mr-1"></i>Biodata Disetujui
+                            </h4>
+                            <p class="text-sm text-green-700">
+                                Biodata telah disetujui oleh admin. Silakan ikuti langkah berikutnya untuk menyelesaikan proses pengajuan HKI.
                             </p>
+                            @if($biodata->reviewed_at && $biodata->reviewedBy)
+                                <p class="text-sm text-green-600 mt-2">
+                                    Disetujui oleh: {{ $biodata->reviewedBy->name }} pada {{ $biodata->reviewed_at->format('d M Y H:i') }}
+                                </p>
+                            @endif
+                        </div>
+
+                        @if($biodata->certificate_issued)
+                            <!-- Sertifikat sudah terbit -->
+                            <div class="p-4 bg-blue-50 border-2 border-blue-300 rounded-lg">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-certificate text-3xl text-blue-600"></i>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <h4 class="text-lg font-bold text-blue-900 mb-2">
+                                            <i class="fas fa-check-double mr-1"></i>Sertifikat HKI Telah Terbit
+                                        </h4>
+                                        <p class="text-sm text-blue-800 mb-2">
+                                            Selamat! Sertifikat HKI untuk karya cipta Anda telah diterbitkan pada <strong>{{ $biodata->certificate_issued_at->format('d F Y') }}</strong>.
+                                        </p>
+                                        <p class="text-sm text-blue-700">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Silakan datang ke kantor HKI Unhas untuk mengambil sertifikat Anda.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @elseif($biodata->document_submitted)
+                            <!-- Berkas sudah disetor, menunggu sertifikat -->
+                            <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                <h4 class="text-sm font-semibold text-blue-800 mb-2">
+                                    <i class="fas fa-check-circle mr-1"></i>Berkas Telah Disetor
+                                </h4>
+                                <p class="text-sm text-blue-700">
+                                    Formulir pendaftaran dan hard copy karya cipta telah diterima pada <strong>{{ $biodata->document_submitted_at->format('d F Y') }}</strong>.
+                                </p>
+                                <p class="text-sm text-blue-700 mt-2">
+                                    <i class="fas fa-hourglass-half mr-1"></i>
+                                    Sertifikat HKI sedang dalam proses penerbitan. Estimasi selesai: <strong>{{ $biodata->getCertificateDeadline()->format('d F Y') }}</strong>
+                                </p>
+                            </div>
+                        @else
+                            <!-- Perlu download form dan setor berkas -->
+                            <div class="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                                <h4 class="text-lg font-bold text-orange-900 mb-3">
+                                    <i class="fas fa-file-download mr-2"></i>Langkah Selanjutnya: Download & Setor Formulir
+                                </h4>
+                                
+                                <!-- Deadline Warning -->
+                                @php
+                                    $daysRemaining = $biodata->getDaysUntilDocumentDeadline();
+                                    $deadline = $biodata->getDocumentDeadline();
+                                    $isOverdue = $biodata->isDocumentOverdue();
+                                @endphp
+                                
+                                @if($isOverdue)
+                                    <div class="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg">
+                                        <p class="text-sm font-semibold text-red-900">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                                            DEADLINE TERLEWAT! Batas waktu penyetoran: {{ $deadline->format('d F Y') }}
+                                        </p>
+                                        <p class="text-xs text-red-700 mt-1">
+                                            Segera hubungi admin untuk informasi lebih lanjut.
+                                        </p>
+                                    </div>
+                                @elseif($daysRemaining <= 7)
+                                    <div class="mb-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
+                                        <p class="text-sm font-semibold text-yellow-900">
+                                            <i class="fas fa-clock mr-1"></i>
+                                            Sisa waktu: <strong>{{ $daysRemaining }} hari</strong> (Deadline: {{ $deadline->format('d F Y') }})
+                                        </p>
+                                        <p class="text-xs text-yellow-700 mt-1">
+                                            Segera selesaikan penyetoran berkas!
+                                        </p>
+                                    </div>
+                                @else
+                                    <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <p class="text-sm text-blue-800">
+                                            <i class="fas fa-calendar-alt mr-1"></i>
+                                            Deadline penyetoran berkas: <strong>{{ $deadline->format('d F Y') }}</strong> ({{ $daysRemaining }} hari lagi)
+                                        </p>
+                                    </div>
+                                @endif
+
+                                <!-- Download Button -->
+                                <div class="mb-4">
+                                    <a href="{{ route('user.biodata.download-formulir', $biodata->id) }}" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                                        <i class="fas fa-file-download mr-2"></i>
+                                        Download Formulir Pendaftaran HKI
+                                    </a>
+                                    <p class="text-xs text-gray-600 mt-2">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        File format: Microsoft Word (.docx)
+                                    </p>
+                                </div>
+
+                                <!-- Instructions -->
+                                <div class="space-y-3">
+                                    <h5 class="font-semibold text-orange-900">
+                                        <i class="fas fa-list-ol mr-2"></i>Instruksi:
+                                    </h5>
+                                    
+                                    <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                                        <li>Silakan <strong>mendownload</strong> formulir pendaftaran HKI menggunakan tombol di atas</li>
+                                        <li>Silakan <strong>print</strong> dokumen HKI yang telah didownload</li>
+                                        <li>Silakan semua pencipta <strong>bertandatangan</strong> di atas dokumen tersebut. <strong>Pencipta 1 bertandatangan di atas materai Rp10.000</strong></li>
+                                        <li class="text-red-700 font-semibold">
+                                            <i class="fas fa-stamp mr-1"></i>
+                                            Siapkan <strong>3 materai Rp10.000</strong> - Ada 3 bagian tanda tangan yang harus di atas materai
+                                        </li>
+                                        <li><strong>Siapkan hard copy</strong> dari karya cipta Anda</li>
+                                        <li>Silakan <strong>menyetor berkas</strong> ke kantor HKI Unhas</li>
+                                    </ol>
+
+                                    <div class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                        <h6 class="font-semibold text-gray-900 mb-2">
+                                            <i class="fas fa-map-marker-alt mr-2 text-red-600"></i>Alamat Kantor HKI Unhas:
+                                        </h6>
+                                        <p class="text-sm text-gray-700 leading-relaxed">
+                                            Lt. 6 Gedung Rektorat<br>
+                                            Universitas Hasanuddin<br>
+                                            Jalan Perintis Kemerdekaan Km.10<br>
+                                            Makassar, 90245<br>
+                                            Sulawesi Selatan, Indonesia
+                                        </p>
+                                    </div>
+
+                                    <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                                        <p class="text-sm text-yellow-800">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            <strong>Penting:</strong> Anda memiliki waktu <strong>1 bulan sejak biodata disetujui</strong> untuk menyetor formulir dan hard copy karya cipta ke kantor HKI Unhas.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </div>
                 @else

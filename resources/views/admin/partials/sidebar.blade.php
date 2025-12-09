@@ -29,9 +29,14 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.users.*') ? 'sidebar-active' : '' }}">
+                <a href="{{ route('admin.users.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.users.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-users mr-3 {{ Request::routeIs('admin.users.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
                     <span class="sidebar-text transition-opacity duration-300">Kelola User</span>
+                    @if(isset($pendingUsers) && $pendingUsers > 0)
+                        <span class="sidebar-badge ml-auto bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
+                            {{ $pendingUsers }}
+                        </span>
+                    @endif
                 </a>
             </li>
             <li>
@@ -41,33 +46,42 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.submissions.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.submissions.*') ? 'sidebar-active' : '' }}">
-                    <i class="fas fa-file-upload mr-3 {{ Request::routeIs('admin.submissions.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
-                    <span class="sidebar-text transition-opacity duration-300">Pengajuan HKI</span>
-                </a>
-            </li>
-            <li>
                 <a href="{{ route('admin.jenis-karyas.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.jenis-karyas.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-list mr-3 {{ Request::routeIs('admin.jenis-karyas.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
                     <span class="sidebar-text transition-opacity duration-300">Jenis Karya</span>
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.biodata-pengaju.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.biodata-pengaju.*') ? 'sidebar-active' : '' }}">
+                <a href="{{ route('admin.submissions.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.submissions.*') ? 'sidebar-active' : '' }}">
+                    <i class="fas fa-file-upload mr-3 {{ Request::routeIs('admin.submissions.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
+                    <span class="sidebar-text transition-opacity duration-300">Pengajuan HKI</span>
+                    @if(isset($pendingSubmissions) && $pendingSubmissions > 0)
+                        <span class="sidebar-badge ml-auto bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
+                            {{ $pendingSubmissions }}
+                        </span>
+                    @endif
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.biodata-pengaju.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.biodata-pengaju.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-user-friends mr-3 {{ Request::routeIs('admin.biodata-pengaju.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
                     <span class="sidebar-text transition-opacity duration-300">Biodata Pengaju</span>
+                    @if(isset($pendingBiodatas) && $pendingBiodatas > 0)
+                        <span class="sidebar-badge ml-auto bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
+                            {{ $pendingBiodatas }}
+                        </span>
+                    @endif
                 </a>
             </li>
             <li>
-                <a href="#" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group">
-                    <i class="fas fa-chart-bar mr-3 text-gray-500"></i>
+                <a href="{{ route('admin.reports.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.reports.*') ? 'sidebar-active' : '' }}">
+                    <i class="fas fa-chart-bar mr-3 {{ Request::routeIs('admin.reports.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
                     <span class="sidebar-text transition-opacity duration-300">Laporan</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group">
-                    <i class="fas fa-cog mr-3 text-gray-500"></i>
-                    <span class="sidebar-text transition-opacity duration-300">Pengaturan</span>
+                    @if(isset($pendingCertificates) && $pendingCertificates > 0)
+                        <span class="sidebar-badge ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
+                            {{ $pendingCertificates }}
+                        </span>
+                    @endif
                 </a>
             </li>
         </ul>
@@ -109,6 +123,27 @@
     .sidebar-collapsed #logo-text {
         opacity: 0;
         visibility: hidden;
+    }
+    .sidebar-collapsed .sidebar-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        margin-left: 0 !important;
+        min-width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 6px;
+    }
+    .sidebar-badge {
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 24px;
+        height: 24px;
+        line-height: 1;
     }
     .sidebar-collapsed .sidebar-header-content {
         justify-content: center;
