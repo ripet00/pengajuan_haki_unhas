@@ -6,7 +6,9 @@ use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\SubmissionController as AdminSubmissionController;
+use App\Http\Controllers\Admin\SubmissionPatenController as AdminSubmissionPatenController;
 use App\Http\Controllers\User\SubmissionController as UserSubmissionController;
+use App\Http\Controllers\User\SubmissionPatenController as UserSubmissionPatenController;
 
 // Default route redirects based on authentication status
 Route::get('/', function () {
@@ -52,6 +54,21 @@ Route::prefix('users')->middleware('auth')->group(function () {
     Route::post('submissions/{submission}/biodata', [App\Http\Controllers\User\BiodataController::class, 'store'])->name('user.biodata.store');
     Route::get('submissions/{submission}/biodata/{biodata}', [App\Http\Controllers\User\BiodataController::class, 'show'])->name('user.biodata.show');
     Route::get('biodata/{biodata}/download-formulir', [App\Http\Controllers\User\BiodataController::class, 'downloadFormulir'])->name('user.biodata.download-formulir');
+    
+    // Paten submission routes
+    Route::get('submissions-paten', [UserSubmissionPatenController::class, 'index'])->name('user.submissions-paten.index');
+    Route::get('submissions-paten/create', [UserSubmissionPatenController::class, 'create'])->name('user.submissions-paten.create');
+    Route::post('submissions-paten', [UserSubmissionPatenController::class, 'store'])->middleware('file.upload')->name('user.submissions-paten.store');
+    Route::get('submissions-paten/{submissionPaten}', [UserSubmissionPatenController::class, 'show'])->name('user.submissions-paten.show');
+    Route::get('submissions-paten/{submissionPaten}/download', [UserSubmissionPatenController::class, 'download'])->name('user.submissions-paten.download');
+    Route::post('submissions-paten/{submissionPaten}/resubmit', [UserSubmissionPatenController::class, 'resubmit'])->middleware('file.upload')->name('user.submissions-paten.resubmit');
+    
+    // Biodata Paten routes
+    Route::get('submissions-paten/{submissionPaten}/biodata-paten/create', [App\Http\Controllers\User\BiodataPatenController::class, 'create'])->name('user.biodata-paten.create');
+    Route::post('submissions-paten/{submissionPaten}/biodata-paten', [App\Http\Controllers\User\BiodataPatenController::class, 'store'])->name('user.biodata-paten.store');
+    Route::get('submissions-paten/{submissionPaten}/biodata-paten/{biodataPaten}', [App\Http\Controllers\User\BiodataPatenController::class, 'show'])->name('user.biodata-paten.show');
+    Route::get('biodata-paten/{biodataPaten}/download-formulir', [App\Http\Controllers\User\BiodataPatenController::class, 'downloadFormulir'])->name('user.biodata-paten.download-formulir');
+    Route::post('biodata-paten/{biodataPaten}/mark-document-submitted', [App\Http\Controllers\User\BiodataPatenController::class, 'markDocumentSubmitted'])->name('user.biodata-paten.mark-document-submitted');
     
     // Wilayah API routes
     Route::get('api/wilayah/provinces', [App\Http\Controllers\Api\WilayahController::class, 'getProvinces'])->name('api.wilayah.provinces');
@@ -100,6 +117,21 @@ Route::prefix('admin')->group(function () {
         Route::post('reports/{biodata}/mark-document-submitted', [\App\Http\Controllers\Admin\ReportController::class, 'markDocumentSubmitted'])->name('admin.reports.mark-document-submitted');
         Route::post('reports/{biodata}/mark-certificate-issued', [\App\Http\Controllers\Admin\ReportController::class, 'markCertificateIssued'])->name('admin.reports.mark-certificate-issued');
         Route::get('reports/{biodata}/download-kelengkapan', [\App\Http\Controllers\Admin\ReportController::class, 'downloadKelengkapan'])->name('admin.reports.download-kelengkapan');
+
+        // Admin paten submission routes
+        Route::get('submissions-paten', [AdminSubmissionPatenController::class, 'index'])->name('admin.submissions-paten.index');
+        Route::get('submissions-paten/{submissionPaten}', [AdminSubmissionPatenController::class, 'show'])->name('admin.submissions-paten.show');
+        Route::get('submissions-paten/{submissionPaten}/download', [AdminSubmissionPatenController::class, 'download'])->name('admin.submissions-paten.download');
+        Route::post('submissions-paten/{submissionPaten}/review', [AdminSubmissionPatenController::class, 'review'])->name('admin.submissions-paten.review');
+        Route::post('submissions-paten/{submissionPaten}/update-review', [AdminSubmissionPatenController::class, 'updateReview'])->name('admin.submissions-paten.update-review');
+
+        // Admin biodata paten routes  
+        Route::get('biodata-paten', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'index'])->name('admin.biodata-paten.index');
+        Route::get('biodata-paten/{biodataPaten}', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'show'])->name('admin.biodata-paten.show');
+        Route::post('biodata-paten/{biodataPaten}/review', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'review'])->name('admin.biodata-paten.review');
+        Route::post('biodata-paten/{biodataPaten}/update-errors', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'updateErrorFlags'])->name('admin.biodata-paten.update-errors');
+        Route::post('biodata-paten/{biodataPaten}/mark-document-submitted', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'markDocumentSubmitted'])->name('admin.biodata-paten.mark-document-submitted');
+        Route::post('biodata-paten/{biodataPaten}/mark-certificate-issued', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'markCertificateIssued'])->name('admin.biodata-paten.mark-certificate-issued');
 
         // Jenis Karya management routes
         Route::resource('jenis-karyas', \App\Http\Controllers\Admin\JenisKaryaController::class)->names([
