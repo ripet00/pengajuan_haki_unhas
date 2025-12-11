@@ -84,6 +84,23 @@
                     @endif
                 </a>
             </li>
+            
+            <!-- Divider -->
+            <li class="my-4">
+                <div class="border-t border-gray-200"></div>
+            </li>
+            
+            <li>
+                <a href="{{ route('admin.submissions-paten.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 group {{ Request::routeIs('admin.submissions-paten.*') ? 'sidebar-active-paten' : '' }}">
+                    <i class="fas fa-lightbulb mr-3 {{ Request::routeIs('admin.submissions-paten.*') ? 'text-green-600' : 'text-gray-500' }}"></i>
+                    <span class="sidebar-text transition-opacity duration-300">Pengajuan Paten</span>
+                    @if(isset($pendingPatenSubmissions) && $pendingPatenSubmissions > 0)
+                        <span class="sidebar-badge ml-auto bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
+                            {{ $pendingPatenSubmissions }}
+                        </span>
+                    @endif
+                </a>
+            </li>
         </ul>
     </nav>
 
@@ -91,8 +108,8 @@
     <div class="p-4 border-t border-gray-200">
         <form method="POST" action="{{ route('admin.logout') }}">
             @csrf
-            <button type="submit" class="w-full flex items-center px-4 py-3 text-red-600 rounded-lg hover:bg-red-50 transition duration-200 group">
-                <i class="fas fa-sign-out-alt mr-3"></i>
+            <button type="submit" class="w-full flex items-center px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200">
+                <i class="fas fa-sign-out-alt w-6"></i>
                 <span class="sidebar-text transition-opacity duration-300">Logout</span>
             </button>
         </form>
@@ -100,82 +117,108 @@
 </div>
 
 <style>
-    .sidebar-active {
-        background-color: rgba(220, 38, 38, 0.1);
-        border-left: 4px solid #dc2626;
-        border-radius: 0.5rem 0.5rem 0.5rem 0;
-        color: #dc2626;
-        font-weight: 600;
+.sidebar-active {
+    background-color: rgba(220, 38, 38, 0.1);
+    border-left: 4px solid #dc2626;
+    border-radius: 0.5rem 0.5rem 0.5rem 0;
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.sidebar-active .sidebar-text {
+    color: #dc2626;
+}
+
+.sidebar-active-paten {
+    background-color: rgba(5, 150, 105, 0.1);
+    border-left: 4px solid #059669;
+    border-radius: 0.5rem 0.5rem 0.5rem 0;
+    color: #059669;
+    font-weight: 600;
+}
+
+.sidebar-active-paten .sidebar-text {
+    color: #059669;
+}
+
+.sidebar-transition {
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+.sidebar-collapsed {
+    width: 4rem;
+}
+
+.sidebar-expanded {
+    width: 16rem;
+}
+
+.sidebar-collapsed .sidebar-text,
+.sidebar-collapsed #logo-text {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.sidebar-collapsed .sidebar-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    margin-left: 0 !important;
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 6px;
+}
+
+.sidebar-badge {
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    line-height: 1;
+}
+
+.sidebar-collapsed .sidebar-header-content {
+    justify-content: center;
+}
+
+.sidebar-collapsed .sidebar-logo-container {
+    margin: 0 auto;
+}
+
+.sidebar-logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle-fixed {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle-fixed.collapsed {
+    left: 20px;
+}
+
+.sidebar-toggle-fixed.expanded {
+    left: 280px;
+}
+
+@media (max-width: 768px) {
+    .sidebar-mobile-hidden {
+        transform: translateX(-100%);
     }
-    .sidebar-active .sidebar-text {
-        color: #dc2626;
+    .sidebar-mobile-visible {
+        transform: translateX(0);
     }
-    .sidebar-transition {
-        transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
-    }
-    .sidebar-collapsed {
-        width: 4rem;
-    }
-    .sidebar-expanded {
-        width: 16rem;
-    }
-    .sidebar-collapsed .sidebar-text,
-    .sidebar-collapsed #logo-text {
-        opacity: 0;
-        visibility: hidden;
-    }
-    .sidebar-collapsed .sidebar-badge {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        margin-left: 0 !important;
-        min-width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 6px;
-    }
-    .sidebar-badge {
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 24px;
-        height: 24px;
-        line-height: 1;
-    }
-    .sidebar-collapsed .sidebar-header-content {
-        justify-content: center;
-    }
-    .sidebar-collapsed .sidebar-logo-container {
-        margin: 0 auto;
-    }
-    .sidebar-logo-container {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        transition: all 0.3s ease;
-    }
-    .sidebar-toggle-fixed {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        z-index: 1000;
-        transition: all 0.3s ease;
-    }
-    .sidebar-toggle-fixed.collapsed {
-        left: 20px;
-    }
-    .sidebar-toggle-fixed.expanded {
-        left: 280px;
-    }
-    @media (max-width: 768px) {
-        .sidebar-mobile-hidden {
-            transform: translateX(-100%);
-        }
-        .sidebar-mobile-visible {
-            transform: translateX(0);
-        }
-    }
+}
 </style>
