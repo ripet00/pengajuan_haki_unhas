@@ -112,6 +112,14 @@ Route::prefix('admin')->group(function () {
         Route::post('biodata-pengaju/{biodata}/mark-document-submitted', [\App\Http\Controllers\Admin\BiodataController::class, 'markDocumentSubmitted'])->name('admin.biodata-pengaju.mark-document-submitted');
         Route::post('biodata-pengaju/{biodata}/mark-certificate-issued', [\App\Http\Controllers\Admin\BiodataController::class, 'markCertificateIssued'])->name('admin.biodata-pengaju.mark-certificate-issued');
         
+        // Admin biodata paten routes
+        Route::get('biodata-paten', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'index'])->name('admin.biodata-paten.index');
+        Route::get('biodata-paten/{biodataPaten}', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'show'])->name('admin.biodata-paten.show');
+        Route::post('biodata-paten/{biodataPaten}/review', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'review'])->name('admin.biodata-paten.review');
+        Route::post('biodata-paten/{biodataPaten}/update-errors', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'updateErrorFlags'])->name('admin.biodata-paten.update-errors');
+        Route::post('biodata-paten/{biodataPaten}/mark-document-submitted', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'markDocumentSubmitted'])->name('admin.biodata-paten.mark-document-submitted');
+        Route::post('biodata-paten/{biodataPaten}/mark-certificate-issued', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'markCertificateIssued'])->name('admin.biodata-paten.mark-certificate-issued');
+        
         // Admin reports routes
         Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.reports.index');
         Route::post('reports/{biodata}/mark-document-submitted', [\App\Http\Controllers\Admin\ReportController::class, 'markDocumentSubmitted'])->name('admin.reports.mark-document-submitted');
