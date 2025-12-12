@@ -14,15 +14,15 @@ class BiodataPaten extends Model
     protected $fillable = [
         'submission_paten_id',
         'user_id',
-        'tempat_ciptaan',
-        'tanggal_ciptaan',
+        'tempat_invensi',
+        'tanggal_invensi',
         'uraian_singkat',
         'status',
         'rejection_reason',
         'reviewed_at',
         'reviewed_by',
-        'error_tempat_ciptaan',
-        'error_tanggal_ciptaan',
+        'error_tempat_invensi',
+        'error_tanggal_invensi',
         'error_uraian_singkat',
         'document_submitted',
         'document_submitted_at',
@@ -31,12 +31,12 @@ class BiodataPaten extends Model
     ];
 
     protected $casts = [
-        'tanggal_ciptaan' => 'date',
+        'tanggal_invensi' => 'date',
         'reviewed_at' => 'datetime',
         'document_submitted_at' => 'datetime',
         'certificate_issued_at' => 'datetime',
-        'error_tempat_ciptaan' => 'boolean',
-        'error_tanggal_ciptaan' => 'boolean',
+        'error_tempat_invensi' => 'boolean',
+        'error_tanggal_invensi' => 'boolean',
         'error_uraian_singkat' => 'boolean',
         'document_submitted' => 'boolean',
         'certificate_issued' => 'boolean',
@@ -119,8 +119,8 @@ class BiodataPaten extends Model
      */
     public function hasErrors()
     {
-        return $this->error_tempat_ciptaan || 
-               $this->error_tanggal_ciptaan || 
+        return $this->error_tempat_invensi || 
+               $this->error_tanggal_invensi || 
                $this->error_uraian_singkat ||
                $this->inventors()->where(function($query) {
                    $query->where('error_name', true)
@@ -167,5 +167,71 @@ class BiodataPaten extends Model
                   ->orWhere('error_nomor_hp', true)
                   ->orWhere('error_kewarganegaraan', true);
         })->count();
+    }
+
+    /**
+     * Get document submission deadline (1 month after biodata approval)
+     */
+    public function getDocumentDeadline()
+    {
+        if ($this->isApproved() && $this->reviewed_at) {
+            return $this->reviewed_at->addMonth();
+        }
+        return null;
+    }
+
+    /**
+     * Check if document submission is overdue
+     */
+    public function isDocumentOverdue()
+    {
+        if (!$this->document_submitted && $this->getDocumentDeadline()) {
+            return now()->isAfter($this->getDocumentDeadline());
+        }
+        return false;
+    }
+
+    /**
+     * Get certificate processing deadline (2 weeks after document submitted)
+     */
+    public function getCertificateDeadline()
+    {
+        if ($this->document_submitted && $this->document_submitted_at) {
+            return $this->document_submitted_at->addWeeks(2);
+        }
+        return null;
+    }
+
+    /**
+     * Check if certificate processing is overdue
+     */
+    public function isCertificateOverdue()
+    {
+        if (!$this->certificate_issued && $this->getCertificateDeadline()) {
+            return now()->isAfter($this->getCertificateDeadline());
+        }
+        return false;
+    }
+
+    /**
+     * Get days remaining until document deadline
+     */
+    public function getDaysUntilDocumentDeadline()
+    {
+        if ($this->getDocumentDeadline()) {
+            return (int) now()->diffInDays($this->getDocumentDeadline(), false);
+        }
+        return null;
+    }
+
+    /**
+     * Get days remaining until certificate deadline
+     */
+    public function getDaysUntilCertificateDeadline()
+    {
+        if ($this->getCertificateDeadline()) {
+            return (int) now()->diffInDays($this->getCertificateDeadline(), false);
+        }
+        return null;
     }
 }
