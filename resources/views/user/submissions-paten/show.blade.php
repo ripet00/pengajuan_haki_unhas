@@ -224,9 +224,9 @@
                         <i class="fas fa-clock mr-2"></i>Biodata sedang direview oleh admin.
                     </p>
                 @elseif($submissionPaten->status == 'approved')
-                    <p class="text-sm text-blue-700 font-medium">
+                    <a href="{{ route('user.biodata-paten.create', $submissionPaten) }}" class="text-sm text-blue-700 font-medium hover:text-blue-800 transition duration-200">
                         <i class="fas fa-arrow-right mr-2"></i>Dokumen disetujui! Silakan upload biodata untuk melanjutkan.
-                    </p>
+                    </a>
                 @elseif($submissionPaten->status == 'rejected')
                     <p class="text-sm text-red-700 font-medium">
                         <i class="fas fa-times-circle mr-2"></i>Paten ditolak. Perbaiki dan upload ulang Paten.
@@ -492,23 +492,191 @@
                 </div>
                 @endif
 
-                <!-- Next Steps -->
-                @if($submissionPaten->status == 'approved' && !$submissionPaten->biodataPaten)
-                    <div class="mt-6 p-4 bg-green-50 border-l-4 border-green-400 rounded-lg">
-                        <h3 class="text-sm font-semibold text-green-800 mb-2">
-                            <i class="fas fa-check-circle mr-1"></i>Dokumen Paten Disetujui!
-                        </h3>
-                        <p class="text-sm text-green-700 mb-4">
-                            Selamat! Dokumen paten Anda telah disetujui oleh admin. Langkah selanjutnya adalah mengupload biodata para inventor.
-                        </p>
-                        
-                        <a href="#" 
-                           class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                            <i class="fas fa-user-plus mr-2"></i>Upload Biodata Inventor
-                        </a>
-                        <p class="text-xs text-green-600 mt-2">
-                            <i class="fas fa-info-circle mr-1"></i>Fitur upload biodata akan segera tersedia
-                        </p>
+                <!-- Biodata Section -->
+                @if($submissionPaten->status == 'approved')
+                    @if($submissionPaten->biodataPaten)
+                        <!-- Biodata exists - show status -->
+                        <div class="mt-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                                <i class="fas fa-user-tie mr-2 text-yellow-600"></i>Biodata Inventor
+                            </h3>
+                            
+                            <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        @if($submissionPaten->biodataPaten->status == 'pending')
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 mb-3">
+                                                <i class="fas fa-clock mr-1"></i>Sedang Direview
+                                            </span>
+                                            <p class="text-sm text-gray-600">
+                                                Biodata inventor sedang dalam proses review oleh admin. Mohon tunggu konfirmasi lebih lanjut.
+                                            </p>
+                                        @elseif($submissionPaten->biodataPaten->status == 'approved')
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 mb-3">
+                                                <i class="fas fa-check mr-1"></i>Disetujui
+                                            </span>
+                                            <p class="text-sm text-gray-600">
+                                                Biodata inventor telah disetujui. Silakan ikuti langkah selanjutnya.
+                                            </p>
+                                        @elseif($submissionPaten->biodataPaten->status == 'denied')
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 mb-3">
+                                                <i class="fas fa-times mr-1"></i>Ditolak
+                                            </span>
+                                            <p class="text-sm text-red-600 mb-3">
+                                                Biodata ditolak. Silakan perbaiki data sesuai petunjuk admin.
+                                            </p>
+                                            
+                                            @if($submissionPaten->biodataPaten->rejection_reason)
+                                                <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                                                    <h5 class="font-semibold text-red-800 text-sm mb-1">Alasan Penolakan:</h5>
+                                                    <p class="text-sm text-red-700">{{ $submissionPaten->biodataPaten->rejection_reason }}</p>
+                                                </div>
+                                            @endif
+
+                                            {{-- Biodata denied - show error flags --}}
+                                            @php 
+                                                $biodataErrors = [];
+                                                if($submissionPaten->biodataPaten->error_tempat_invensi) $biodataErrors[] = 'Tempat Invensi';
+                                                if($submissionPaten->biodataPaten->error_tanggal_invensi) $biodataErrors[] = 'Tanggal Invensi';
+                                                if($submissionPaten->biodataPaten->error_uraian_singkat) $biodataErrors[] = 'Uraian Singkat';
+
+                                                $inventorErrors = [];
+                                                foreach($submissionPaten->biodataPaten->inventors as $index => $inventor) {
+                                                    $inventorFieldErrors = [];
+                                                    if($inventor->error_name) $inventorFieldErrors[] = 'Nama';
+                                                    if($inventor->error_nik) $inventorFieldErrors[] = 'NIK';
+                                                    if($inventor->error_paspor) $inventorFieldErrors[] = 'Nomor Paspor';
+                                                    if($inventor->error_negara_asal) $inventorFieldErrors[] = 'Negara Asal';
+                                                    if($inventor->error_tempat_lahir) $inventorFieldErrors[] = 'Tempat Lahir';
+                                                    if($inventor->error_tanggal_lahir) $inventorFieldErrors[] = 'Tanggal Lahir';
+                                                    if($inventor->error_jenis_kelamin) $inventorFieldErrors[] = 'Jenis Kelamin';
+                                                    if($inventor->error_pekerjaan) $inventorFieldErrors[] = 'Pekerjaan';
+                                                    if($inventor->error_instansi) $inventorFieldErrors[] = 'Instansi';
+                                                    if($inventor->error_alamat_instansi) $inventorFieldErrors[] = 'Alamat Instansi';
+                                                    if($inventor->error_alamat) $inventorFieldErrors[] = 'Alamat';
+                                                    if($inventor->error_kelurahan) $inventorFieldErrors[] = 'Kelurahan';
+                                                    if($inventor->error_kecamatan) $inventorFieldErrors[] = 'Kecamatan';
+                                                    if($inventor->error_kota_kabupaten) $inventorFieldErrors[] = 'Kota/Kabupaten';
+                                                    if($inventor->error_provinsi) $inventorFieldErrors[] = 'Provinsi';
+                                                    if($inventor->error_kode_pos) $inventorFieldErrors[] = 'Kode Pos';
+                                                    if($inventor->error_email) $inventorFieldErrors[] = 'Email';
+                                                    if($inventor->error_nomor_hp) $inventorFieldErrors[] = 'Nomor HP';
+                                                    if($inventor->error_kewarganegaraan) $inventorFieldErrors[] = 'Kewarganegaraan';
+                                                    if($inventor->error_negara_alamat) $inventorFieldErrors[] = 'Negara (Alamat)';
+
+                                                    if(count($inventorFieldErrors) > 0) {
+                                                        $inventorErrors[] = [
+                                                            'index' => $index + 1,
+                                                            'name' => $inventor->name,
+                                                            'fields' => $inventorFieldErrors
+                                                        ];
+                                                    }
+                                                }
+                                            @endphp
+
+                                            @if(count($biodataErrors) > 0 || count($inventorErrors) > 0)
+                                                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                                    <div class="flex items-center mb-3">
+                                                        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                                                        <h5 class="font-semibold text-red-800">Perbaikan Diperlukan</h5>
+                                                    </div>
+                                                    
+                                                    <p class="text-sm text-red-700 mb-4">
+                                                        Admin telah menandai beberapa field yang perlu diperbaiki. Silakan klik "Lihat Detail" untuk memperbaiki data.
+                                                    </p>
+
+                                                    @if(count($biodataErrors) > 0)
+                                                        <div class="mb-4">
+                                                            <h6 class="font-medium text-red-800 mb-2">Kesalahan Biodata:</h6>
+                                                            <div class="flex flex-wrap gap-2">
+                                                                @foreach($biodataErrors as $error)
+                                                                    <span class="inline-flex items-center px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">
+                                                                        <i class="fas fa-times-circle mr-1"></i>{{ $error }}
+                                                                    </span>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    @endif
+
+                                                    @if(count($inventorErrors) > 0)
+                                                        <div>
+                                                            <h6 class="font-medium text-red-800 mb-2">Kesalahan Data Inventor:</h6>
+                                                            <div class="space-y-2">
+                                                                @foreach($inventorErrors as $inventorError)
+                                                                    <div class="bg-red-100 rounded-lg p-3">
+                                                                        <p class="font-medium text-red-800 text-sm mb-1">
+                                                                            Inventor {{ $inventorError['index'] }}: {{ $inventorError['name'] }}
+                                                                        </p>
+                                                                        <div class="flex flex-wrap gap-1">
+                                                                            @foreach($inventorError['fields'] as $field)
+                                                                                <span class="inline-flex items-center px-2 py-0.5 bg-red-200 text-red-800 text-xs rounded">
+                                                                                    {{ $field }}
+                                                                                </span>
+                                                                            @endforeach
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        @endif
+                                    </div>
+                                    
+                                    <div class="ml-4">
+                                        <a href="{{ route('user.biodata-paten.show', [$submissionPaten, $submissionPaten->biodataPaten]) }}" 
+                                           class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                            <i class="fas fa-eye mr-2"></i>Lihat Detail
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <!-- Biodata not created yet - show create biodata section -->
+                        <div class="mt-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl shadow-lg overflow-hidden border border-green-200">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-3">
+                                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                                <i class="fas fa-arrow-right text-green-600 text-lg"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-xl font-semibold text-green-900">Langkah Selanjutnya</h4>
+                                                <p class="text-sm text-green-700">Dokumen telah disetujui</p>
+                                            </div>
+                                        </div>
+                                        <p class="text-green-800 mb-4">
+                                            Selamat! Dokumen paten Anda telah disetujui oleh admin. Silakan lengkapi biodata inventor untuk melanjutkan proses pengajuan paten.
+                                        </p>
+                                        <div class="flex items-center text-sm text-green-700">
+                                            <i class="fas fa-info-circle mr-2"></i>
+                                            <span>Biodata diperlukan untuk penyelesaian proses paten</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex-shrink-0 ml-6">
+                                        <a href="{{ route('user.biodata-paten.create', $submissionPaten) }}" 
+                                           class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                                            <i class="fas fa-plus mr-2"></i>Buat Biodata
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endif
+
+                <!-- Submission Rejection Section -->
+                @if($submissionPaten->status == 'rejected' && $submissionPaten->rejection_reason)
+                    <div class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                            <h4 class="font-semibold text-red-800">Dokumen Ditolak</h4>
+                        </div>
+                        <p class="text-sm text-red-700">{{ $submissionPaten->rejection_reason }}</p>
                     </div>
                 @endif
             </div>
