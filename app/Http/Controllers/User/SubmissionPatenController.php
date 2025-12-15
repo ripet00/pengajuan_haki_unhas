@@ -46,28 +46,28 @@ class SubmissionPatenController extends Controller
                 'creator_name' => 'required|string|max:255',
                 'creator_whatsapp' => 'required|string|max:255',
                 'creator_country_code' => 'required|string|max:5',
-                'document' => 'required|file|mimes:pdf|max:20480', // Max 20MB
+                'document' => 'required|file|mimes:docx|max:5120', // Max 5MB for DOCX
             ], [
                 'judul_paten.required' => 'Judul paten harus diisi.',
                 'kategori_paten.required' => 'Kategori paten harus dipilih.',
                 'kategori_paten.in' => 'Kategori paten tidak valid.',
-                'creator_name.required' => 'Nama pencipta harus diisi.',
+                'creator_name.required' => 'Nama inventor harus diisi.',
                 'creator_whatsapp.required' => 'Nomor WhatsApp harus diisi.',
-                'document.required' => 'Dokumen paten harus diunggah.',
-                'document.mimes' => 'Dokumen harus berformat PDF.',
-                'document.max' => 'Ukuran dokumen maksimal 20MB.',
+                'document.required' => 'Draft paten harus diunggah.',
+                'document.mimes' => 'Draft paten harus berformat .docx (Microsoft Word).',
+                'document.max' => 'Ukuran draft paten maksimal 5MB.',
             ]);
 
             // Pre-upload validation for file size
             if ($request->hasFile('document')) {
                 $file = $request->file('document');
                 $fileSize = $file->getSize();
-                $maxSize = 20 * 1024 * 1024; // 20MB in bytes
+                $maxSize = 5 * 1024 * 1024; // 5MB in bytes
                 
                 if ($fileSize > $maxSize) {
                     $fileSizeMB = round($fileSize / (1024 * 1024), 2);
                     return back()->withErrors([
-                        'document' => "Ukuran file terlalu besar ({$fileSizeMB} MB). Maksimal ukuran file adalah 20MB. Silakan kompres file PDF Anda terlebih dahulu."
+                        'document' => "Ukuran file terlalu besar ({$fileSizeMB} MB). Maksimal ukuran file adalah 5MB. Silakan kompres file DOCX Anda terlebih dahulu."
                     ])->withInput();
                 }
             }
@@ -183,7 +183,7 @@ class SubmissionPatenController extends Controller
                 'creator_name' => 'required|string|max:255',
                 'creator_whatsapp' => 'required|string|max:255',
                 'creator_country_code' => 'required|string|max:5',
-                'document' => 'required|file|mimes:pdf|max:20480', // Max 20MB
+                'document' => 'required|file|mimes:docx|max:5120', // Max 5MB for DOCX
             ]);
 
             $file = $request->file('document');

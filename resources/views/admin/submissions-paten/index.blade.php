@@ -223,7 +223,7 @@ use Illuminate\Support\Facades\Storage;
                                 <div>
                                     <div class="text-sm font-medium text-gray-900">{{ Str::limit($submission->judul_paten, 40) }}</div>
                                     <div class="text-sm text-gray-500">
-                                        <i class="fas fa-file-pdf text-red-500 mr-1"></i>
+                                        <i class="fas fa-file-word text-blue-500 mr-1"></i>
                                         {{ $submission->file_name }}
                                     </div>
                                 </div>
@@ -287,7 +287,7 @@ use Illuminate\Support\Facades\Storage;
                                 <div class="flex flex-wrap gap-2">
                                     @if($submission->status == 'pending')
                                         <a href="{{ route('admin.submissions-paten.show', $submission) }}" 
-                                           class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                           class="inline-flex items-center px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                             <i class="fas fa-gavel mr-1"></i>
                                             Review
                                         </a>
@@ -301,9 +301,9 @@ use Illuminate\Support\Facades\Storage;
                                     
                                     <a href="{{ Storage::disk('public')->url($submission->file_path) }}" 
                                        target="_blank" 
-                                       class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                        <i class="fas fa-file-pdf mr-1"></i>
-                                        PDF
+                                       class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                        <i class="fas fa-file-word mr-1"></i>
+                                        DOCX
                                     </a>
                                     
                                     @if($submission->status != 'pending')

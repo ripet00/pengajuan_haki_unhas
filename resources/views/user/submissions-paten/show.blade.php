@@ -364,7 +364,7 @@
                                 <a href="{{ asset('storage/' . $submissionPaten->file_path) }}" 
                                    target="_blank"
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                    <i class="fas fa-eye mr-2"></i>Lihat File PDF
+                                    <i class="fas fa-eye mr-2"></i>Download File Docx
                                 </a>
                                 <a href="{{ asset('storage/' . $submissionPaten->file_path) }}" 
                                    download="{{ $submissionPaten->file_name }}"

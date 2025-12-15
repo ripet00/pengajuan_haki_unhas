@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
         }
         .glass-effect {
             background: rgba(255, 255, 255, 0.98);
@@ -18,8 +18,8 @@
         }
         .input-focus:focus {
             outline: none;
-            border-color: #dc2626;
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
         }
     </style>
 </head>
@@ -31,9 +31,40 @@
                 <img src="{{ asset('images/logo-unhas-kecil.png') }}" alt="Logo Unhas" class="w-16 h-16">
             </div>
             <h1 class="text-2xl font-bold text-white mb-2">Pengajuan Paten Baru</h1>
-            <div class="text-red-100">
+            <div class="text-green-100">
                 <p class="font-semibold">Direktorat Inovasi dan Kekayaan Intelektual</p>
                 <p class="text-sm">Universitas Hasanuddin</p>
+            </div>
+        </div>
+
+        <!-- Template Download Section -->
+        <div class="glass-effect rounded-2xl shadow-xl p-6 mb-6">
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-download text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">
+                        <i class="fas fa-file-word text-blue-600 mr-2"></i>Template Draft Paten
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-3">
+                        Silakan download template draft paten terlebih dahulu, kemudian isi sesuai dengan paten yang akan diajukan.
+                    </p>
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4 rounded">
+                        <p class="text-sm text-yellow-800">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            <strong>Penting:</strong> Template harus diisi dengan lengkap dan sesuai dengan format yang telah ditentukan.
+                        </p>
+                    </div>
+                    <a href="{{ asset('templates/Template_Draft_Paten.docx') }}" 
+                       download="Template_Draft_Paten.docx"
+                       class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                        <i class="fas fa-file-download mr-2"></i>
+                        Download Template Draft Paten (.docx)
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -150,51 +181,70 @@
 
                 <div>
                     <label for="document" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-file-pdf mr-2 text-gray-400"></i>Dokumen Paten (PDF)
+                        <i class="fas fa-file-word mr-2 text-blue-600"></i>Draft Paten (Format DOCX) <span class="text-red-500">*</span>
                     </label>
-                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-green-400 transition duration-200">
+                    
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-600 mt-1 mr-3"></i>
+                            <div class="text-sm text-blue-900">
+                                <p class="font-semibold mb-2">Langkah-langkah upload Draft Paten:</p>
+                                <ol class="list-decimal list-inside space-y-1 ml-2">
+                                    <li>Download template di atas terlebih dahulu</li>
+                                    <li>Isi template sesuai dengan paten yang akan diajukan</li>
+                                    <li>Simpan file dalam format <strong>.docx</strong></li>
+                                    <li>Upload file yang sudah diisi di bawah ini</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="drop-area" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-green-400 transition duration-200">
                         <div class="space-y-1 text-center">
                             <div class="flex text-sm text-gray-600">
                                 <label for="document" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
                                     <span class="px-3 py-2 bg-green-50 rounded-lg">
-                                        <i class="fas fa-upload mr-2"></i>Upload File PDF
+                                        <i class="fas fa-upload mr-2"></i>Upload Draft Paten (.docx)
                                     </span>
                                     <input 
                                         id="document" 
                                         name="document" 
                                         type="file" 
                                         class="sr-only" 
-                                        accept="application/pdf"
+                                        accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                         required
                                         onchange="updateFileName(this)"
                                     >
                                 </label>
                             </div>
-                            <p class="text-xs text-gray-500">PDF maksimal 20MB</p>
-                            <div id="file-info" class="text-sm text-gray-700 hidden">
-                                <i class="fas fa-file-pdf text-red-500 mr-1"></i>
-                                <span id="file-name"></span>
+                            <p class="text-xs text-gray-500">Format: .docx (Microsoft Word) | Maksimal 5MB</p>
+                            <div id="file-info" class="text-sm text-gray-700 hidden mt-2">
+                                <i class="fas fa-file-word text-blue-600 mr-1"></i>
+                                <span id="file-name" class="font-medium"></span>
                                 <span id="file-size" class="text-gray-500"></span>
                             </div>
                         </div>
                     </div>
-                    <p class="text-sm text-gray-500 mt-2">
-                        Dokumen harus berisi deskripsi penemuan, gambar teknis, dan klaim paten.
+                    <p class="text-sm text-red-600 mt-2 font-medium">
+                        <i class="fas fa-exclamation-circle mr-1"></i>
+                        Pastikan file yang diupload dalam format .docx dengan ukuran maksimal 5MB
                     </p>
                 </div>
 
                 <!-- Information Box -->
-                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded">
                     <div class="flex">
                         <div class="flex-shrink-0">
-                            <i class="fas fa-info-circle text-blue-400"></i>
+                            <i class="fas fa-check-circle text-green-500"></i>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm text-blue-700">
-                                <strong>Catatan Penting:</strong><br>
-                                • Setelah dokumen disetujui, Anda akan diminta melengkapi biodata inventor<br>
-                                • Pastikan dokumen paten berisi informasi lengkap tentang penemuan Anda<br>
-                                • Proses review akan dilakukan oleh admin dalam 3-5 hari kerja
+                            <p class="text-sm text-green-800">
+                                <strong>Alur Pengajuan Paten:</strong><br>
+                                1️⃣ Download template dan isi draft paten dengan lengkap<br>
+                                2️⃣ Upload draft paten dalam format .docx (maksimal 5MB)<br>
+                                3️⃣ Tunggu review dari admin (3-5 hari kerja)<br>
+                                4️⃣ Setelah disetujui, lengkapi biodata inventor<br>
+                                5️⃣ Setor dokumen fisik ke kantor HKI Unhas
                             </p>
                         </div>
                     </div>
@@ -223,6 +273,62 @@
     </div>
 
     <script>
+        // Prevent browser from opening file on drag and drop
+        window.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        }, false);
+        
+        window.addEventListener('drop', function(e) {
+            e.preventDefault();
+        }, false);
+
+        // Get drop area element
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('document');
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Highlight drop area when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropArea.classList.add('border-green-500', 'bg-green-50');
+        }
+
+        function unhighlight(e) {
+            dropArea.classList.remove('border-green-500', 'bg-green-50');
+        }
+
+        // Handle dropped files
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                // Transfer the dropped file to the file input
+                fileInput.files = files;
+                // Trigger the change event to validate the file
+                updateFileName(fileInput);
+            }
+        }
+
         function updateFileName(input) {
             const fileInfo = document.getElementById('file-info');
             const fileName = document.getElementById('file-name');
@@ -236,11 +342,23 @@
                 fileSize.textContent = ` (${fileSizeMB} MB)`;
                 fileInfo.classList.remove('hidden');
                 
-                // Validate file size
-                if (file.size > 20 * 1024 * 1024) {
-                    alert('Ukuran file terlalu besar! Maksimal 20MB.');
+                // Validate file extension
+                const validExtensions = ['.docx'];
+                const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+                
+                if (!validExtensions.includes(fileExtension)) {
+                    alert('Format file tidak valid! Hanya file .docx yang diperbolehkan.\n\nSilakan upload file dalam format Microsoft Word (.docx)');
                     input.value = '';
                     fileInfo.classList.add('hidden');
+                    return;
+                }
+                
+                // Validate file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`Ukuran file terlalu besar (${fileSizeMB} MB)!\n\nMaksimal ukuran file adalah 5MB.\nSilakan kompres atau kurangi ukuran file Anda.`);
+                    input.value = '';
+                    fileInfo.classList.add('hidden');
+                    return;
                 }
             }
         }
