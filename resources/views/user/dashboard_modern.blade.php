@@ -128,12 +128,12 @@
                     </div>
                     <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Baru</span>
                 </div>
-                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Pengajuan Baru</h3>
-                <p class="text-gray-600 text-xs sm:text-sm mb-4">Ajukan permohonan HKI baru untuk karya Anda</p>
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Pengajuan Hak Cipta</h3>
+                <p class="text-gray-600 text-xs sm:text-sm mb-4">Ajukan permohonan Hak Cipta untuk karya Anda</p>
                 <button 
                     onclick="window.location.href='{{ route('user.submissions.create') }}'"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
-                    <i class="fas fa-plus mr-2"></i>Buat Pengajuan
+                    <i class="fas fa-plus mr-2"></i>Buat Pengajuan Hak Cipta
                 </button>
             </div>
 
@@ -178,7 +178,7 @@
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
                         <i class="fas fa-book text-orange-600"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">Panduan HKI</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">Panduan Hak Cipta</h3>
                 </div>
                 <div class="space-y-3">
                     <div class="flex items-start">

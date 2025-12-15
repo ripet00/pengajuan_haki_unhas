@@ -120,7 +120,7 @@
         <!-- Progress Tracker -->
         <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <i class="fas fa-route mr-2 text-blue-600"></i>Progress Pengajuan HKI
+                <i class="fas fa-route mr-2 text-blue-600"></i>Progress Pengajuan Hak Cipta
             </h3>
             
             <div class="flex items-center justify-between relative">
@@ -239,7 +239,7 @@
         <!-- Submission Details -->
         <div class="bg-white rounded-xl shadow-lg overflow-hidden">
             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-900">Detail Pengajuan HKI</h2>
+                <h2 class="text-xl font-semibold text-gray-900">Detail Pengajuan Hak Cipta</h2>
                 <p class="text-sm text-gray-600 mt-1">ID Pengajuan: #{{ $submission->id }}</p>
             </div>
 
