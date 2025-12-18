@@ -99,7 +99,7 @@ class BiodataPatenController extends Controller
             'tempat_invensi' => 'required|string|max:255',
             'tanggal_invensi' => 'required|date',
             'uraian_singkat' => 'required|string',
-            'inventors' => 'required|array|min:1|max:10',
+            'inventors' => 'required|array|min:1|max:6',
             'inventors.*.name' => 'required|string|max:255',
             'inventors.*.nik' => 'required|digits:16',
             'inventors.*.npwp' => 'nullable|string|max:255',
