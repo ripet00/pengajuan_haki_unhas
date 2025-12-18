@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
         }
         
         .header-text {
@@ -56,7 +56,7 @@
                     <img src="{{ asset('images/logo-unhas-kecil.png') }}" alt="Logo Unhas" class="w-10 h-10 sm:w-12 sm:h-12 mr-3">
                     <div>
                         <h1 class="text-sm sm:text-lg font-bold header-text leading-tight">Direktorat Inovasi dan Kekayaan Intelektual</h1>
-                        <p class="text-red-100 text-xs sm:text-sm">Universitas Hasanuddin</p>
+                        <p class="text-green-100 text-xs sm:text-sm">Universitas Hasanuddin</p>
                     </div>
                 </div>
                 
@@ -98,7 +98,7 @@
         <!-- Page Title -->
         <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
             <h2 class="text-2xl font-bold text-gray-900 mb-2 flex items-center">
-                <i class="fas fa-lightbulb text-green-600 mr-3"></i>Daftar Pengajuan Paten
+                <i class="fas fa-lightbulb text-green-600 mr-3"></i>Riwayat Pengajuan Paten
             </h2>
             <p class="text-gray-600">Berikut adalah daftar semua pengajuan paten yang pernah Anda buat.</p>
         </div>

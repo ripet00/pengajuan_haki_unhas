@@ -120,7 +120,7 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
             <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition duration-300">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -153,19 +153,35 @@
                 </button>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition duration-300 md:col-span-2 lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition duration-300">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-chart-line text-lg sm:text-xl text-purple-600"></i>
+                        <i class="fas fa-history text-lg sm:text-xl text-purple-600"></i>
                     </div>
-                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Info</span>
+                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Hak Cipta</span>
                 </div>
-                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Status Pengajuan</h3>
-                <p class="text-gray-600 text-xs sm:text-sm mb-4">Pantau progress pengajuan HKI Anda</p>
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Riwayat Hak Cipta</h3>
+                <p class="text-gray-600 text-xs sm:text-sm mb-4">Lihat semua riwayat pengajuan Hak Cipta Anda</p>
                 <button 
                     onclick="window.location.href='{{ route('user.submissions.index') }}'"
                     class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
-                    <i class="fas fa-eye mr-2"></i>Cek Status
+                    <i class="fas fa-list mr-2"></i>Lihat Riwayat
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-history text-lg sm:text-xl text-teal-600"></i>
+                    </div>
+                    <span class="bg-teal-100 text-teal-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Paten</span>
+                </div>
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Riwayat Paten</h3>
+                <p class="text-gray-600 text-xs sm:text-sm mb-4">Lihat semua riwayat pengajuan Paten Anda</p>
+                <button 
+                    onclick="window.location.href='{{ route('user.submissions-paten.index') }}'"
+                    class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
+                    <i class="fas fa-list mr-2"></i>Lihat Riwayat
                 </button>
             </div>
         </div>
