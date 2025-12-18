@@ -54,8 +54,12 @@ class BiodataPatenController extends Controller
         // Check if this is first time submitting (no inventors exist yet)
         $isFirstTimeSubmit = $inventors->isEmpty();
         
-        // Get user data for auto-fill
-        $user = Auth::user();
+        // Get creator data for auto-fill (inventor pertama from submission)
+        $creatorData = [
+            'name' => $submissionPaten->creator_name,
+            'phone' => $submissionPaten->creator_whatsapp,
+            'country_code' => $submissionPaten->creator_country_code ?? '+62'
+        ];
         
         // If there's old input (validation failed), merge it with inventors
         if (old('inventors')) {
@@ -71,7 +75,7 @@ class BiodataPatenController extends Controller
             });
         }
 
-        return view('user.biodata-paten.create', compact('submissionPaten', 'biodataPaten', 'inventors', 'isEdit', 'canEdit', 'isFirstTimeSubmit', 'user'));
+        return view('user.biodata-paten.create', compact('submissionPaten', 'biodataPaten', 'inventors', 'isEdit', 'canEdit', 'isFirstTimeSubmit', 'creatorData'));
     }
 
     /**

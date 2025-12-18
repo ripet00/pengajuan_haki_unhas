@@ -343,11 +343,8 @@
         // Check if this is first time submit (for auto-fill feature)
         const isFirstTimeSubmit = @json($isFirstTimeSubmit ?? false);
         
-        // User data for auto-fill (only used for first time)
-        const userData = {
-            name: @json($user->name ?? ''),
-            phone: @json($user->phone_number ?? '')
-        };
+        // Creator data for auto-fill (inventor pertama from submission)
+        const creatorData = @json($creatorData ?? ['name' => '', 'phone' => '', 'country_code' => '+62']);
         
         function createInventorForm(index, inventorData = {}) {
             const isLeader = index === 0;
@@ -355,8 +352,8 @@
             
             // Auto-fill for first inventor (Inventor 1) only on first time submit
             if (isLeader && isFirstTimeSubmit && !inventorData.name && !inventorData.nomor_hp) {
-                inventor.name = userData.name;
-                inventor.nomor_hp = userData.phone;
+                inventor.name = creatorData.name || '';
+                inventor.nomor_hp = creatorData.phone || '';
             }
             
             // Check if fakultas is a predefined option or custom
