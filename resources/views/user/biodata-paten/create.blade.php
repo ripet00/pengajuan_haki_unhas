@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
         }
         
         /* Ensure text is always visible with high contrast */
@@ -58,7 +58,7 @@
                     <img src="{{ asset('images/logo-unhas-kecil.png') }}" alt="Logo Unhas" class="w-10 h-10 sm:w-12 sm:h-12 mr-3">
                     <div>
                         <h1 class="text-sm sm:text-lg font-bold header-text leading-tight">Direktorat Inovasi dan Kekayaan Intelektual</h1>
-                        <p class="text-red-100 text-xs sm:text-sm">Universitas Hasanuddin</p>
+                        <p class="text-green-100 text-xs sm:text-sm">Universitas Hasanuddin</p>
                     </div>
                 </div>
                 
