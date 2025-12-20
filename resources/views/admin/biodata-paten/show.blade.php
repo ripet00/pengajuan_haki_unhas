@@ -176,10 +176,6 @@
                                             {{ $biodataPaten->tanggal_invensi ? $biodataPaten->tanggal_invensi->format('d M Y') : '-' }}
                                         </p>
                                     </div>
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm font-bold text-gray-600">Uraian Singkat</label>
-                                        <p class="mt-1 text-sm text-gray-900">{{ $biodataPaten->uraian_singkat ?: '-' }}</p>
-                                    </div>
                                 </div>
 
                                 <!-- Biodata-level error flags (positioned under Detail Biodata) -->
@@ -201,14 +197,6 @@
                                                 <i class="fas fa-times {{ $biodataPaten->error_tanggal_invensi ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
                                             </span>
                                             <span>Tanggal Invensi</span>
-                                        </label>
-                                        <label class="inline-flex items-center text-sm cursor-pointer relative">
-                                            <input type="hidden" name="error_uraian_singkat" value="0">
-                                            <input type="checkbox" name="error_uraian_singkat" value="1" class="absolute w-6 h-6 opacity-0 cursor-pointer z-10" aria-label="Tandai Uraian Singkat salah" {{ $biodataPaten->error_uraian_singkat ? 'checked' : '' }}>
-                                            <span class="inline-flex items-center justify-center h-6 w-6 border rounded text-red-600 mr-2 relative">
-                                                <i class="fas fa-times {{ $biodataPaten->error_uraian_singkat ? 'opacity-100' : 'opacity-0' }} transition-opacity duration-150"></i>
-                                            </span>
-                                            <span>Uraian Singkat</span>
                                         </label>
                                     </div>
                                 </div>
@@ -245,21 +233,6 @@
                                         <div>
                                             <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Nama Lengkap</label>
                                             <p class="text-sm text-gray-900 {{ $member->error_name ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->name ?: '-' }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">NIK</label>
-                                            <p class="text-sm text-gray-900 {{ $member->error_nik ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->nik ?: '-' }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">NPWP</label>
-                                            <p class="text-sm text-gray-900 {{ $member->error_npwp ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->npwp ?: '-' }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5">Jenis Kelamin</label>
-                                            <p class="text-sm text-gray-900 {{ $member->error_jenis_kelamin ? 'bg-red-100 border-l-4 border-red-600 pl-3 py-2 font-semibold' : '' }}">{{ $member->jenis_kelamin ?: '-' }}</p>
                                         </div>
 
                                         <div>
@@ -353,9 +326,6 @@
                                                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                                                     <!-- Hidden inputs for unchecked state -->
                                                     <input type="hidden" name="members[{{ $mid }}][error_name]" value="0">
-                                                    <input type="hidden" name="members[{{ $mid }}][error_nik]" value="0">
-                                                    <input type="hidden" name="members[{{ $mid }}][error_npwp]" value="0">
-                                                    <input type="hidden" name="members[{{ $mid }}][error_jenis_kelamin]" value="0">
                                                     <input type="hidden" name="members[{{ $mid }}][error_pekerjaan]" value="0">
                                                     <input type="hidden" name="members[{{ $mid }}][error_universitas]" value="0">
                                                     <input type="hidden" name="members[{{ $mid }}][error_fakultas]" value="0">
@@ -374,18 +344,6 @@
                                                     <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
                                                         <input type="checkbox" name="members[{{ $mid }}][error_name]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_name ? 'checked' : '' }}>
                                                         <span class="text-gray-700">Nama</span>
-                                                    </label>
-                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_nik]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_nik ? 'checked' : '' }}>
-                                                        <span class="text-gray-700">NIK</span>
-                                                    </label>
-                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_npwp]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_npwp ? 'checked' : '' }}>
-                                                        <span class="text-gray-700">NPWP</span>
-                                                    </label>
-                                                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
-                                                        <input type="checkbox" name="members[{{ $mid }}][error_jenis_kelamin]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_jenis_kelamin ? 'checked' : '' }}>
-                                                        <span class="text-gray-700">Jenis Kelamin</span>
                                                     </label>
                                                     <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded border border-transparent hover:border-red-200">
                                                         <input type="checkbox" name="members[{{ $mid }}][error_pekerjaan]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500 member-error-checkbox" {{ $member->error_pekerjaan ? 'checked' : '' }}>
@@ -573,6 +531,74 @@
                                         <form id="editReviewForm" method="POST" action="{{ route('admin.biodata-paten.review', $biodataPaten) }}" class="space-y-4">
                                             @csrf
                                             
+                                            <!-- Error Flags untuk Biodata-level fields -->
+                                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                                                <h4 class="text-sm font-bold text-gray-800 mb-3 flex items-center">
+                                                    <i class="fas fa-exclamation-triangle mr-2 text-orange-600"></i>
+                                                    Tandai Error pada Biodata
+                                                </h4>
+                                                <div class="flex flex-wrap gap-3">
+                                                    <label class="inline-flex items-center text-sm cursor-pointer relative">
+                                                        <input type="hidden" name="error_tempat_invensi" value="0">
+                                                        <input type="checkbox" name="error_tempat_invensi" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500" {{ $biodataPaten->error_tempat_invensi ? 'checked' : '' }}>
+                                                        <span class="ml-2">Tempat Invensi</span>
+                                                    </label>
+                                                    <label class="inline-flex items-center text-sm cursor-pointer relative">
+                                                        <input type="hidden" name="error_tanggal_invensi" value="0">
+                                                        <input type="checkbox" name="error_tanggal_invensi" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500" {{ $biodataPaten->error_tanggal_invensi ? 'checked' : '' }}>
+                                                        <span class="ml-2">Tanggal Invensi</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <!-- Error Flags untuk Inventors -->
+                                            <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+                                                <h4 class="text-sm font-bold text-gray-800 mb-3 flex items-center">
+                                                    <i class="fas fa-users mr-2 text-purple-600"></i>
+                                                    Tandai Error pada Inventor
+                                                </h4>
+                                                @foreach($biodataPaten->inventors->sortBy('is_leader', SORT_REGULAR, true) as $invIdx => $inv)
+                                                <details class="mb-3">
+                                                    <summary class="cursor-pointer list-none bg-white border border-gray-300 rounded p-3 hover:bg-gray-50">
+                                                        <span class="font-medium text-gray-800">
+                                                            <i class="fas fa-user mr-1"></i>
+                                                            Inventor {{ $invIdx + 1 }}: {{ $inv->name }}{{ $inv->is_leader ? ' (Ketua)' : '' }}
+                                                        </span>
+                                                        <i class="fas fa-chevron-down float-right mt-1"></i>
+                                                    </summary>
+                                                    <div class="mt-2 p-3 bg-white border border-gray-200 rounded">
+                                                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                                                            @php
+                                                                $errorFields = [
+                                                                    'error_name' => 'Nama',
+                                                                    'error_pekerjaan' => 'Pekerjaan',
+                                                                    'error_universitas' => 'Universitas',
+                                                                    'error_fakultas' => 'Fakultas',
+                                                                    'error_program_studi' => 'Program Studi',
+                                                                    'error_alamat' => 'Alamat',
+                                                                    'error_kelurahan' => 'Kelurahan',
+                                                                    'error_kecamatan' => 'Kecamatan',
+                                                                    'error_kota_kabupaten' => 'Kota/Kabupaten',
+                                                                    'error_provinsi' => 'Provinsi',
+                                                                    'error_kode_pos' => 'Kode Pos',
+                                                                    'error_email' => 'Email',
+                                                                    'error_nomor_hp' => 'Nomor HP',
+                                                                    'error_kewarganegaraan' => 'Kewarganegaraan',
+                                                                ];
+                                                            @endphp
+                                                            @foreach($errorFields as $field => $label)
+                                                            <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-red-50 p-2 rounded">
+                                                                <input type="hidden" name="members[{{ $inv->id }}][{{ $field }}]" value="0">
+                                                                <input type="checkbox" name="members[{{ $inv->id }}][{{ $field }}]" value="1" class="rounded border-gray-300 text-red-600 focus:ring-red-500" {{ $inv->$field ? 'checked' : '' }}>
+                                                                <span class="text-gray-700">{{ $label }}</span>
+                                                            </label>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </details>
+                                                @endforeach
+                                            </div>
+
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-700 mb-3">Ubah Keputusan:</label>
                                                 <div class="space-y-2">

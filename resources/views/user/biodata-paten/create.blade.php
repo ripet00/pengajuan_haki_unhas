@@ -240,29 +240,6 @@
                             @enderror
                         </div>
                     </div>
-
-                    <div>
-                        <label for="uraian_singkat" class="block text-sm font-medium text-gray-700 mb-1">
-                            Uraian Singkat Paten *
-                            @if($biodataPaten && $biodataPaten->error_uraian_singkat)
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
-                                    <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
-                                </span>
-                            @endif
-                        </label>
-                        <textarea id="uraian_singkat" 
-                                  name="uraian_singkat" 
-                                  rows="4"
-                                  placeholder="{{ $biodataPaten && $biodataPaten->error_uraian_singkat ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan uraian singkat paten maksimal 2 kalimat.' }}"
-                                  class="w-full px-3 py-2 border {{ $biodataPaten && $biodataPaten->error_uraian_singkat ? 'border-red-300 bg-red-50' : 'border-gray-300' }} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                  required>{{ old('uraian_singkat', $biodataPaten ? $biodataPaten->uraian_singkat : '') }}</textarea>
-                        <p class="mt-1 text-xs text-gray-500">
-                            <i class="fas fa-info-circle mr-1"></i>Cukup tuliskan maksimal 2 kalimat yang menjelaskan inti dari paten
-                        </p>
-                        @error('uraian_singkat')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
                 </div>
             </div>
 
@@ -340,6 +317,9 @@
         // Existing inventors data from server
         const existingInventors = @json($inventors ? $inventors->toArray() : []);
         
+        // Debug: Log existing inventors to console
+        console.log('Existing Inventors Data:', existingInventors);
+        
         // Check if this is first time submit (for auto-fill feature)
         const isFirstTimeSubmit = @json($isFirstTimeSubmit ?? false);
         
@@ -349,6 +329,16 @@
         function createInventorForm(index, inventorData = {}) {
             const isLeader = index === 0;
             const inventor = inventorData || {};
+            
+            // Debug log untuk inventor yang sedang dibuat
+            if (inventorData && Object.keys(inventorData).length > 0) {
+                console.log(`Creating form for inventor ${index}:`, inventor);
+                console.log('Error flags:', {
+                    error_name: inventor.error_name,
+                    error_pekerjaan: inventor.error_pekerjaan,
+                    error_email: inventor.error_email
+                });
+            }
             
             // Auto-fill for first inventor (Inventor 1) only on first time submit
             if (isLeader && isFirstTimeSubmit && !inventorData.name && !inventorData.nomor_hp) {
@@ -399,10 +389,10 @@
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
+                        <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Nama Lengkap *
-                                ${inventor.error_name ? `
+                                ${!!inventor.error_name ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                     </span>
@@ -411,66 +401,12 @@
                             <input type="text" 
                                    name="inventors[${index}][name]" 
                                    value="${inventor.name || ''}"
-                                   placeholder="${inventor.error_name ? 'Admin menandai field ini perlu diperbaiki' : 'Contoh: Dr. Ir. Ahmad Sudirman, M.T.'}"
-                                   class="w-full px-3 py-2 border ${inventor.error_name ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                   placeholder="${!!inventor.error_name ? 'Admin menandai field ini perlu diperbaiki' : 'Contoh: Dr. Ir. Ahmad Sudirman, M.T.'}"
+                                   class="w-full px-3 py-2 border ${!!inventor.error_name ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                    required>
                             <p class="text-xs text-gray-500 mt-1">
                                 <i class="fas fa-info-circle mr-1"></i>${isLeader && isFirstTimeSubmit && inventor.name ? '✓ Terisi otomatis dari data submission (dapat diedit). Pastikan nama dan gelar sudah benar.' : 'Isi dengan nama lengkap beserta gelar (jika ada)'}
                             </p>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                NIK *
-                                ${inventor.error_nik ? `
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
-                                    </span>
-                                ` : ''}
-                            </label>
-                            <input type="text" 
-                                   name="inventors[${index}][nik]" 
-                                   value="${inventor.nik || ''}"
-                                   placeholder="${inventor.error_nik ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan NIK 16 digit'}"
-                                   pattern="[0-9]{16}"
-                                   maxlength="16"
-                                   class="w-full px-3 py-2 border ${inventor.error_nik ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                   required>
-                            <p class="text-xs text-gray-500 mt-1">
-                                <i class="fas fa-info-circle mr-1"></i>NIK harus 16 digit angka
-                            </p>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                NPWP
-                                ${inventor.error_npwp ? `
-                                    <span class="text-red-600 text-xs ml-1">
-                                        <i class="fas fa-exclamation-circle"></i> Admin menandai field ini perlu diperbaiki
-                                    </span>
-                                ` : ''}
-                            </label>
-                            <input type="text" 
-                                   name="inventors[${index}][npwp]" 
-                                   value="${inventor.npwp || ''}"
-                                   placeholder="${inventor.error_npwp ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan NPWP (opsional)'}"
-                                   class="w-full px-3 py-2 border ${inventor.error_npwp ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                            <p class="text-xs text-gray-500 mt-1">
-                                <i class="fas fa-info-circle mr-1"></i>Opsional - Nomor Pokok Wajib Pajak
-                            </p>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Jenis Kelamin *
-                            </label>
-                            <select name="inventors[${index}][jenis_kelamin]" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    required>
-                                <option value="">Pilih Jenis Kelamin</option>
-                                <option value="Pria" ${inventor.jenis_kelamin === 'Pria' ? 'selected' : ''}>Pria</option>
-                                <option value="Wanita" ${inventor.jenis_kelamin === 'Wanita' ? 'selected' : ''}>Wanita</option>
-                            </select>
                         </div>
                     </div>
                     
@@ -478,7 +414,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Pekerjaan *
-                                ${inventor.error_pekerjaan ? `
+                                ${!!inventor.error_pekerjaan ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                     </span>
@@ -487,15 +423,15 @@
                             <input type="text" 
                                    name="inventors[${index}][pekerjaan]" 
                                    value="${inventor.pekerjaan || ''}"
-                                   placeholder="${inventor.error_pekerjaan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan pekerjaan'}"
-                                   class="w-full px-3 py-2 border ${inventor.error_pekerjaan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                   placeholder="${!!inventor.error_pekerjaan ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan pekerjaan'}"
+                                   class="w-full px-3 py-2 border ${!!inventor.error_pekerjaan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                    required>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Universitas *
-                                ${inventor.error_universitas ? `
+                                ${!!inventor.error_universitas ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                     </span>
@@ -504,15 +440,15 @@
                             <input type="text" 
                                    name="inventors[${index}][universitas]" 
                                    value="${inventor.universitas || ''}"
-                                   placeholder="${inventor.error_universitas ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan universitas'}"
-                                   class="w-full px-3 py-2 border ${inventor.error_universitas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                   placeholder="${!!inventor.error_universitas ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan universitas'}"
+                                   class="w-full px-3 py-2 border ${!!inventor.error_universitas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                    required>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Fakultas *
-                                ${inventor.error_fakultas ? `
+                                ${!!inventor.error_fakultas ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                     </span>
@@ -521,7 +457,7 @@
                             <select name="inventors[${index}][fakultas_type]" 
                                     id="fakultas_type_${index}"
                                     data-inventor-index="${index}"
-                                    class="fakultas-type-select w-full px-3 py-2 border ${inventor.error_fakultas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    class="fakultas-type-select w-full px-3 py-2 border ${!!inventor.error_fakultas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                     required>
                                 <option value="">Pilih Fakultas</option>
                                 <option value="Umum" ${fakultasTypeValue === 'Umum' ? 'selected' : ''}>Umum</option>
@@ -550,7 +486,7 @@
                         <div id="fakultas_manual_div_${index}" class="fakultas-manual-container" style="display: ${isFakultasCustom ? 'block' : 'none'}">
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Nama Fakultas *
-                                ${inventor.error_fakultas ? `
+                                ${!!inventor.error_fakultas ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                     </span>
@@ -560,7 +496,7 @@
                                    id="fakultas_manual_${index}"
                                    value="${isFakultasCustom ? inventor.fakultas : ''}"
                                    placeholder="Masukkan nama fakultas"
-                                   class="fakultas-manual-input w-full px-3 py-2 border ${inventor.error_fakultas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                   class="fakultas-manual-input w-full px-3 py-2 border ${!!inventor.error_fakultas ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <p class="text-xs text-gray-500 mt-1">
                                 <i class="fas fa-info-circle mr-1"></i>Isi manual jika fakultas tidak ada di daftar
                             </p>
@@ -572,7 +508,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Program Studi *
-                                ${inventor.error_program_studi ? `
+                                ${!!inventor.error_program_studi ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                     </span>
@@ -581,15 +517,15 @@
                             <input type="text" 
                                    name="inventors[${index}][program_studi]" 
                                    value="${inventor.program_studi || ''}"
-                                   placeholder="${inventor.error_program_studi ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan program studi'}"
-                                   class="w-full px-3 py-2 border ${inventor.error_program_studi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                   placeholder="${!!inventor.error_program_studi ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan program studi'}"
+                                   class="w-full px-3 py-2 border ${!!inventor.error_program_studi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                    required>
                         </div>
                         
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Alamat *
-                                ${inventor.error_alamat ? `
+                                ${!!inventor.error_alamat ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                     </span>
@@ -597,15 +533,15 @@
                             </label>
                             <textarea name="inventors[${index}][alamat]" 
                                       rows="2"
-                                      placeholder="${inventor.error_alamat ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan alamat lengkap'}"
-                                      class="w-full px-3 py-2 border ${inventor.error_alamat ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                      placeholder="${!!inventor.error_alamat ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan alamat lengkap'}"
+                                      class="w-full px-3 py-2 border ${!!inventor.error_alamat ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                       required>${inventor.alamat || ''}</textarea>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Kewarganegaraan *
-                                ${inventor.error_kewarganegaraan ? `
+                                ${!!inventor.error_kewarganegaraan ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                     </span>
@@ -614,7 +550,7 @@
                             <select name="inventors[${index}][kewarganegaraan_type]" 
                                     id="kewarganegaraan_type_${index}"
                                     data-inventor-index="${index}"
-                                    class="kewarganegaraan-type-select w-full px-3 py-2 border ${inventor.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    class="kewarganegaraan-type-select w-full px-3 py-2 border ${!!inventor.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                     required>
                                 <option value="">Pilih Kewarganegaraan</option>
                                 <option value="Indonesia" ${(inventor.kewarganegaraan || 'Indonesia') === 'Indonesia' ? 'selected' : ''}>Indonesia</option>
@@ -625,7 +561,7 @@
                         <div id="kewarganegaraan_asing_div_${index}" class="kewarganegaraan-asing-container" style="display: ${(inventor.kewarganegaraan && inventor.kewarganegaraan !== 'Indonesia') ? 'block' : 'none'}">
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Negara Asal *
-                                ${inventor.error_kewarganegaraan ? `
+                                ${!!inventor.error_kewarganegaraan ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                     </span>
@@ -636,7 +572,7 @@
                                    id="kewarganegaraan_asing_${index}"
                                    value="${(inventor.kewarganegaraan && inventor.kewarganegaraan !== 'Indonesia') ? inventor.kewarganegaraan : ''}"
                                    placeholder="Contoh: Malaysia, Singapura, Amerika Serikat"
-                                   class="kewarganegaraan-asing-input w-full px-3 py-2 border ${inventor.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                   class="kewarganegaraan-asing-input w-full px-3 py-2 border ${!!inventor.error_kewarganegaraan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
                         
                         <!-- Hidden input to store final kewarganegaraan value -->
@@ -646,7 +582,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Provinsi *
-                                    ${inventor.error_provinsi ? `
+                                    ${!!inventor.error_provinsi ? `
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                             <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                         </span>
@@ -655,7 +591,7 @@
                                 <select name="inventors[${index}][provinsi]" 
                                         id="provinsi_${index}"
                                         data-inventor-index="${index}"
-                                        class="provinsi-select w-full px-3 py-2 border ${inventor.error_provinsi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                        class="provinsi-select w-full px-3 py-2 border ${!!inventor.error_provinsi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                     <option value="">Pilih Provinsi</option>
                                 </select>
                             </div>
@@ -663,7 +599,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Kota/Kabupaten *
-                                    ${inventor.error_kota_kabupaten ? `
+                                    ${!!inventor.error_kota_kabupaten ? `
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                             <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                         </span>
@@ -672,7 +608,7 @@
                                 <select name="inventors[${index}][kota_kabupaten]" 
                                         id="kota_kabupaten_${index}"
                                         data-inventor-index="${index}"
-                                        class="kota-select w-full px-3 py-2 border ${inventor.error_kota_kabupaten ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        class="kota-select w-full px-3 py-2 border ${!!inventor.error_kota_kabupaten ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                         disabled>
                                     <option value="">Pilih Kota/Kabupaten</option>
                                 </select>
@@ -681,7 +617,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Kecamatan *
-                                    ${inventor.error_kecamatan ? `
+                                    ${!!inventor.error_kecamatan ? `
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                             <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                         </span>
@@ -690,7 +626,7 @@
                                 <select name="inventors[${index}][kecamatan]" 
                                         id="kecamatan_${index}"
                                         data-inventor-index="${index}"
-                                        class="kecamatan-select w-full px-3 py-2 border ${inventor.error_kecamatan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        class="kecamatan-select w-full px-3 py-2 border ${!!inventor.error_kecamatan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                         disabled>
                                     <option value="">Pilih Kecamatan</option>
                                 </select>
@@ -699,7 +635,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Kelurahan *
-                                    ${inventor.error_kelurahan ? `
+                                    ${!!inventor.error_kelurahan ? `
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                             <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                         </span>
@@ -708,7 +644,7 @@
                                 <select name="inventors[${index}][kelurahan]" 
                                         id="kelurahan_${index}"
                                         data-inventor-index="${index}"
-                                        class="kelurahan-select w-full px-3 py-2 border ${inventor.error_kelurahan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        class="kelurahan-select w-full px-3 py-2 border ${!!inventor.error_kelurahan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                         disabled>
                                     <option value="">Pilih Kelurahan</option>
                                 </select>
@@ -719,7 +655,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Provinsi/Negara Bagian *
-                                    ${inventor.error_provinsi ? `
+                                    ${!!inventor.error_provinsi ? `
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                             <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                         </span>
@@ -730,13 +666,13 @@
                                        id="provinsi_manual_${index}"
                                        value="${inventor.kewarganegaraan === 'Asing' ? inventor.provinsi || '' : ''}"
                                        placeholder="Masukkan provinsi/negara bagian"
-                                       class="w-full px-3 py-2 border ${inventor.error_provinsi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                       class="w-full px-3 py-2 border ${!!inventor.error_provinsi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             </div>
                             
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Kota *
-                                    ${inventor.error_kota_kabupaten ? `
+                                    ${!!inventor.error_kota_kabupaten ? `
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                             <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                         </span>
@@ -747,13 +683,13 @@
                                        id="kota_manual_${index}"
                                        value="${inventor.kewarganegaraan === 'Asing' ? inventor.kota_kabupaten || '' : ''}"
                                        placeholder="Masukkan nama kota"
-                                       class="w-full px-3 py-2 border ${inventor.error_kota_kabupaten ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                       class="w-full px-3 py-2 border ${!!inventor.error_kota_kabupaten ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             </div>
                             
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Kecamatan/Distrik
-                                    ${inventor.error_kecamatan ? `
+                                    ${!!inventor.error_kecamatan ? `
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                             <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                         </span>
@@ -764,13 +700,13 @@
                                        id="kecamatan_manual_${index}"
                                        value="${inventor.kewarganegaraan === 'Asing' ? inventor.kecamatan || '' : ''}"
                                        placeholder="Masukkan kecamatan/distrik (opsional)"
-                                       class="w-full px-3 py-2 border ${inventor.error_kecamatan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                       class="w-full px-3 py-2 border ${!!inventor.error_kecamatan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             </div>
                             
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Kelurahan/Desa
-                                    ${inventor.error_kelurahan ? `
+                                    ${!!inventor.error_kelurahan ? `
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                             <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                         </span>
@@ -781,14 +717,14 @@
                                        id="kelurahan_manual_${index}"
                                        value="${inventor.kewarganegaraan === 'Asing' ? inventor.kelurahan || '' : ''}"
                                        placeholder="Masukkan kelurahan/desa (opsional)"
-                                       class="w-full px-3 py-2 border ${inventor.error_kelurahan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                       class="w-full px-3 py-2 border ${!!inventor.error_kelurahan ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             </div>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Kode Pos *
-                                ${inventor.error_kode_pos ? `
+                                ${!!inventor.error_kode_pos ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                     </span>
@@ -797,15 +733,15 @@
                             <input type="text" 
                                    name="inventors[${index}][kode_pos]" 
                                    value="${inventor.kode_pos || ''}"
-                                   placeholder="${inventor.error_kode_pos ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kode pos'}"
-                                   class="w-full px-3 py-2 border ${inventor.error_kode_pos ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                   placeholder="${!!inventor.error_kode_pos ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan kode pos'}"
+                                   class="w-full px-3 py-2 border ${!!inventor.error_kode_pos ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                    required>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Email *
-                                ${inventor.error_email ? `
+                                Email
+                                ${!!inventor.error_email ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                     </span>
@@ -814,15 +750,17 @@
                             <input type="email" 
                                    name="inventors[${index}][email]" 
                                    value="${inventor.email || ''}"
-                                   placeholder="${inventor.error_email ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan email'}"
-                                   class="w-full px-3 py-2 border ${inventor.error_email ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                   required>
+                                   placeholder="${!!inventor.error_email ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan email (opsional)'}"
+                                   class="w-full px-3 py-2 border ${!!inventor.error_email ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>Opsional - Email inventor
+                            </p>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Nomor HP *
-                                ${inventor.error_nomor_hp ? `
+                                ${!!inventor.error_nomor_hp ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
                                     </span>
@@ -831,8 +769,8 @@
                             <input type="text" 
                                    name="inventors[${index}][nomor_hp]" 
                                    value="${inventor.nomor_hp || ''}"
-                                   placeholder="${inventor.error_nomor_hp ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan nomor HP aktif'}"
-                                   class="w-full px-3 py-2 border ${inventor.error_nomor_hp ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                   placeholder="${!!inventor.error_nomor_hp ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan nomor HP aktif'}"
+                                   class="w-full px-3 py-2 border ${!!inventor.error_nomor_hp ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                    required>
                             <p class="text-xs text-gray-500 mt-1">
                                 <i class="fas fa-info-circle mr-1"></i>${isLeader && isFirstTimeSubmit && inventor.nomor_hp ? '✓ Terisi otomatis dari data submission (dapat diedit). Pastikan nomor Whatsapp sudah benar.' : 'Nomor HP harus aktif dan dapat dihubungi'}

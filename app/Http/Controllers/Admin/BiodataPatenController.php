@@ -102,23 +102,28 @@ class BiodataPatenController extends Controller
             return back()->with('error', 'Admin session tidak valid.');
         }
 
+        // DEBUG: Log request data
+        \Log::info('Review Request Data:', [
+            'all' => $request->all(),
+            'has_members' => $request->has('members'),
+            'members' => $request->input('members'),
+            'error_tempat_invensi' => $request->input('error_tempat_invensi'),
+            'error_tanggal_invensi' => $request->input('error_tanggal_invensi'),
+        ]);
+
         // Update biodata error flags
         $biodataPaten->update([
             'error_tempat_invensi' => $request->boolean('error_tempat_invensi'),
             'error_tanggal_invensi' => $request->boolean('error_tanggal_invensi'),
-            'error_uraian_singkat' => $request->boolean('error_uraian_singkat'),
         ]);
 
         // Update inventor error flags
-        if ($request->has('inventors')) {
-            foreach ($request->inventors as $inventorId => $inventorErrors) {
+        if ($request->has('members')) {
+            foreach ($request->members as $inventorId => $inventorErrors) {
                 $inventor = $biodataPaten->inventors()->find($inventorId);
                 if ($inventor) {
                     $inventor->update([
                         'error_name' => isset($inventorErrors['error_name']) ? (bool)$inventorErrors['error_name'] : false,
-                        'error_nik' => isset($inventorErrors['error_nik']) ? (bool)$inventorErrors['error_nik'] : false,
-                        'error_npwp' => isset($inventorErrors['error_npwp']) ? (bool)$inventorErrors['error_npwp'] : false,
-                        'error_jenis_kelamin' => isset($inventorErrors['error_jenis_kelamin']) ? (bool)$inventorErrors['error_jenis_kelamin'] : false,
                         'error_pekerjaan' => isset($inventorErrors['error_pekerjaan']) ? (bool)$inventorErrors['error_pekerjaan'] : false,
                         'error_universitas' => isset($inventorErrors['error_universitas']) ? (bool)$inventorErrors['error_universitas'] : false,
                         'error_fakultas' => isset($inventorErrors['error_fakultas']) ? (bool)$inventorErrors['error_fakultas'] : false,
@@ -186,19 +191,15 @@ class BiodataPatenController extends Controller
         $biodataPaten->update([
             'error_tempat_invensi' => $request->boolean('error_tempat_invensi'),
             'error_tanggal_invensi' => $request->boolean('error_tanggal_invensi'),
-            'error_uraian_singkat' => $request->boolean('error_uraian_singkat'),
         ]);
 
         // Update inventor error flags
-        if ($request->has('inventors')) {
-            foreach ($request->inventors as $inventorId => $inventorErrors) {
+        if ($request->has('members')) {
+            foreach ($request->members as $inventorId => $inventorErrors) {
                 $inventor = $biodataPaten->inventors()->find($inventorId);
                 if ($inventor) {
                     $inventor->update([
                         'error_name' => isset($inventorErrors['error_name']) ? (bool)$inventorErrors['error_name'] : false,
-                        'error_nik' => isset($inventorErrors['error_nik']) ? (bool)$inventorErrors['error_nik'] : false,
-                        'error_npwp' => isset($inventorErrors['error_npwp']) ? (bool)$inventorErrors['error_npwp'] : false,
-                        'error_jenis_kelamin' => isset($inventorErrors['error_jenis_kelamin']) ? (bool)$inventorErrors['error_jenis_kelamin'] : false,
                         'error_pekerjaan' => isset($inventorErrors['error_pekerjaan']) ? (bool)$inventorErrors['error_pekerjaan'] : false,
                         'error_universitas' => isset($inventorErrors['error_universitas']) ? (bool)$inventorErrors['error_universitas'] : false,
                         'error_fakultas' => isset($inventorErrors['error_fakultas']) ? (bool)$inventorErrors['error_fakultas'] : false,

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('tempat_invensi');
             $table->date('tanggal_invensi');
-            $table->text('uraian_singkat');
             $table->enum('status', ['pending', 'approved', 'denied'])->default('pending');
             $table->text('rejection_reason')->nullable();
             $table->timestamp('reviewed_at')->nullable();
@@ -26,7 +25,6 @@ return new class extends Migration
             // Error flags for field-level validation
             $table->boolean('error_tempat_invensi')->default(false);
             $table->boolean('error_tanggal_invensi')->default(false);
-            $table->boolean('error_uraian_singkat')->default(false);
             
             // Document tracking fields
             $table->boolean('document_submitted')->default(false);
