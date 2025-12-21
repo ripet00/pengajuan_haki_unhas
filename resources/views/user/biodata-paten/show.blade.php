@@ -251,16 +251,30 @@
 
                                 <!-- Download Buttons -->
                                 <div class="mb-4 space-y-3">                                    
-                                    <div>
-                                        <a href="{{ route('user.biodata-paten.download-surat-pengalihan', $biodataPaten) }}" 
-                                           class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition duration-200 shadow-md hover:shadow-lg">
-                                            <i class="fas fa-file-word mr-2"></i>
-                                            Download Surat Pengalihan Invensi
-                                        </a>
-                                        <p class="text-xs text-gray-600 mt-2">
-                                            <i class="fas fa-info-circle mr-1"></i>
-                                            File format: Microsoft Word (.docx)
-                                        </p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <div>
+                                            <a href="{{ route('user.biodata-paten.download-surat-pengalihan', $biodataPaten) }}" 
+                                               class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                                                <i class="fas fa-file-word mr-2"></i>
+                                                Download Surat Pengalihan Invensi
+                                            </a>
+                                            <p class="text-xs text-gray-600 mt-2">
+                                                <i class="fas fa-info-circle mr-1"></i>
+                                                File format: Microsoft Word (.docx)
+                                            </p>
+                                        </div>
+                                        
+                                        <div>
+                                            <a href="{{ route('user.biodata-paten.download-surat-pernyataan', $biodataPaten) }}" 
+                                               class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                                                <i class="fas fa-file-word mr-2"></i>
+                                                Download Surat Pernyataan Invensi Oleh Inventor
+                                            </a>
+                                            <p class="text-xs text-gray-600 mt-2">
+                                                <i class="fas fa-info-circle mr-1"></i>
+                                                File format: Microsoft Word (.docx)
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -271,12 +285,12 @@
                                     </h5>
                                     
                                     <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
-                                        <li>Silakan <strong>mendownload</strong> formulir pendaftaran paten dan surat pengalihan invensi menggunakan tombol di atas</li>
-                                        <li>Silakan <strong>print</strong> kedua dokumen yang telah didownload</li>
+                                        <li>Silakan <strong>mendownload</strong> formulir pendaftaran paten, surat pengalihan invensi, dan surat pernyataan invensi menggunakan tombol di atas</li>
+                                        <li>Silakan <strong>print</strong> semua dokumen yang telah didownload</li>
                                         <li>Silakan semua inventor <strong>bertandatangan</strong> di atas dokumen tersebut. <strong>Inventor 1 bertandatangan di atas materai Rp10.000</strong></li>
                                         <li class="text-red-700 font-semibold">
                                             <i class="fas fa-stamp mr-1"></i>
-                                            Siapkan <strong>3 materai Rp10.000</strong> - Ada 3 bagian tanda tangan yang harus di atas materai
+                                            Siapkan <strong>4 materai Rp10.000</strong> - Ada 4 bagian tanda tangan yang harus di atas materai (1x di Surat Pengalihan + 3x di Surat Pernyataan)
                                         </li>
                                         <li>Silakan <strong>menyetor berkas</strong> ke kantor HKI Unhas</li>
                                     </ol>
