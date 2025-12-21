@@ -7,6 +7,7 @@ use App\Models\BiodataPaten;
 use App\Models\SubmissionPaten;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class BiodataPatenController extends Controller
 {
@@ -103,7 +104,7 @@ class BiodataPatenController extends Controller
         }
 
         // DEBUG: Log request data
-        \Log::info('Review Request Data:', [
+        Log::info('Review Request Data:', [
             'all' => $request->all(),
             'has_members' => $request->has('members'),
             'members' => $request->input('members'),
