@@ -69,6 +69,7 @@ Route::prefix('users')->middleware('auth')->group(function () {
     Route::get('submissions-paten/{submissionPaten}/biodata-paten/{biodataPaten}', [App\Http\Controllers\User\BiodataPatenController::class, 'show'])->name('user.biodata-paten.show');
     Route::get('biodata-paten/{biodataPaten}/download-formulir', [App\Http\Controllers\User\BiodataPatenController::class, 'downloadFormulir'])->name('user.biodata-paten.download-formulir');
     Route::get('biodata-paten/{biodataPaten}/download-surat-pengalihan', [App\Http\Controllers\User\BiodataPatenController::class, 'downloadSuratPengalihan'])->name('user.biodata-paten.download-surat-pengalihan');
+    Route::get('biodata-paten/{biodataPaten}/download-surat-pernyataan', [App\Http\Controllers\User\BiodataPatenController::class, 'downloadSuratPernyataan'])->name('user.biodata-paten.download-surat-pernyataan');
     Route::post('biodata-paten/{biodataPaten}/mark-document-submitted', [App\Http\Controllers\User\BiodataPatenController::class, 'markDocumentSubmitted'])->name('user.biodata-paten.mark-document-submitted');
     
     // Wilayah API routes
