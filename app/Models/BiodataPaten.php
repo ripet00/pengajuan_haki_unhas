@@ -16,14 +16,12 @@ class BiodataPaten extends Model
         'user_id',
         'tempat_invensi',
         'tanggal_invensi',
-        'uraian_singkat',
         'status',
         'rejection_reason',
         'reviewed_at',
         'reviewed_by',
         'error_tempat_invensi',
         'error_tanggal_invensi',
-        'error_uraian_singkat',
         'document_submitted',
         'document_submitted_at',
         'certificate_issued',
@@ -37,7 +35,6 @@ class BiodataPaten extends Model
         'certificate_issued_at' => 'datetime',
         'error_tempat_invensi' => 'boolean',
         'error_tanggal_invensi' => 'boolean',
-        'error_uraian_singkat' => 'boolean',
         'document_submitted' => 'boolean',
         'certificate_issued' => 'boolean',
     ];
@@ -121,12 +118,8 @@ class BiodataPaten extends Model
     {
         return $this->error_tempat_invensi || 
                $this->error_tanggal_invensi || 
-               $this->error_uraian_singkat ||
                $this->inventors()->where(function($query) {
                    $query->where('error_name', true)
-                         ->orWhere('error_nik', true)
-                         ->orWhere('error_npwp', true)
-                         ->orWhere('error_jenis_kelamin', true)
                          ->orWhere('error_pekerjaan', true)
                          ->orWhere('error_universitas', true)
                          ->orWhere('error_fakultas', true)
@@ -150,9 +143,6 @@ class BiodataPaten extends Model
     {
         return $this->inventors()->where(function($query) {
             $query->where('error_name', true)
-                  ->orWhere('error_nik', true)
-                  ->orWhere('error_npwp', true)
-                  ->orWhere('error_jenis_kelamin', true)
                   ->orWhere('error_pekerjaan', true)
                   ->orWhere('error_universitas', true)
                   ->orWhere('error_fakultas', true)

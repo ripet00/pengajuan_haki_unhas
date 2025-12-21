@@ -341,11 +341,8 @@
         // Check if this is first time submit (for auto-fill feature)
         const isFirstTimeSubmit = @json($isFirstTimeSubmit ?? false);
         
-        // User data for auto-fill (only used for first time)
-        const userData = {
-            name: @json($user->name ?? ''),
-            phone: @json($user->phone_number ?? '')
-        };
+        // Creator data for auto-fill (pencipta pertama from submission)
+        const creatorData = @json($creatorData ?? ['name' => '', 'phone' => '', 'country_code' => '+62']);
         
         function createMemberForm(index, memberData = {}) {
             const isLeader = index === 0;
@@ -353,8 +350,8 @@
             
             // Auto-fill for first member (Pencipta 1) only on first time submit
             if (isLeader && isFirstTimeSubmit && !memberData.name && !memberData.nomor_hp) {
-                member.name = userData.name;
-                member.nomor_hp = userData.phone;
+                member.name = creatorData.name || '';
+                member.nomor_hp = creatorData.phone || '';
             }
             
             // Check if fakultas is a predefined option or custom

@@ -54,8 +54,12 @@ class BiodataPatenController extends Controller
         // Check if this is first time submitting (no inventors exist yet)
         $isFirstTimeSubmit = $inventors->isEmpty();
         
-        // Get user data for auto-fill
-        $user = Auth::user();
+        // Get creator data for auto-fill (inventor pertama from submission)
+        $creatorData = [
+            'name' => $submissionPaten->creator_name,
+            'phone' => $submissionPaten->creator_whatsapp,
+            'country_code' => $submissionPaten->creator_country_code ?? '+62'
+        ];
         
         // If there's old input (validation failed), merge it with inventors
         if (old('inventors')) {
@@ -71,7 +75,7 @@ class BiodataPatenController extends Controller
             });
         }
 
-        return view('user.biodata-paten.create', compact('submissionPaten', 'biodataPaten', 'inventors', 'isEdit', 'canEdit', 'isFirstTimeSubmit', 'user'));
+        return view('user.biodata-paten.create', compact('submissionPaten', 'biodataPaten', 'inventors', 'isEdit', 'canEdit', 'isFirstTimeSubmit', 'creatorData'));
     }
 
     /**
@@ -94,12 +98,8 @@ class BiodataPatenController extends Controller
         $validatedData = $request->validate([
             'tempat_invensi' => 'required|string|max:255',
             'tanggal_invensi' => 'required|date',
-            'uraian_singkat' => 'required|string',
-            'inventors' => 'required|array|min:1|max:10',
+            'inventors' => 'required|array|min:1|max:6',
             'inventors.*.name' => 'required|string|max:255',
-            'inventors.*.nik' => 'required|digits:16',
-            'inventors.*.npwp' => 'nullable|string|max:255',
-            'inventors.*.jenis_kelamin' => 'required|in:Pria,Wanita',
             'inventors.*.pekerjaan' => 'required|string|max:255',
             'inventors.*.universitas' => 'required|string|max:255',
             'inventors.*.fakultas' => 'required|string|max:255',
@@ -110,7 +110,7 @@ class BiodataPatenController extends Controller
             'inventors.*.kota_kabupaten' => 'required|string|max:255',
             'inventors.*.provinsi' => 'required|string|max:255',
             'inventors.*.kode_pos' => 'required|string|max:10',
-            'inventors.*.email' => 'required|email|max:255',
+            'inventors.*.email' => 'nullable|email|max:255',
             'inventors.*.nomor_hp' => 'required|string|max:20',
             'inventors.*.kewarganegaraan' => 'required|string|max:100',
             // Optional helper fields that won't be stored
@@ -139,7 +139,6 @@ class BiodataPatenController extends Controller
                     'user_id' => Auth::id(),
                     'tempat_invensi' => $request->tempat_invensi,
                     'tanggal_invensi' => $request->tanggal_invensi,
-                    'uraian_singkat' => $request->uraian_singkat,
                     'status' => 'pending',
                 ]);
             } else {
@@ -152,7 +151,6 @@ class BiodataPatenController extends Controller
                 $biodataPaten->update([
                     'tempat_invensi' => $request->tempat_invensi,
                     'tanggal_invensi' => $request->tanggal_invensi,
-                    'uraian_singkat' => $request->uraian_singkat,
                     'status' => 'pending', // Reset to pending when edited
                     'rejection_reason' => null, // Clear previous rejection reason
                     'reviewed_at' => null, // Clear review timestamp
@@ -160,7 +158,6 @@ class BiodataPatenController extends Controller
                     // Reset all error flags
                     'error_tempat_invensi' => false,
                     'error_tanggal_invensi' => false,
-                    'error_uraian_singkat' => false,
                 ]);
 
                 // Delete existing inventors
@@ -172,9 +169,6 @@ class BiodataPatenController extends Controller
                 BiodataPatenInventor::create([
                     'biodata_paten_id' => $biodataPaten->id,
                     'name' => $inventorData['name'],
-                    'nik' => $inventorData['nik'],
-                    'npwp' => $inventorData['npwp'] ?? null,
-                    'jenis_kelamin' => $inventorData['jenis_kelamin'],
                     'pekerjaan' => $inventorData['pekerjaan'],
                     'universitas' => $inventorData['universitas'],
                     'fakultas' => $inventorData['fakultas'],
@@ -185,15 +179,12 @@ class BiodataPatenController extends Controller
                     'kota_kabupaten' => $inventorData['kota_kabupaten'],
                     'provinsi' => $inventorData['provinsi'],
                     'kode_pos' => $inventorData['kode_pos'],
-                    'email' => $inventorData['email'],
+                    'email' => $inventorData['email'] ?? null,
                     'nomor_hp' => $inventorData['nomor_hp'],
                     'kewarganegaraan' => $inventorData['kewarganegaraan'],
                     'is_leader' => $index === 0, // First inventor is the leader
                     // Reset all error flags for new submission
                     'error_name' => false,
-                    'error_nik' => false,
-                    'error_npwp' => false,
-                    'error_jenis_kelamin' => false,
                     'error_pekerjaan' => false,
                     'error_universitas' => false,
                     'error_fakultas' => false,

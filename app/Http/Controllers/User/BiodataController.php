@@ -54,8 +54,12 @@ class BiodataController extends Controller
         // Check if this is first time submitting (no members exist yet)
         $isFirstTimeSubmit = $members->isEmpty();
         
-        // Get user data for auto-fill
-        $user = Auth::user();
+        // Get creator data for auto-fill (pencipta pertama from submission)
+        $creatorData = [
+            'name' => $submission->creator_name,
+            'phone' => $submission->creator_whatsapp,
+            'country_code' => $submission->creator_country_code ?? '+62'
+        ];
         
         // If there's old input (validation failed), merge it with members
         if (old('members')) {
@@ -71,7 +75,7 @@ class BiodataController extends Controller
             });
         }
 
-        return view('user.biodata.create', compact('submission', 'biodata', 'members', 'isEdit', 'canEdit', 'isFirstTimeSubmit', 'user'));
+        return view('user.biodata.create', compact('submission', 'biodata', 'members', 'isEdit', 'canEdit', 'isFirstTimeSubmit', 'creatorData'));
     }
 
     /**

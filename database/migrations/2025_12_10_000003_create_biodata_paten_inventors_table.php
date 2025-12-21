@@ -15,9 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('biodata_paten_id');
             $table->string('name');
-            $table->string('nik')->nullable();
-            $table->string('npwp')->nullable();
-            $table->enum('jenis_kelamin', ['Pria', 'Wanita']);
             $table->string('pekerjaan')->nullable();
             $table->string('universitas')->nullable();
             $table->string('fakultas')->nullable();
@@ -35,9 +32,6 @@ return new class extends Migration
             
             // Error flags for field-level validation
             $table->boolean('error_name')->default(false);
-            $table->boolean('error_nik')->default(false);
-            $table->boolean('error_npwp')->default(false);
-            $table->boolean('error_jenis_kelamin')->default(false);
             $table->boolean('error_pekerjaan')->default(false);
             $table->boolean('error_universitas')->default(false);
             $table->boolean('error_fakultas')->default(false);

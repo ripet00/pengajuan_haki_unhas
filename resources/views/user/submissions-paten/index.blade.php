@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
         }
         
         .header-text {
@@ -56,7 +56,7 @@
                     <img src="{{ asset('images/logo-unhas-kecil.png') }}" alt="Logo Unhas" class="w-10 h-10 sm:w-12 sm:h-12 mr-3">
                     <div>
                         <h1 class="text-sm sm:text-lg font-bold header-text leading-tight">Direktorat Inovasi dan Kekayaan Intelektual</h1>
-                        <p class="text-red-100 text-xs sm:text-sm">Universitas Hasanuddin</p>
+                        <p class="text-green-100 text-xs sm:text-sm">Universitas Hasanuddin</p>
                     </div>
                 </div>
                 
@@ -98,7 +98,7 @@
         <!-- Page Title -->
         <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
             <h2 class="text-2xl font-bold text-gray-900 mb-2 flex items-center">
-                <i class="fas fa-lightbulb text-green-600 mr-3"></i>Daftar Pengajuan Paten
+                <i class="fas fa-lightbulb text-green-600 mr-3"></i>Riwayat Pengajuan Paten
             </h2>
             <p class="text-gray-600">Berikut adalah daftar semua pengajuan paten yang pernah Anda buat.</p>
         </div>
@@ -179,6 +179,7 @@
                                         {{ $submission->kategori_paten }}
                                     </span>
                                     
+                                    {{-- Status Draft --}}
                                     @if($submission->status == 'pending')
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                             <i class="fas fa-clock mr-1"></i>Pending
@@ -190,6 +191,35 @@
                                     @else
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                             <i class="fas fa-times-circle mr-1"></i>Ditolak
+                                        </span>
+                                    @endif
+                                    
+                                    {{-- Status Biodata --}}
+                                    @if(isset($submission->biodataPaten) && $submission->biodataPaten->status === 'denied')
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-user-times mr-1"></i>Biodata: Ditolak
+                                        </span>
+                                    @elseif($submission->biodata_status == 'not_started')
+                                        @if($submission->status == 'approved')
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                <i class="fas fa-upload mr-1"></i>Biodata: Siap Upload
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                                <i class="fas fa-lock mr-1"></i>Biodata: Terkunci
+                                            </span>
+                                        @endif
+                                    @elseif($submission->biodata_status == 'pending')
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            <i class="fas fa-clock mr-1"></i>Biodata: Review
+                                        </span>
+                                    @elseif($submission->biodata_status == 'approved')
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check-double mr-1"></i>Biodata: Selesai
+                                        </span>
+                                    @elseif($submission->biodata_status == 'rejected')
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-times mr-1"></i>Biodata: Ditolak
                                         </span>
                                     @endif
                                 </div>
