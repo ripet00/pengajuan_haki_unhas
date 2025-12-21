@@ -116,7 +116,7 @@
                             Detail Biodata Paten
                         </h2>
                         <p class="text-sm text-gray-600 mt-1">
-                            Submission: <strong>{{ $submissionPaten->title }}</strong> (ID: #{{ $submissionPaten->id }})
+                            Submission: <strong>{{ $submissionPaten->judul_paten }}</strong> (ID: #{{ $submissionPaten->id }})
                         </p>
                     </div>
                     <div class="flex items-center space-x-3">
@@ -156,17 +156,152 @@
                         </p>
                     </div>
                 @elseif($biodataPaten->status == 'approved')
-                    <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <h4 class="text-sm font-semibold text-green-800 mb-2">
-                            <i class="fas fa-check-circle mr-1"></i>Biodata Disetujui
-                        </h4>
-                        <p class="text-sm text-green-700">
-                            Biodata paten telah disetujui oleh admin. Silakan ikuti langkah berikutnya untuk menyelesaikan proses pengajuan paten.
-                        </p>
-                        @if($biodataPaten->reviewed_at && $biodataPaten->reviewedBy)
-                            <p class="text-sm text-green-600 mt-2">
-                                Disetujui oleh: {{ $biodataPaten->reviewedBy->name }} pada {{ $biodataPaten->reviewed_at->format('d M Y H:i') }}
+                    <div class="space-y-4">
+                        <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <h4 class="text-sm font-semibold text-green-800 mb-2">
+                                <i class="fas fa-check-circle mr-1"></i>Biodata Disetujui
+                            </h4>
+                            <p class="text-sm text-green-700">
+                                Biodata telah disetujui oleh admin. Silakan ikuti langkah berikutnya untuk menyelesaikan proses pengajuan paten.
                             </p>
+                            @if($biodataPaten->reviewed_at && $biodataPaten->reviewedBy)
+                                <p class="text-sm text-green-600 mt-2">
+                                    Disetujui oleh: {{ $biodataPaten->reviewedBy->name }} pada {{ $biodataPaten->reviewed_at->format('d M Y H:i') }}
+                                </p>
+                            @endif
+                        </div>
+
+                        @if($biodataPaten->certificate_issued)
+                            <!-- Sertifikat sudah terbit -->
+                            <div class="p-4 bg-blue-50 border-2 border-blue-300 rounded-lg">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-certificate text-3xl text-blue-600"></i>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <h4 class="text-lg font-bold text-blue-900 mb-2">
+                                            <i class="fas fa-check-double mr-1"></i>Sertifikat Paten Telah Terbit
+                                        </h4>
+                                        <p class="text-sm text-blue-800 mb-2">
+                                            Selamat! Sertifikat paten untuk invensi Anda telah diterbitkan pada <strong>{{ $biodataPaten->certificate_issued_at->format('d F Y') }}</strong>.
+                                        </p>
+                                        <p class="text-sm text-blue-700">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Silakan datang ke kantor HKI Unhas untuk mengambil sertifikat Anda.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @elseif($biodataPaten->document_submitted)
+                            <!-- Berkas sudah disetor, menunggu sertifikat -->
+                            <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                <h4 class="text-sm font-semibold text-blue-800 mb-2">
+                                    <i class="fas fa-check-circle mr-1"></i>Berkas Telah Disetor
+                                </h4>
+                                <p class="text-sm text-blue-700">
+                                    Formulir pendaftaran paten telah diterima pada <strong>{{ $biodataPaten->document_submitted_at->format('d F Y') }}</strong>.
+                                </p>
+                                <p class="text-sm text-blue-700 mt-2">
+                                    <i class="fas fa-hourglass-half mr-1"></i>
+                                    Sertifikat paten sedang dalam proses penerbitan. Estimasi selesai: <strong>{{ $biodataPaten->getCertificateDeadline()->format('d F Y') }}</strong>
+                                </p>
+                            </div>
+                        @else
+                            <!-- Perlu download form dan setor berkas -->
+                            <div class="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                                <h4 class="text-lg font-bold text-orange-900 mb-3">
+                                    <i class="fas fa-file-download mr-2"></i>Langkah Selanjutnya: Download & Setor Formulir
+                                </h4>
+                                
+                                <!-- Deadline Warning -->
+                                @php
+                                    $daysRemaining = $biodataPaten->getDaysUntilDocumentDeadline();
+                                    $deadline = $biodataPaten->getDocumentDeadline();
+                                    $isOverdue = $biodataPaten->isDocumentOverdue();
+                                @endphp
+                                
+                                @if($isOverdue)
+                                    <div class="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg">
+                                        <p class="text-sm font-semibold text-red-900">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                                            DEADLINE TERLEWAT! Batas waktu penyetoran: {{ $deadline->format('d F Y') }}
+                                        </p>
+                                        <p class="text-xs text-red-700 mt-1">
+                                            Segera hubungi admin untuk informasi lebih lanjut.
+                                        </p>
+                                    </div>
+                                @elseif($daysRemaining <= 7)
+                                    <div class="mb-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
+                                        <p class="text-sm font-semibold text-yellow-900">
+                                            <i class="fas fa-clock mr-1"></i>
+                                            Sisa waktu: <strong>{{ $daysRemaining }} hari</strong> (Deadline: {{ $deadline->format('d F Y') }})
+                                        </p>
+                                        <p class="text-xs text-yellow-700 mt-1">
+                                            Segera selesaikan penyetoran berkas!
+                                        </p>
+                                    </div>
+                                @else
+                                    <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <p class="text-sm text-blue-800">
+                                            <i class="fas fa-calendar-alt mr-1"></i>
+                                            Deadline penyetoran berkas: <strong>{{ $deadline->format('d F Y') }}</strong> ({{ $daysRemaining }} hari lagi)
+                                        </p>
+                                    </div>
+                                @endif
+
+                                <!-- Download Buttons -->
+                                <div class="mb-4 space-y-3">                                    
+                                    <div>
+                                        <a href="{{ route('user.biodata-paten.download-surat-pengalihan', $biodataPaten) }}" 
+                                           class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                                            <i class="fas fa-file-word mr-2"></i>
+                                            Download Surat Pengalihan Invensi
+                                        </a>
+                                        <p class="text-xs text-gray-600 mt-2">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            File format: Microsoft Word (.docx)
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Instructions -->
+                                <div class="space-y-3">
+                                    <h5 class="font-semibold text-orange-900">
+                                        <i class="fas fa-list-ol mr-2"></i>Instruksi:
+                                    </h5>
+                                    
+                                    <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                                        <li>Silakan <strong>mendownload</strong> formulir pendaftaran paten dan surat pengalihan invensi menggunakan tombol di atas</li>
+                                        <li>Silakan <strong>print</strong> kedua dokumen yang telah didownload</li>
+                                        <li>Silakan semua inventor <strong>bertandatangan</strong> di atas dokumen tersebut. <strong>Inventor 1 bertandatangan di atas materai Rp10.000</strong></li>
+                                        <li class="text-red-700 font-semibold">
+                                            <i class="fas fa-stamp mr-1"></i>
+                                            Siapkan <strong>3 materai Rp10.000</strong> - Ada 3 bagian tanda tangan yang harus di atas materai
+                                        </li>
+                                        <li>Silakan <strong>menyetor berkas</strong> ke kantor HKI Unhas</li>
+                                    </ol>
+
+                                    <div class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                        <h6 class="font-semibold text-gray-900 mb-2">
+                                            <i class="fas fa-map-marker-alt mr-2 text-red-600"></i>Alamat Kantor HKI Unhas:
+                                        </h6>
+                                        <p class="text-sm text-gray-700 leading-relaxed">
+                                            Lt. 6 Gedung Rektorat<br>
+                                            Universitas Hasanuddin<br>
+                                            Jalan Perintis Kemerdekaan Km.10<br>
+                                            Makassar, 90245<br>
+                                            Sulawesi Selatan, Indonesia
+                                        </p>
+                                    </div>
+
+                                    <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                                        <p class="text-sm text-yellow-800">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            <strong>Penting:</strong> Anda memiliki waktu <strong>1 bulan sejak biodata disetujui</strong> untuk menyetor formulir ke kantor HKI Unhas.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </div>
                 @else
@@ -192,7 +327,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Judul Invensi</h4>
-                        <p class="mt-1 text-lg font-semibold text-gray-900">{{ $submissionPaten->title }}</p>
+                        <p class="mt-1 text-lg font-semibold text-gray-900">{{ $submissionPaten->judul_paten }}</p>
                     </div>
                     
                     <div>
@@ -234,6 +369,11 @@
                                 <i class="fas fa-user-tie mr-2 text-yellow-600"></i>
                                 Inventor ke-{{ $index + 1 }}
                             </h4>
+                            @if($inventor->is_leader)
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    <i class="fas fa-crown mr-1"></i>Ketua
+                                </span>
+                            @endif
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -246,45 +386,17 @@
                                     <p class="text-gray-900">{{ $inventor->name }}</p>
                                 </div>
                                 
-                                <div>
-                                    <span class="text-sm font-medium text-gray-500">Kewarganegaraan:</span>
-                                    <p class="text-gray-900">{{ $inventor->kewarganegaraan == 'WNI' ? 'WNI - Warga Negara Indonesia' : 'WNA - Warga Negara Asing' }}</p>
-                                </div>
-                                
-                                @if($inventor->kewarganegaraan == 'WNI')
-                                    @if($inventor->nik)
-                                        <div>
-                                            <span class="text-sm font-medium text-gray-500">NIK:</span>
-                                            <p class="text-gray-900">{{ $inventor->nik }}</p>
-                                        </div>
-                                    @endif
-                                @else
-                                    @if($inventor->paspor)
-                                        <div>
-                                            <span class="text-sm font-medium text-gray-500">Nomor Paspor:</span>
-                                            <p class="text-gray-900">{{ $inventor->paspor }}</p>
-                                        </div>
-                                    @endif
-                                    
-                                    @if($inventor->negara_asal)
-                                        <div>
-                                            <span class="text-sm font-medium text-gray-500">Negara Asal:</span>
-                                            <p class="text-gray-900">{{ $inventor->negara_asal }}</p>
-                                        </div>
-                                    @endif
-                                @endif
-                                
-                                @if($inventor->tempat_lahir)
+                                @if($inventor->nik)
                                     <div>
-                                        <span class="text-sm font-medium text-gray-500">Tempat Lahir:</span>
-                                        <p class="text-gray-900">{{ $inventor->tempat_lahir }}</p>
+                                        <span class="text-sm font-medium text-gray-500">NIK:</span>
+                                        <p class="text-gray-900">{{ $inventor->nik }}</p>
                                     </div>
                                 @endif
                                 
-                                @if($inventor->tanggal_lahir)
+                                @if($inventor->npwp)
                                     <div>
-                                        <span class="text-sm font-medium text-gray-500">Tanggal Lahir:</span>
-                                        <p class="text-gray-900">{{ $inventor->tanggal_lahir->format('d F Y') }}</p>
+                                        <span class="text-sm font-medium text-gray-500">NPWP:</span>
+                                        <p class="text-gray-900">{{ $inventor->npwp }}</p>
                                     </div>
                                 @endif
                                 
@@ -294,11 +406,6 @@
                                         <p class="text-gray-900">{{ $inventor->jenis_kelamin }}</p>
                                     </div>
                                 @endif
-                            </div>
-                            
-                            <!-- Professional Information -->
-                            <div class="space-y-3">
-                                <h5 class="font-medium text-gray-800 border-b border-gray-200 pb-1">Informasi Profesi</h5>
                                 
                                 @if($inventor->pekerjaan)
                                     <div>
@@ -307,17 +414,36 @@
                                     </div>
                                 @endif
                                 
-                                @if($inventor->instansi)
+                                @if($inventor->kewarganegaraan)
                                     <div>
-                                        <span class="text-sm font-medium text-gray-500">Instansi:</span>
-                                        <p class="text-gray-900">{{ $inventor->instansi }}</p>
+                                        <span class="text-sm font-medium text-gray-500">Kewarganegaraan:</span>
+                                        <p class="text-gray-900">{{ $inventor->kewarganegaraan }}</p>
+                                    </div>
+                                @endif
+                            </div>
+                            
+                            <!-- Academic Information -->
+                            <div class="space-y-3">
+                                <h5 class="font-medium text-gray-800 border-b border-gray-200 pb-1">Informasi Akademik</h5>
+                                
+                                @if($inventor->universitas)
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-500">Universitas:</span>
+                                        <p class="text-gray-900">{{ $inventor->universitas }}</p>
                                     </div>
                                 @endif
                                 
-                                @if($inventor->alamat_instansi)
+                                @if($inventor->fakultas)
                                     <div>
-                                        <span class="text-sm font-medium text-gray-500">Alamat Instansi:</span>
-                                        <p class="text-gray-900">{{ $inventor->alamat_instansi }}</p>
+                                        <span class="text-sm font-medium text-gray-500">Fakultas:</span>
+                                        <p class="text-gray-900">{{ $inventor->fakultas }}</p>
+                                    </div>
+                                @endif
+                                
+                                @if($inventor->program_studi)
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-500">Program Studi:</span>
+                                        <p class="text-gray-900">{{ $inventor->program_studi }}</p>
                                     </div>
                                 @endif
                             </div>
@@ -347,37 +473,21 @@
                                     </div>
                                 @endif
                                 
-                                @if($inventor->kewarganegaraan == 'WNI')
-                                    @if($inventor->kelurahan || $inventor->kecamatan || $inventor->kota_kabupaten || $inventor->provinsi || $inventor->kode_pos)
-                                        <div>
-                                            <span class="text-sm font-medium text-gray-500">Wilayah:</span>
-                                            <p class="text-gray-900">
-                                                @php
-                                                    $alamatParts = [];
-                                                    if($inventor->kelurahan) $alamatParts[] = "Kel. " . $inventor->kelurahan;
-                                                    if($inventor->kecamatan) $alamatParts[] = "Kec. " . $inventor->kecamatan;
-                                                    if($inventor->kota_kabupaten) $alamatParts[] = $inventor->kota_kabupaten;
-                                                    if($inventor->provinsi) $alamatParts[] = $inventor->provinsi;
-                                                    if($inventor->kode_pos) $alamatParts[] = $inventor->kode_pos;
-                                                @endphp
-                                                {{ implode(', ', $alamatParts) }}
-                                            </p>
-                                        </div>
-                                    @endif
-                                @else
-                                    @if($inventor->negara_alamat)
-                                        <div>
-                                            <span class="text-sm font-medium text-gray-500">Negara:</span>
-                                            <p class="text-gray-900">{{ $inventor->negara_alamat }}</p>
-                                        </div>
-                                    @endif
-                                    
-                                    @if($inventor->kode_pos)
-                                        <div>
-                                            <span class="text-sm font-medium text-gray-500">Kode Pos:</span>
-                                            <p class="text-gray-900">{{ $inventor->kode_pos }}</p>
-                                        </div>
-                                    @endif
+                                @if($inventor->kelurahan || $inventor->kecamatan || $inventor->kota_kabupaten || $inventor->provinsi || $inventor->kode_pos)
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-500">Wilayah:</span>
+                                        <p class="text-gray-900">
+                                            @php
+                                                $alamatParts = [];
+                                                if($inventor->kelurahan) $alamatParts[] = "Kel. " . $inventor->kelurahan;
+                                                if($inventor->kecamatan) $alamatParts[] = "Kec. " . $inventor->kecamatan;
+                                                if($inventor->kota_kabupaten) $alamatParts[] = $inventor->kota_kabupaten;
+                                                if($inventor->provinsi) $alamatParts[] = $inventor->provinsi;
+                                                if($inventor->kode_pos) $alamatParts[] = $inventor->kode_pos;
+                                            @endphp
+                                            {{ implode(', ', $alamatParts) }}
+                                        </p>
+                                    </div>
                                 @endif
                             </div>
                         </div>
