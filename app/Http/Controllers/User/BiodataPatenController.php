@@ -413,4 +413,188 @@ class BiodataPatenController extends Controller
         
         return back()->with('success', 'Berkas telah ditandai sebagai disetor. Terima kasih!');
     }
+
+    /**
+     * Generate and download Surat Pengalihan Invensi (Transfer of Invention Letter)
+     */
+    public function downloadSuratPengalihan(BiodataPaten $biodataPaten)
+    {
+        // 1. CEK AUTHORIZATION - hanya user pemilik
+        if (Auth::id() !== $biodataPaten->submissionPaten->user_id) {
+            abort(403, 'Unauthorized access');
+        }
+        
+        // 2. CEK STATUS - hanya biodata yang sudah ACC
+        if ($biodataPaten->status !== 'approved') {
+            return back()->with('error', 'Biodata harus di-ACC oleh admin terlebih dahulu');
+        }
+        
+        // 3. LOAD TEMPLATE
+        $templatePath = public_path('templates/surat_pengalihan_invensi.docx');
+        
+        if (!file_exists($templatePath)) {
+            return back()->with('error', 'Template Surat Pengalihan Invensi tidak ditemukan. Silakan hubungi administrator.');
+        }
+        
+        try {
+            $templateProcessor = new TemplateProcessor($templatePath);
+            
+            // 4. LOAD RELATIONSHIPS
+            $biodataPaten->load(['inventors', 'submissionPaten']);
+            
+            // 5. SET SINGLE VALUES (data umum)
+            $templateProcessor->setValue('tanggal_download', 
+                \Carbon\Carbon::now('Asia/Makassar')->locale('id')->isoFormat('D MMMM Y'));
+            
+            $templateProcessor->setValue('tanggal_pengajuan', 
+                \Carbon\Carbon::parse($biodataPaten->created_at)->locale('id')->isoFormat('D MMMM Y'));
+            
+            // Data Submission Paten
+            $templateProcessor->setValue('judul_paten', 
+                $biodataPaten->submissionPaten->judul_paten ?? '-');
+            
+            $templateProcessor->setValue('paten_title', 
+                $biodataPaten->submissionPaten->judul_paten ?? '-');
+            
+            $templateProcessor->setValue('kategori_paten', 
+                $biodataPaten->submissionPaten->kategori_paten ?? '-');
+            
+            // Data Biodata
+            $templateProcessor->setValue('tempat_invensi', 
+                $biodataPaten->tempat_invensi ?? '-');
+            $templateProcessor->setValue('tanggal_invensi', 
+                $biodataPaten->tanggal_invensi ? \Carbon\Carbon::parse($biodataPaten->tanggal_invensi)->locale('id')->isoFormat('D MMMM Y') : '-');
+            $templateProcessor->setValue('uraian_singkat', 
+                $biodataPaten->uraian_singkat ?? '-');
+            
+            // Data Pejabat (dari config)
+            $templateProcessor->setValue('pejabat_nama', 
+                config('hki.pejabat_pengalihan.nama', '-'));
+            $templateProcessor->setValue('pejabat_nip', 
+                config('hki.pejabat_pengalihan.nip', '-'));
+            
+            // 6. CLONE ROW untuk INVENTORS
+            $allInventors = $biodataPaten->inventors;
+            $inventorCount = $allInventors->count();
+            
+            Log::info('Processing Surat Pengalihan Invensi', [
+                'biodata_paten_id' => $biodataPaten->id,
+                'inventor_count' => $inventorCount,
+                'inventors' => $allInventors->pluck('name')->toArray()
+            ]);
+            
+            if ($inventorCount > 0) {
+                // Clone row untuk inventor
+                try {
+                    $templateProcessor->cloneRow('inventor_no', $inventorCount);
+                    Log::info("Cloned row 'inventor_no' for {$inventorCount} inventors");
+                } catch (\Exception $e) {
+                    Log::warning("cloneRow 'inventor_no' failed: " . $e->getMessage());
+                }
+                
+                // Clone row untuk signature_inventor
+                try {
+                    $templateProcessor->cloneRow('signature_inventor', $inventorCount);
+                    Log::info("Cloned row 'signature_inventor' for {$inventorCount} inventors");
+                } catch (\Exception $e) {
+                    Log::warning("cloneRow 'signature_inventor' failed: " . $e->getMessage());
+                }
+                
+                // Set values untuk setiap inventor
+                foreach ($allInventors as $index => $inventor) {
+                    $num = $index + 1;
+                    
+                    // Susun alamat lengkap
+                    $alamatParts = [];
+                    
+                    if ($inventor->alamat) {
+                        $alamatParts[] = $inventor->alamat;
+                    }
+                    
+                    if ($inventor->kelurahan) {
+                        $alamatParts[] = $inventor->kelurahan;
+                    }
+                    
+                    if ($inventor->kecamatan) {
+                        $alamatParts[] = 'Kec. ' . $inventor->kecamatan;
+                    }
+                    
+                    if ($inventor->kota_kabupaten) {
+                        $alamatParts[] = $inventor->kota_kabupaten;
+                    }
+                    
+                    if ($inventor->provinsi) {
+                        $alamatParts[] = 'Provinsi ' . $inventor->provinsi;
+                    }
+                    
+                    if ($inventor->kode_pos) {
+                        $alamatParts[] = $inventor->kode_pos;
+                    }
+                    
+                    $alamatLengkap = implode(', ', $alamatParts);
+                    
+                    // HALAMAN 1: Data inventor lengkap
+                    $templateProcessor->setValue("inventor_no#$num", $num . '.');
+                    $templateProcessor->setValue("inventor_name#$num", $inventor->name ?? '-');
+                    $templateProcessor->setValue("inventor_pekerjaan#$num", $inventor->pekerjaan ?? '-');
+                    $templateProcessor->setValue("inventor_alamat#$num", $alamatLengkap ?: '-');
+                    
+                    // HALAMAN 2: Signature section
+                    $templateProcessor->setValue("signature_inventor#$num", $inventor->name ?? '-');
+                    
+                    // Materai hanya untuk inventor pertama
+                    if ($num === 1) {
+                        $templateProcessor->setValue("materai#$num", config('hki.materai.text', 'MATERAI Rp10.000'));
+                    } else {
+                        $templateProcessor->setValue("materai#$num", '');
+                    }
+                    
+                    // Set without numbering untuk inventor pertama (fallback jika template punya variable tanpa #)
+                    if ($num === 1) {
+                        $templateProcessor->setValue("inventor_no", $num . '.');
+                        $templateProcessor->setValue("inventor_name", $inventor->name ?? '-');
+                        $templateProcessor->setValue("inventor_pekerjaan", $inventor->pekerjaan ?? '-');
+                        $templateProcessor->setValue("inventor_alamat", $alamatLengkap ?: '-');
+                        $templateProcessor->setValue("signature_inventor", $inventor->name ?? '-');
+                        $templateProcessor->setValue("materai", config('hki.materai.text', 'MATERAI Rp10.000'));
+                    }
+                }
+            } else {
+                // Jika tidak ada inventor, set nilai default
+                $templateProcessor->setValue("inventor_no", '-');
+                $templateProcessor->setValue("inventor_name", '-');
+                $templateProcessor->setValue("inventor_pekerjaan", '-');
+                $templateProcessor->setValue("inventor_alamat", '-');
+                $templateProcessor->setValue("signature_inventor", '-');
+                $templateProcessor->setValue("materai", '-');
+            }
+            
+            // 7. SAVE FILE
+            $fileName = 'Surat_Pengalihan_Invensi_' . $biodataPaten->id . '_' . time() . '.docx';
+            $outputPath = storage_path('app/public/generated_documents/' . $fileName);
+            
+            // Create directory if not exists
+            if (!file_exists(dirname($outputPath))) {
+                mkdir(dirname($outputPath), 0755, true);
+            }
+            
+            $templateProcessor->saveAs($outputPath);
+            
+            Log::info('Surat Pengalihan Invensi generated successfully', [
+                'biodata_paten_id' => $biodataPaten->id,
+                'file_name' => $fileName,
+                'output_path' => $outputPath
+            ]);
+            
+            // 8. DOWNLOAD FILE dan hapus setelah download
+            return response()->download($outputPath, $fileName)->deleteFileAfterSend(true);
+            
+        } catch (\Exception $e) {
+            Log::error('Error generating Surat Pengalihan Invensi: ' . $e->getMessage(), [
+                'biodata_paten_id' => $biodataPaten->id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Terjadi kesalahan saat generate dokumen: ' . $e->getMessage());
+        }
+    }
 }
