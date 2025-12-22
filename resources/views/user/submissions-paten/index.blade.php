@@ -236,11 +236,13 @@
                                     <i class="fas fa-eye mr-2"></i>Lihat Detail
                                 </a>
                                 
-                                @if($submission->status == 'rejected')
-                                    <a href="{{ route('user.submissions-paten.create') }}" 
-                                       class="inline-flex items-center justify-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                        <i class="fas fa-redo mr-2"></i>Upload Ulang
-                                    </a>
+                                @if($submission->status == 'rejected' || (isset($submission->biodataPaten) && $submission->biodataPaten->status === 'denied'))
+                                    <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+                                        <p class="text-xs text-red-700">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            <strong>Ditolak:</strong> Klik "Lihat Detail" untuk melihat alasan dan melakukan perbaikan
+                                        </p>
+                                    </div>
                                 @endif
                             </div>
                         </div>
