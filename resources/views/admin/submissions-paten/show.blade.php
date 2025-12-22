@@ -412,8 +412,7 @@ use Illuminate\Support\Facades\Storage;
     // Auto-require rejection reason when reject is selected
     document.addEventListener('DOMContentLoaded', function() {
         // Handle both forms - pending review and edit review
-        function setupFormValidation(formSelector) {
-            const form = document.querySelector(formSelector);
+        function setupFormValidation(form) {
             if (!form) return;
             
             const rejectedRadio = form.querySelector('input[value="rejected"]');
@@ -436,10 +435,73 @@ use Illuminate\Support\Facades\Storage;
                     });
                 }
             }
+            
+            // Add confirmation dialog before form submission
+            form.addEventListener('submit', function(e) {
+                // Check if reject is selected
+                if (rejectedRadio && rejectedRadio.checked) {
+                    // Validate rejection reason is filled
+                    if (!rejectionReasonTextarea.value.trim()) {
+                        e.preventDefault();
+                        alert('⚠️ Alasan penolakan harus diisi!');
+                        rejectionReasonTextarea.focus();
+                        rejectionReasonTextarea.style.borderColor = '#ef4444';
+                        rejectionReasonTextarea.style.borderWidth = '2px';
+                        
+                        setTimeout(function() {
+                            rejectionReasonTextarea.style.borderColor = '';
+                            rejectionReasonTextarea.style.borderWidth = '';
+                        }, 3000);
+                        
+                        return false;
+                    }
+                    
+                    // Show confirmation for rejection
+                    e.preventDefault();
+                    const confirmReject = confirm(
+                        '🚫 KONFIRMASI PENOLAKAN PENGAJUAN PATEN\n\n' +
+                        '⚠️ Apakah Anda yakin ingin MENOLAK pengajuan paten ini?\n\n' +
+                        'Pastikan:\n' +
+                        '✓ Alasan penolakan sudah jelas dan spesifik\n' +
+                        '✓ User dapat memahami kesalahan dan memperbaikinya\n' +
+                        '✓ Dokumen sudah diperiksa dengan teliti\n\n' +
+                        'Klik OK untuk melanjutkan penolakan, atau Cancel untuk kembali.'
+                    );
+                    
+                    if (confirmReject) {
+                        form.submit();
+                    }
+                    return false;
+                }
+                
+                // Check if approve is selected
+                if (approvedRadio && approvedRadio.checked) {
+                    e.preventDefault();
+                    const confirmApprove = confirm(
+                        '✅ KONFIRMASI PERSETUJUAN PENGAJUAN PATEN\n\n' +
+                        '⚠️ Apakah Anda yakin ingin MENYETUJUI pengajuan paten ini?\n\n' +
+                        'Pastikan:\n' +
+                        '✓ Dokumen PDF sudah diperiksa dengan teliti\n' +
+                        '✓ Judul paten dan informasi sudah sesuai\n' +
+                        '✓ Kategori paten (Paten/Paten Sederhana) sudah benar\n' +
+                        '✓ Pengajuan siap diproses ke tahap selanjutnya\n\n' +
+                        'Setelah disetujui, user dapat melanjutkan ke proses biodata paten.\n\n' +
+                        'Klik OK untuk menyetujui, atau Cancel untuk kembali memeriksa.'
+                    );
+                    
+                    if (confirmApprove) {
+                        form.submit();
+                    }
+                    return false;
+                }
+            });
         }
         
-        // Setup validation for both forms
-        setupFormValidation('form'); // This will handle all forms on the page
+        // Setup validation for all forms on the page
+        const forms = document.querySelectorAll('form[action*="review"]');
+        forms.forEach(form => {
+            setupFormValidation(form);
+        });
     });
     </script>
 </body>
