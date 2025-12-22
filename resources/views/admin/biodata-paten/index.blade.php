@@ -310,7 +310,7 @@
                                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
                                                                     <i class="fas fa-certificate mr-1"></i>Sertifikat ✓
                                                                 </span>
-                                                            @elseif($biodata->document_submitted && $biodata->isCertificateOverdue())
+                                                            @elseif($biodata->document_submitted && $biodata->isSigningOverdue())
                                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-800">
                                                                     <i class="fas fa-hourglass-end mr-1"></i>Proses Telat
                                                                 </span>

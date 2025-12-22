@@ -759,9 +759,9 @@
                                     </div>
                                 @elseif($biodataPaten->document_submitted)
                                     @php
-                                        $certDeadline = $biodataPaten->getCertificateDeadline();
-                                        $certDaysRemaining = $biodataPaten->getDaysUntilCertificateDeadline();
-                                        $isCertOverdue = $biodataPaten->isCertificateOverdue();
+                                        $certDeadline = $biodataPaten->getSigningDeadline();
+                                        $certDaysRemaining = $biodataPaten->getDaysUntilSigningDeadline();
+                                        $isCertOverdue = $biodataPaten->isSigningOverdue();
                                     @endphp
                                     
                                     @if($isCertOverdue)

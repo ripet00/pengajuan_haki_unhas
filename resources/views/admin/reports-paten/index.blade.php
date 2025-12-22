@@ -403,9 +403,9 @@
                                                             </p>
                                                         @elseif($biodataPaten->document_submitted)
                                                             @php
-                                                                $certDeadline = $biodataPaten->getCertificateDeadline();
-                                                                $certDays = $biodataPaten->getDaysUntilCertificateDeadline();
-                                                                $isCertOverdue = $biodataPaten->isCertificateOverdue();
+                                                                $certDeadline = $biodataPaten->getSigningDeadline();
+                                                                $certDays = $biodataPaten->getDaysUntilSigningDeadline();
+                                                                $isCertOverdue = $biodataPaten->isSigningOverdue();
                                                             @endphp
                                                             
                                                             @if($isCertOverdue)

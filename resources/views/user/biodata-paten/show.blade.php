@@ -203,7 +203,7 @@
                                 </p>
                                 <p class="text-sm text-blue-700 mt-2">
                                     <i class="fas fa-hourglass-half mr-1"></i>
-                                    Sertifikat paten sedang dalam proses penerbitan. Estimasi selesai: <strong>{{ $biodataPaten->getCertificateDeadline()->format('d F Y') }}</strong>
+                                    Dokumen paten sedang dalam proses persiapan tanda tangan pimpinan. Estimasi selesai: <strong>{{ $biodataPaten->getSigningDeadline()->format('d F Y') }}</strong>
                                 </p>
                             </div>
                         @else
