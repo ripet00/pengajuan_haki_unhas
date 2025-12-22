@@ -252,9 +252,9 @@ class BiodataPatenController extends Controller
     }
 
     /**
-     * Mark biodata paten certificate as issued
+     * Mark biodata paten document as ready for signing by leadership
      */
-    public function markCertificateIssued(BiodataPaten $biodataPaten)
+    public function markReadyForSigning(BiodataPaten $biodataPaten)
     {
         $admin = $this->getCurrentAdmin();
         
@@ -262,25 +262,25 @@ class BiodataPatenController extends Controller
             return back()->with('error', 'Admin session tidak valid.');
         }
 
-        // Only approved biodata with submitted documents can have certificates issued
+        // Only approved biodata with submitted documents can be marked ready for signing
         if ($biodataPaten->status !== 'approved') {
-            return back()->with('error', 'Hanya biodata yang disetujui yang dapat ditandai sertifikat terbit.');
+            return back()->with('error', 'Hanya biodata yang disetujui yang dapat ditandai siap ditandatangani.');
         }
 
         if (!$biodataPaten->document_submitted) {
-            return back()->with('error', 'Berkas harus disetor terlebih dahulu sebelum sertifikat dapat ditandai terbit.');
+            return back()->with('error', 'Berkas harus disetor terlebih dahulu sebelum dapat ditandai siap ditandatangani pimpinan.');
         }
 
-        // Check if already issued
-        if ($biodataPaten->certificate_issued) {
-            return back()->with('error', 'Sertifikat sudah ditandai sebagai terbit sebelumnya.');
+        // Check if already marked
+        if ($biodataPaten->ready_for_signing) {
+            return back()->with('error', 'Dokumen sudah ditandai sebagai siap ditandatangani sebelumnya.');
         }
 
         $biodataPaten->update([
-            'certificate_issued' => true,
-            'certificate_issued_at' => now(),
+            'ready_for_signing' => true,
+            'ready_for_signing_at' => now(),
         ]);
 
-        return back()->with('success', 'Sertifikat Paten berhasil ditandai sebagai sudah terbit pada ' . now()->format('d F Y, H:i') . ' WITA');
+        return back()->with('success', 'Dokumen paten berhasil ditandai sebagai siap ditandatangani pimpinan pada ' . now()->format('d F Y, H:i') . ' WITA');
     }
 }

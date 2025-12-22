@@ -128,6 +128,11 @@ Route::prefix('admin')->group(function () {
         Route::post('reports/{biodata}/mark-certificate-issued', [\App\Http\Controllers\Admin\ReportController::class, 'markCertificateIssued'])->name('admin.reports.mark-certificate-issued');
         Route::get('reports/{biodata}/download-kelengkapan', [\App\Http\Controllers\Admin\ReportController::class, 'downloadKelengkapan'])->name('admin.reports.download-kelengkapan');
 
+        // Admin reports paten routes
+        Route::get('reports-paten', [\App\Http\Controllers\Admin\ReportPatenController::class, 'index'])->name('admin.reports-paten.index');
+        Route::post('reports-paten/{biodataPaten}/mark-document-submitted', [\App\Http\Controllers\Admin\ReportPatenController::class, 'markDocumentSubmitted'])->name('admin.reports-paten.mark-document-submitted');
+        Route::post('reports-paten/{biodataPaten}/mark-ready-for-signing', [\App\Http\Controllers\Admin\ReportPatenController::class, 'markReadyForSigning'])->name('admin.reports-paten.mark-ready-for-signing');
+
         // Admin paten submission routes
         Route::get('submissions-paten', [AdminSubmissionPatenController::class, 'index'])->name('admin.submissions-paten.index');
         Route::get('submissions-paten/{submissionPaten}', [AdminSubmissionPatenController::class, 'show'])->name('admin.submissions-paten.show');
@@ -141,7 +146,7 @@ Route::prefix('admin')->group(function () {
         Route::post('biodata-paten/{biodataPaten}/review', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'review'])->name('admin.biodata-paten.review');
         Route::post('biodata-paten/{biodataPaten}/update-errors', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'updateErrorFlags'])->name('admin.biodata-paten.update-errors');
         Route::post('biodata-paten/{biodataPaten}/mark-document-submitted', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'markDocumentSubmitted'])->name('admin.biodata-paten.mark-document-submitted');
-        Route::post('biodata-paten/{biodataPaten}/mark-certificate-issued', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'markCertificateIssued'])->name('admin.biodata-paten.mark-certificate-issued');
+        Route::post('biodata-paten/{biodataPaten}/mark-ready-for-signing', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'markReadyForSigning'])->name('admin.biodata-paten.mark-ready-for-signing');
 
         // Jenis Karya management routes
         Route::resource('jenis-karyas', \App\Http\Controllers\Admin\JenisKaryaController::class)->names([

@@ -129,7 +129,7 @@
                                         <div class="space-y-3">
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-700">Judul Karya</label>
-                                                <p class="mt-1 text-sm text-gray-900">{{ $biodataPaten->submissionPaten->title }}</p>
+                                                <p class="mt-1 text-sm text-gray-900">{{ $biodataPaten->submissionPaten->judul_paten }}</p>
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-700">Jenis Karya</label>

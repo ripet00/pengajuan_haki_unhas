@@ -24,19 +24,19 @@ class BiodataPaten extends Model
         'error_tanggal_invensi',
         'document_submitted',
         'document_submitted_at',
-        'certificate_issued',
-        'certificate_issued_at',
+        'ready_for_signing',
+        'ready_for_signing_at',
     ];
 
     protected $casts = [
         'tanggal_invensi' => 'date',
         'reviewed_at' => 'datetime',
         'document_submitted_at' => 'datetime',
-        'certificate_issued_at' => 'datetime',
+        'ready_for_signing_at' => 'datetime',
         'error_tempat_invensi' => 'boolean',
         'error_tanggal_invensi' => 'boolean',
         'document_submitted' => 'boolean',
-        'certificate_issued' => 'boolean',
+        'ready_for_signing' => 'boolean',
     ];
 
     /**
@@ -182,9 +182,9 @@ class BiodataPaten extends Model
     }
 
     /**
-     * Get certificate processing deadline (2 weeks after document submitted)
+     * Get signing processing deadline (2 weeks after document submitted)
      */
-    public function getCertificateDeadline()
+    public function getSigningDeadline()
     {
         if ($this->document_submitted && $this->document_submitted_at) {
             return $this->document_submitted_at->addWeeks(2);
@@ -193,12 +193,12 @@ class BiodataPaten extends Model
     }
 
     /**
-     * Check if certificate processing is overdue
+     * Check if signing processing is overdue
      */
-    public function isCertificateOverdue()
+    public function isSigningOverdue()
     {
-        if (!$this->certificate_issued && $this->getCertificateDeadline()) {
-            return now()->isAfter($this->getCertificateDeadline());
+        if (!$this->ready_for_signing && $this->getSigningDeadline()) {
+            return now()->isAfter($this->getSigningDeadline());
         }
         return false;
     }
@@ -215,12 +215,12 @@ class BiodataPaten extends Model
     }
 
     /**
-     * Get days remaining until certificate deadline
+     * Get days remaining until signing deadline
      */
-    public function getDaysUntilCertificateDeadline()
+    public function getDaysUntilSigningDeadline()
     {
-        if ($this->getCertificateDeadline()) {
-            return (int) now()->diffInDays($this->getCertificateDeadline(), false);
+        if ($this->getSigningDeadline()) {
+            return (int) now()->diffInDays($this->getSigningDeadline(), false);
         }
         return null;
     }

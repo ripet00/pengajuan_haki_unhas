@@ -102,12 +102,23 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.biodata-paten.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 group {{ Request::routeIs('admin.biodata-paten.*') ? 'sidebar-active-paten' : '' }}">
-                    <i class="fas fa-user-tie mr-3 {{ Request::routeIs('admin.biodata-paten.*') ? 'text-green-600' : 'text-gray-500' }}"></i>
+                <a href="{{ route('admin.biodata-paten.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 group {{ Request::routeIs('admin.biodata-paten.*') && !Request::routeIs('admin.reports-paten.*') ? 'sidebar-active-paten' : '' }}">
+                    <i class="fas fa-user-tie mr-3 {{ Request::routeIs('admin.biodata-paten.*') && !Request::routeIs('admin.reports-paten.*') ? 'text-green-600' : 'text-gray-500' }}"></i>
                     <span class="sidebar-text transition-opacity duration-300">Biodata Inventor</span>
                     @if(isset($pendingBiodataPatens) && $pendingBiodataPatens > 0)
                         <span class="sidebar-badge ml-auto bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
                             {{ $pendingBiodataPatens }}
+                        </span>
+                    @endif
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.reports-paten.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 group {{ Request::routeIs('admin.reports-paten.*') ? 'sidebar-active-paten' : '' }}">
+                    <i class="fas fa-chart-line mr-3 {{ Request::routeIs('admin.reports-paten.*') ? 'text-green-600' : 'text-gray-500' }}"></i>
+                    <span class="sidebar-text transition-opacity duration-300">Laporan Paten</span>
+                    @if(isset($pendingSigning) && $pendingSigning > 0)
+                        <span class="sidebar-badge ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
+                            {{ $pendingSigning }}
                         </span>
                     @endif
                 </a>
