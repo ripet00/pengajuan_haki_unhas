@@ -54,7 +54,7 @@
             <li>
                 <a href="{{ route('admin.submissions.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.submissions.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-file-upload mr-3 {{ Request::routeIs('admin.submissions.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
-                    <span class="sidebar-text transition-opacity duration-300">Pengajuan HKI</span>
+                    <span class="sidebar-text transition-opacity duration-300">Pengajuan Hak Cipta</span>
                     @if(isset($pendingSubmissions) && $pendingSubmissions > 0)
                         <span class="sidebar-badge ml-auto bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
                             {{ $pendingSubmissions }}
@@ -65,7 +65,7 @@
             <li>
                 <a href="{{ route('admin.biodata-pengaju.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.biodata-pengaju.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-user-friends mr-3 {{ Request::routeIs('admin.biodata-pengaju.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
-                    <span class="sidebar-text transition-opacity duration-300">Biodata Pengaju</span>
+                    <span class="sidebar-text transition-opacity duration-300">Biodata Pencipta</span>
                     @if(isset($pendingBiodatas) && $pendingBiodatas > 0)
                         <span class="sidebar-badge ml-auto bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
                             {{ $pendingBiodatas }}
@@ -76,7 +76,7 @@
             <li>
                 <a href="{{ route('admin.reports.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.reports.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-chart-bar mr-3 {{ Request::routeIs('admin.reports.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
-                    <span class="sidebar-text transition-opacity duration-300">Laporan</span>
+                    <span class="sidebar-text transition-opacity duration-300">Laporan Hak Cipta</span>
                     @if(isset($pendingCertificates) && $pendingCertificates > 0)
                         <span class="sidebar-badge ml-auto bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
                             {{ $pendingCertificates }}

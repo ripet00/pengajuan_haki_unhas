@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biodata Pengaju - Pengajuan HKI</title>
+    <title>Biodata Pencipta - Pengajuan Hak Cipta</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -13,7 +13,7 @@
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            @include('admin.partials.header', ['title' => 'Biodata Pengaju'])
+            @include('admin.partials.header', ['title' => 'Biodata Pencipta'])
 
             <!-- Main Content Area -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
@@ -54,9 +54,9 @@
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                                 <div>
                                     <h1 class="text-2xl font-bold text-gray-900 flex items-center">
-                                        <i class="fas fa-user-friends mr-3 text-red-600"></i>Manajemen Biodata Pengaju
+                                        <i class="fas fa-user-friends mr-3 text-red-600"></i>Manajemen Biodata Pencipta
                                     </h1>
-                                    <p class="text-gray-600 mt-1">Kelola dan review biodata yang disubmit oleh pengguna</p>
+                                    <p class="text-gray-600 mt-1">Kelola dan review biodata yang disubmit oleh pencipta</p>
                                 </div>
                                 <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                                     <!-- Search Bar -->

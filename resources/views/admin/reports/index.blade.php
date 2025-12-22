@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Tracking HKI - Admin Panel</title>
+    <title>Laporan Tracking Hak Cipta - Admin Panel</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -13,7 +13,7 @@
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            @include('admin.partials.header', ['title' => 'Laporan Tracking HKI'])
+            @include('admin.partials.header', ['title' => 'Laporan Tracking Hak Cipta'])
 
             <!-- Main Content Area -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
@@ -51,10 +51,10 @@
                             <div class="mb-4">
                                 <h2 class="text-2xl font-bold text-gray-900 mb-2">
                                     <i class="fas fa-clipboard-check mr-3 text-blue-600"></i>
-                                    Laporan & Tracking HKI
+                                    Laporan & Tracking Hak Cipta
                                 </h2>
                                 <p class="text-gray-600">
-                                    Monitor status penyetoran berkas dan penerbitan sertifikat HKI yang telah disetujui
+                                    Monitor status penyetoran berkas dan penerbitan sertifikat Hak Cipta yang telah disetujui
                                 </p>
                             </div>
 
