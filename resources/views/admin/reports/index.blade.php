@@ -509,7 +509,7 @@
 
                                                 <!-- Quick Action Button -->
                                                 <div class="pt-2">
-                                                    <a href="{{ route('admin.biodata-pengaju.show', $biodata) }}" 
+                                                    <a href="{{ route('admin.biodata.show', $biodata) }}" 
                                                        class="block text-center px-4 py-2.5 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded transition duration-200">
                                                         <i class="fas fa-eye mr-2"></i>Lihat Detail
                                                     </a>

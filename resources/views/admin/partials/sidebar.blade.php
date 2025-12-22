@@ -63,8 +63,8 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.biodata-pengaju.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.biodata-pengaju.*') ? 'sidebar-active' : '' }}">
-                    <i class="fas fa-user-friends mr-3 {{ Request::routeIs('admin.biodata-pengaju.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
+                <a href="{{ route('admin.biodata.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.biodata.*') ? 'sidebar-active' : '' }}">
+                    <i class="fas fa-user-friends mr-3 {{ Request::routeIs('admin.biodata.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
                     <span class="sidebar-text transition-opacity duration-300">Biodata Pencipta</span>
                     @if(isset($pendingBiodatas) && $pendingBiodatas > 0)
                         <span class="sidebar-badge ml-auto bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">

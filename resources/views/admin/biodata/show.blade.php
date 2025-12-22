@@ -51,7 +51,7 @@
                     <div class="space-y-6">
                         <!-- Back Button -->
                         <div>
-                            <a href="{{ route('admin.biodata-pengaju.index') }}" class="inline-flex items-center px-5 py-3 bg-white hover:bg-gray-50 text-gray-800 hover:text-gray-900 border-2 border-gray-500 hover:border-gray-700 rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
+                            <a href="{{ route('admin.biodata.index') }}" class="inline-flex items-center px-5 py-3 bg-white hover:bg-gray-50 text-gray-800 hover:text-gray-900 border-2 border-gray-500 hover:border-gray-700 rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
                                 <i class="fas fa-arrow-left mr-2"></i>
                                 Kembali ke Daftar Biodata
                             </a>
@@ -91,7 +91,7 @@
                         <!-- Main Content Grid -->
                         @if($biodata->status === 'pending')
                             <!-- Wrap entire content in review form for pending biodata -->
-                            <form id="pendingReviewForm" method="POST" action="{{ route('admin.biodata-pengaju.review', $biodata) }}">
+                            <form id="pendingReviewForm" method="POST" action="{{ route('admin.biodata.review', $biodata) }}">
                                 @csrf
                         @endif
                         
@@ -601,7 +601,7 @@
                                             <i class="fas fa-edit mr-1"></i>Perlu mengubah keputusan review?
                                         </p>
                                         
-                                        <form id="editReviewForm" method="POST" action="{{ route('admin.biodata-pengaju.review', $biodata) }}" class="space-y-4">
+                                        <form id="editReviewForm" method="POST" action="{{ route('admin.biodata.review', $biodata) }}" class="space-y-4">
                                             @csrf
                                             
                                             <div>
@@ -720,7 +720,7 @@
 
                                 <!-- Mark as Submitted Form -->
                                 @if(!$biodata->document_submitted)
-                                    <form method="POST" action="{{ route('admin.biodata-pengaju.mark-document-submitted', $biodata) }}" class="mt-3">
+                                    <form method="POST" action="{{ route('admin.biodata.mark-document-submitted', $biodata) }}" class="mt-3">
                                         @csrf
                                         <button type="submit" 
                                                 onclick="return confirm('Apakah Anda yakin berkas telah disetor oleh user?')"
@@ -811,7 +811,7 @@
 
                                 <!-- Mark as Issued Form -->
                                 @if($biodata->document_submitted && !$biodata->certificate_issued)
-                                    <form method="POST" action="{{ route('admin.biodata-pengaju.mark-certificate-issued', $biodata) }}" class="mt-3">
+                                    <form method="POST" action="{{ route('admin.biodata.mark-certificate-issued', $biodata) }}" class="mt-3">
                                         @csrf
                                         <button type="submit" 
                                                 onclick="return confirm('Apakah Anda yakin sertifikat HKI sudah terbit?')"
