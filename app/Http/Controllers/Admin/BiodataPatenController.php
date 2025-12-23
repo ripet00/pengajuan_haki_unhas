@@ -57,19 +57,19 @@ class BiodataPatenController extends Controller
             })
             ->count();
 
-        $certificateOverdue = BiodataPaten::where('status', 'approved')
+        $signingOverdue = BiodataPaten::where('status', 'approved')
             ->where('document_submitted', true)
-            ->where('certificate_issued', false)
+            ->where('ready_for_signing', false)
             ->get()
             ->filter(function($biodataPaten) {
-                return $biodataPaten->isCertificateOverdue();
+                return $biodataPaten->isSigningOverdue();
             })
             ->count();
 
         return view('admin.biodata-paten.index', compact(
             'biodataPatens',
             'documentOverdue',
-            'certificateOverdue',
+            'signingOverdue',
             'totalBiodatas',
             'approvedBiodatas',
             'pendingBiodatas',
