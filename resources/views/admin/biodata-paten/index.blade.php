@@ -179,7 +179,7 @@
                         </div>
 
                         <!-- Overdue Warnings -->
-                        {{-- @if($documentOverdue > 0 || $certificateOverdue > 0)
+                        {{-- @if($documentOverdue > 0 || $signingOverdue > 0)
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             @if($documentOverdue > 0)
                             <div class="bg-red-50 border-2 border-red-300 rounded-lg shadow-lg p-6">
@@ -205,7 +205,7 @@
                             </div>
                             @endif --}}
 
-                            {{-- @if($certificateOverdue > 0)
+                            {{-- @if($signingOverdue > 0)
                             <div class="bg-orange-50 border-2 border-orange-300 rounded-lg shadow-lg p-6">
                                 <div class="flex items-start">
                                     <div class="flex-shrink-0">
@@ -215,14 +215,14 @@
                                     </div>
                                     <div class="ml-4 flex-1">
                                         <h3 class="text-lg font-bold text-orange-900 mb-2">
-                                            <i class="fas fa-hourglass-end mr-2"></i>Penerbitan Sertifikat Terlambat
+                                            <i class="fas fa-hourglass-end mr-2"></i>Penandatanganan Terlambat
                                         </h3>
                                         <p class="text-sm text-orange-800 mb-2">
-                                            <strong class="text-2xl">{{ $certificateOverdue }}</strong> sertifikat sudah melewati estimasi 2 minggu sejak berkas disetor!
+                                            <strong class="text-2xl">{{ $signingOverdue }}</strong> dokumen sudah melewati estimasi 2 minggu sejak berkas disetor!
                                         </p>
                                         <p class="text-xs text-orange-700">
                                             <i class="fas fa-info-circle mr-1"></i>
-                                            Segera proses penerbitan sertifikat Paten untuk biodata terkait.
+                                            Segera proses penandatanganan pimpinan untuk biodata paten terkait.
                                         </p>
                                     </div>
                                 </div>
