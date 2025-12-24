@@ -529,7 +529,7 @@ class BiodataPatenController extends Controller
                     
                     // Materai hanya untuk inventor pertama
                     if ($num === 1) {
-                        $templateProcessor->setValue("materai#$num", config('hki.materai.text', 'MATERAI Rp10.000'));
+                        $templateProcessor->setValue("materai#$num", config('hki.materai.text', 'MATERAI'));
                     } else {
                         $templateProcessor->setValue("materai#$num", '');
                     }
@@ -550,7 +550,7 @@ class BiodataPatenController extends Controller
                         $templateProcessor->setValue("inventor_pekerjaan", $inventor->pekerjaan ?? '-');
                         $templateProcessor->setValue("inventor_alamat", $alamatLengkap ?: '-');
                         $templateProcessor->setValue("signature_inventor", $inventor->name ?? '-');
-                        $templateProcessor->setValue("materai", config('hki.materai.text', 'MATERAI Rp10.000'));
+                        $templateProcessor->setValue("materai", config('hki.materai.text', 'MATERAI'));
                         $templateProcessor->setValue('pejabat_nama', config('hki.pejabat_pengalihan.nama', '-'));
                         $templateProcessor->setValue('pejabat_nip', config('hki.pejabat_pengalihan.nip', '-'));
                     }
@@ -777,7 +777,7 @@ class BiodataPatenController extends Controller
                             // Materai hanya untuk inventor pertama (index 0, row 1, kolom kiri)
                             if ($inventorIndex === 0) {
                                 try {
-                                    $templateProcessor->setValue("materai_kiri#$row", config('hki.materai.text', 'MATERAI Rp10.000'));
+                                    $templateProcessor->setValue("materai_kiri#$row", config('hki.materai.text', 'MATERAI'));
                                     Log::info("Set inventor_kiri#{$row} = ({$inventor->name}) WITH MATERAI");
                                 } catch (\Exception $e) {
                                     Log::info("Set inventor_kiri#{$row} = ({$inventor->name})");
@@ -814,7 +814,7 @@ class BiodataPatenController extends Controller
                     // Fallback jika clone gagal - set single values
                     $templateProcessor->setValue("inventor_kiri", $allInventors[0]->name ?? '-');
                     $templateProcessor->setValue("inventor_kanan", isset($allInventors[1]) ? '(' . $allInventors[1]->name . ')' : '');
-                    $templateProcessor->setValue("materai_kiri", config('hki.materai.text', 'MATERAI Rp10.000'));
+                    $templateProcessor->setValue("materai_kiri", config('hki.materai.text', 'MATERAI'));
                 }
             } else {
                 // Jika tidak ada inventor, set nilai default kosong
