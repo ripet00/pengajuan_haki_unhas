@@ -290,7 +290,7 @@
                                         <li>Silakan semua inventor <strong>bertandatangan</strong> di atas dokumen tersebut. <strong>Inventor 1 bertandatangan di atas materai Rp10.000</strong></li>
                                         <li class="text-red-700 font-semibold">
                                             <i class="fas fa-stamp mr-1"></i>
-                                            Siapkan <strong>4 materai Rp10.000</strong> - Ada 4 bagian tanda tangan yang harus di atas materai (1x di Surat Pengalihan + 3x di Surat Pernyataan)
+                                            Siapkan <strong>2 materai Rp10.000</strong> - Ada 2 bagian tanda tangan yang harus di atas materai (1x di Surat Pengalihan + 1x di Surat Pernyataan)
                                         </li>
                                         <li>Silakan <strong>menyetor berkas</strong> ke kantor HKI Unhas</li>
                                     </ol>
