@@ -24,6 +24,9 @@ class SubmissionPaten extends Model
         'status',
         'reviewed_at',
         'rejection_reason',
+        'file_review_path',
+        'file_review_name',
+        'file_review_uploaded_at',
         'revisi',
         'reviewed_by_admin_id',
         'biodata_status',
@@ -36,6 +39,7 @@ class SubmissionPaten extends Model
     protected $casts = [
         'revisi' => 'boolean',
         'reviewed_at' => 'datetime',
+        'file_review_uploaded_at' => 'datetime',
         'biodata_submitted_at' => 'datetime',
         'biodata_reviewed_at' => 'datetime',
         'file_size' => 'integer',
