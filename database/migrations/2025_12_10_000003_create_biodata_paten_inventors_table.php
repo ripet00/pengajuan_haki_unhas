@@ -18,14 +18,13 @@ return new class extends Migration
             $table->string('pekerjaan')->nullable();
             $table->string('universitas')->nullable();
             $table->string('fakultas')->nullable();
-            $table->string('program_studi')->nullable();
             $table->text('alamat')->nullable();
             $table->string('kelurahan')->nullable();
             $table->string('kecamatan')->nullable();
             $table->string('kota_kabupaten')->nullable();
             $table->string('provinsi')->nullable();
             $table->string('kode_pos')->nullable();
-            $table->string('email')->nullable();
+            $table->string('email');
             $table->string('nomor_hp')->nullable();
             $table->string('kewarganegaraan')->nullable();
             $table->boolean('is_leader')->default(false);
@@ -35,7 +34,6 @@ return new class extends Migration
             $table->boolean('error_pekerjaan')->default(false);
             $table->boolean('error_universitas')->default(false);
             $table->boolean('error_fakultas')->default(false);
-            $table->boolean('error_program_studi')->default(false);
             $table->boolean('error_alamat')->default(false);
             $table->boolean('error_kelurahan')->default(false);
             $table->boolean('error_kecamatan')->default(false);

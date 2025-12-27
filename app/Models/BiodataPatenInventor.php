@@ -17,7 +17,6 @@ class BiodataPatenInventor extends Model
         'pekerjaan',
         'universitas',
         'fakultas',
-        'program_studi',
         'alamat',
         'kelurahan',
         'kecamatan',
@@ -32,7 +31,6 @@ class BiodataPatenInventor extends Model
         'error_pekerjaan',
         'error_universitas',
         'error_fakultas',
-        'error_program_studi',
         'error_alamat',
         'error_kelurahan',
         'error_kecamatan',
@@ -50,7 +48,6 @@ class BiodataPatenInventor extends Model
         'error_pekerjaan' => 'boolean',
         'error_universitas' => 'boolean',
         'error_fakultas' => 'boolean',
-        'error_program_studi' => 'boolean',
         'error_alamat' => 'boolean',
         'error_kelurahan' => 'boolean',
         'error_kecamatan' => 'boolean',
@@ -84,13 +81,9 @@ class BiodataPatenInventor extends Model
     public function hasErrors()
     {
         return $this->error_name || 
-               $this->error_nik || 
-               $this->error_npwp || 
-               $this->error_jenis_kelamin || 
                $this->error_pekerjaan || 
                $this->error_universitas || 
                $this->error_fakultas || 
-               $this->error_program_studi || 
                $this->error_alamat || 
                $this->error_kelurahan || 
                $this->error_kecamatan || 
@@ -114,13 +107,9 @@ class BiodataPatenInventor extends Model
         if ($this->error_npwp) $errors[] = 'npwp';
         if ($this->error_jenis_kelamin) $errors[] = 'jenis_kelamin';
         if ($this->error_pekerjaan) $errors[] = 'pekerjaan';
+        if ($this->error_pekerjaan) $errors[] = 'pekerjaan';
         if ($this->error_universitas) $errors[] = 'universitas';
-        if ($this->error_fakultas) $errors[] = 'fakultas';
-        if ($this->error_program_studi) $errors[] = 'program_studi';
-        if ($this->error_alamat) $errors[] = 'alamat';
-        if ($this->error_kelurahan) $errors[] = 'kelurahan';
-        if ($this->error_kecamatan) $errors[] = 'kecamatan';
-        if ($this->error_kota_kabupaten) $errors[] = 'kota_kabupaten';
+        if ($this->error_fakultas) $errors[] = 'fakultasen';
         if ($this->error_provinsi) $errors[] = 'provinsi';
         if ($this->error_kode_pos) $errors[] = 'kode_pos';
         if ($this->error_email) $errors[] = 'email';

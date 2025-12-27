@@ -96,21 +96,18 @@ class BiodataPatenController extends Controller
 
         // Validate the request
         $validatedData = $request->validate([
-            'tempat_invensi' => 'required|string|max:255',
-            'tanggal_invensi' => 'required|date',
             'inventors' => 'required|array|min:1|max:6',
             'inventors.*.name' => 'required|string|max:255',
             'inventors.*.pekerjaan' => 'required|string|max:255',
             'inventors.*.universitas' => 'required|string|max:255',
             'inventors.*.fakultas' => 'required|string|max:255',
-            'inventors.*.program_studi' => 'required|string|max:255',
             'inventors.*.alamat' => 'required|string',
             'inventors.*.kelurahan' => 'required|string|max:255',
             'inventors.*.kecamatan' => 'required|string|max:255',
             'inventors.*.kota_kabupaten' => 'required|string|max:255',
             'inventors.*.provinsi' => 'required|string|max:255',
             'inventors.*.kode_pos' => 'required|string|max:10',
-            'inventors.*.email' => 'nullable|email|max:255',
+            'inventors.*.email' => 'required|email|max:255',
             'inventors.*.nomor_hp' => 'required|string|max:20',
             'inventors.*.kewarganegaraan' => 'required|string|max:100',
             // Optional helper fields that won't be stored
@@ -137,8 +134,6 @@ class BiodataPatenController extends Controller
                 $biodataPaten = BiodataPaten::create([
                     'submission_paten_id' => $submissionPaten->id,
                     'user_id' => Auth::id(),
-                    'tempat_invensi' => $request->tempat_invensi,
-                    'tanggal_invensi' => $request->tanggal_invensi,
                     'status' => 'pending',
                 ]);
             } else {
@@ -149,15 +144,10 @@ class BiodataPatenController extends Controller
                 }
 
                 $biodataPaten->update([
-                    'tempat_invensi' => $request->tempat_invensi,
-                    'tanggal_invensi' => $request->tanggal_invensi,
                     'status' => 'pending', // Reset to pending when edited
                     'rejection_reason' => null, // Clear previous rejection reason
                     'reviewed_at' => null, // Clear review timestamp
                     'reviewed_by' => null, // Clear reviewer
-                    // Reset all error flags
-                    'error_tempat_invensi' => false,
-                    'error_tanggal_invensi' => false,
                 ]);
 
                 // Delete existing inventors
@@ -172,7 +162,6 @@ class BiodataPatenController extends Controller
                     'pekerjaan' => $inventorData['pekerjaan'],
                     'universitas' => $inventorData['universitas'],
                     'fakultas' => $inventorData['fakultas'],
-                    'program_studi' => $inventorData['program_studi'],
                     'alamat' => $inventorData['alamat'],
                     'kelurahan' => $inventorData['kelurahan'],
                     'kecamatan' => $inventorData['kecamatan'],

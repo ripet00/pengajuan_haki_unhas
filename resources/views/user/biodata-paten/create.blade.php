@@ -194,52 +194,6 @@
                             Judul ini diambil otomatis dari submission yang telah disetujui
                         </p>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="tempat_invensi" class="block text-sm font-medium text-gray-700 mb-1">
-                                Tempat Paten Dibuat *
-                                @if($biodataPaten && $biodataPaten->error_tempat_invensi)
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
-                                    </span>
-                                @endif
-                            </label>
-                            <input type="text" 
-                                   id="tempat_invensi" 
-                                   name="tempat_invensi" 
-                                   value="{{ old('tempat_invensi', $biodataPaten ? $biodataPaten->tempat_invensi : '') }}"
-                                   placeholder="{{ $biodataPaten && $biodataPaten->error_tempat_invensi ? 'Admin menandai field ini perlu diperbaiki' : 'Contoh: Makassar, Jakarta, Bandung' }}"
-                                   class="w-full px-3 py-2 border {{ $biodataPaten && $biodataPaten->error_tempat_invensi ? 'border-red-300 bg-red-50' : 'border-gray-300' }} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                   required>
-                            <p class="mt-1 text-xs text-gray-500">
-                                <i class="fas fa-info-circle mr-1"></i>Isi dengan nama kota/kabupaten tempat paten dibuat
-                            </p>
-                            @error('tempat_invensi')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="tanggal_invensi" class="block text-sm font-medium text-gray-700 mb-1">
-                                Tanggal Paten Dibuat *
-                                @if($biodataPaten && $biodataPaten->error_tanggal_invensi)
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
-                                    </span>
-                                @endif
-                            </label>
-                            <input type="date" 
-                                   id="tanggal_invensi" 
-                                   name="tanggal_invensi" 
-                                   value="{{ old('tanggal_invensi', $biodataPaten && $biodataPaten->tanggal_invensi ? $biodataPaten->tanggal_invensi->format('Y-m-d') : '') }}"
-                                   class="w-full px-3 py-2 border {{ $biodataPaten && $biodataPaten->error_tanggal_invensi ? 'border-red-300 bg-red-50' : 'border-gray-300' }} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                   required>
-                            @error('tanggal_invensi')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -508,23 +462,6 @@
                         <!-- Hidden input to store final fakultas value -->
                         <input type="hidden" name="inventors[${index}][fakultas]" id="fakultas_final_${index}" value="${inventor.fakultas || ''}">
                         
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Program Studi *
-                                ${!!inventor.error_program_studi ? `
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
-                                    </span>
-                                ` : ''}
-                            </label>
-                            <input type="text" 
-                                   name="inventors[${index}][program_studi]" 
-                                   value="${inventor.program_studi || ''}"
-                                   placeholder="${!!inventor.error_program_studi ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan program studi'}"
-                                   class="w-full px-3 py-2 border ${!!inventor.error_program_studi ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                   required>
-                        </div>
-                        
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Alamat *
@@ -743,7 +680,7 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Email
+                                Email *
                                 ${!!inventor.error_email ? `
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>Perlu Diperbaiki
@@ -753,11 +690,9 @@
                             <input type="email" 
                                    name="inventors[${index}][email]" 
                                    value="${inventor.email || ''}"
-                                   placeholder="${!!inventor.error_email ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan email (opsional)'}"
-                                   class="w-full px-3 py-2 border ${!!inventor.error_email ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                            <p class="text-xs text-gray-500 mt-1">
-                                <i class="fas fa-info-circle mr-1"></i>Opsional - Email inventor
-                            </p>
+                                   placeholder="${!!inventor.error_email ? 'Admin menandai field ini perlu diperbaiki' : 'Masukkan email inventor'}"
+                                   class="w-full px-3 py-2 border ${!!inventor.error_email ? 'border-red-300 bg-red-50' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                   required>
                         </div>
                         
                         <div>

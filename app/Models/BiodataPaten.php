@@ -14,14 +14,10 @@ class BiodataPaten extends Model
     protected $fillable = [
         'submission_paten_id',
         'user_id',
-        'tempat_invensi',
-        'tanggal_invensi',
         'status',
         'rejection_reason',
         'reviewed_at',
         'reviewed_by',
-        'error_tempat_invensi',
-        'error_tanggal_invensi',
         'document_submitted',
         'document_submitted_at',
         'ready_for_signing',
@@ -29,12 +25,9 @@ class BiodataPaten extends Model
     ];
 
     protected $casts = [
-        'tanggal_invensi' => 'date',
         'reviewed_at' => 'datetime',
         'document_submitted_at' => 'datetime',
         'ready_for_signing_at' => 'datetime',
-        'error_tempat_invensi' => 'boolean',
-        'error_tanggal_invensi' => 'boolean',
         'document_submitted' => 'boolean',
         'ready_for_signing' => 'boolean',
     ];

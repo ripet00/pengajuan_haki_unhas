@@ -15,16 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('submission_paten_id')->constrained('submissions_paten')->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('tempat_invensi');
-            $table->date('tanggal_invensi');
             $table->enum('status', ['pending', 'approved', 'denied'])->default('pending');
             $table->text('rejection_reason')->nullable();
             $table->timestamp('reviewed_at')->nullable();
             $table->foreignId('reviewed_by')->nullable()->constrained('admins')->onDelete('set null');
-            
-            // Error flags for field-level validation
-            $table->boolean('error_tempat_invensi')->default(false);
-            $table->boolean('error_tanggal_invensi')->default(false);
             
             // Document tracking fields
             $table->boolean('document_submitted')->default(false);

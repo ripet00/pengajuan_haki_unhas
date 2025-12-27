@@ -152,7 +152,7 @@
                         <p class="text-sm text-red-700">{{ $biodataPaten->rejection_reason }}</p>
                         <p class="text-sm text-red-600 mt-2">
                             <i class="fas fa-info-circle mr-1"></i>
-                            Anda dapat mengedit biodata untuk memperbaiki masalah ini.
+                            Anda dapat mengedit biodata untuk memperbaiki masalah ini. Silakan klik "Edit Biodata" di bawah halaman.
                         </p>
                     </div>
                 @elseif($biodataPaten->status == 'approved')
@@ -345,24 +345,9 @@
                     </div>
                     
                     <div>
-                        <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Tempat Invensi</h4>
-                        <p class="mt-1 text-lg text-gray-900">{{ $biodataPaten->tempat_invensi }}</p>
-                    </div>
-                    
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Tanggal Invensi</h4>
-                        <p class="mt-1 text-lg text-gray-900">{{ $biodataPaten->tanggal_invensi->format('d F Y') }}</p>
-                    </div>
-                    
-                    <div>
                         <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Dibuat Pada</h4>
                         <p class="mt-1 text-lg text-gray-900">{{ $biodataPaten->created_at->format('d F Y H:i') }}</p>
                     </div>
-                </div>
-                
-                <div class="mt-6">
-                    <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Uraian Singkat Invensi</h4>
-                    <p class="mt-2 text-gray-900 leading-relaxed">{{ $biodataPaten->uraian_singkat }}</p>
                 </div>
             </div>
         </div>
@@ -451,13 +436,6 @@
                                     <div>
                                         <span class="text-sm font-medium text-gray-500">Fakultas:</span>
                                         <p class="text-gray-900">{{ $inventor->fakultas }}</p>
-                                    </div>
-                                @endif
-                                
-                                @if($inventor->program_studi)
-                                    <div>
-                                        <span class="text-sm font-medium text-gray-500">Program Studi:</span>
-                                        <p class="text-gray-900">{{ $inventor->program_studi }}</p>
                                     </div>
                                 @endif
                             </div>

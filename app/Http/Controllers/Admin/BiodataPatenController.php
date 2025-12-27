@@ -87,7 +87,9 @@ class BiodataPatenController extends Controller
             'reviewedBy'
         ]);
 
-        return view('admin.biodata-paten.show', compact('biodataPaten'));
+        $submissionPaten = $biodataPaten->submissionPaten;
+
+        return view('admin.biodata-paten.show', compact('biodataPaten', 'submissionPaten'));
     }
 
     public function review(Request $request, BiodataPaten $biodataPaten)
@@ -108,14 +110,6 @@ class BiodataPatenController extends Controller
             'all' => $request->all(),
             'has_members' => $request->has('members'),
             'members' => $request->input('members'),
-            'error_tempat_invensi' => $request->input('error_tempat_invensi'),
-            'error_tanggal_invensi' => $request->input('error_tanggal_invensi'),
-        ]);
-
-        // Update biodata error flags
-        $biodataPaten->update([
-            'error_tempat_invensi' => $request->boolean('error_tempat_invensi'),
-            'error_tanggal_invensi' => $request->boolean('error_tanggal_invensi'),
         ]);
 
         // Update inventor error flags
@@ -128,7 +122,6 @@ class BiodataPatenController extends Controller
                         'error_pekerjaan' => isset($inventorErrors['error_pekerjaan']) ? (bool)$inventorErrors['error_pekerjaan'] : false,
                         'error_universitas' => isset($inventorErrors['error_universitas']) ? (bool)$inventorErrors['error_universitas'] : false,
                         'error_fakultas' => isset($inventorErrors['error_fakultas']) ? (bool)$inventorErrors['error_fakultas'] : false,
-                        'error_program_studi' => isset($inventorErrors['error_program_studi']) ? (bool)$inventorErrors['error_program_studi'] : false,
                         'error_alamat' => isset($inventorErrors['error_alamat']) ? (bool)$inventorErrors['error_alamat'] : false,
                         'error_kelurahan' => isset($inventorErrors['error_kelurahan']) ? (bool)$inventorErrors['error_kelurahan'] : false,
                         'error_kecamatan' => isset($inventorErrors['error_kecamatan']) ? (bool)$inventorErrors['error_kecamatan'] : false,
@@ -188,11 +181,7 @@ class BiodataPatenController extends Controller
             return back()->with('error', 'Admin session tidak valid.');
         }
 
-        // Update biodata error flags
-        $biodataPaten->update([
-            'error_tempat_invensi' => $request->boolean('error_tempat_invensi'),
-            'error_tanggal_invensi' => $request->boolean('error_tanggal_invensi'),
-        ]);
+        // Update biodata error flags - no longer needed for removed fields
 
         // Update inventor error flags
         if ($request->has('members')) {
@@ -204,7 +193,6 @@ class BiodataPatenController extends Controller
                         'error_pekerjaan' => isset($inventorErrors['error_pekerjaan']) ? (bool)$inventorErrors['error_pekerjaan'] : false,
                         'error_universitas' => isset($inventorErrors['error_universitas']) ? (bool)$inventorErrors['error_universitas'] : false,
                         'error_fakultas' => isset($inventorErrors['error_fakultas']) ? (bool)$inventorErrors['error_fakultas'] : false,
-                        'error_program_studi' => isset($inventorErrors['error_program_studi']) ? (bool)$inventorErrors['error_program_studi'] : false,
                         'error_alamat' => isset($inventorErrors['error_alamat']) ? (bool)$inventorErrors['error_alamat'] : false,
                         'error_kelurahan' => isset($inventorErrors['error_kelurahan']) ? (bool)$inventorErrors['error_kelurahan'] : false,
                         'error_kecamatan' => isset($inventorErrors['error_kecamatan']) ? (bool)$inventorErrors['error_kecamatan'] : false,
