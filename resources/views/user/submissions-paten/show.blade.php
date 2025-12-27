@@ -50,6 +50,9 @@
     </style>
 </head>
 <body class="bg-gray-100">
+@php
+use Illuminate\Support\Facades\Storage;
+@endphp
     <!-- Header -->
     <header class="gradient-bg shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -656,6 +659,25 @@
                             <h4 class="font-semibold text-red-800">Dokumen Ditolak</h4>
                         </div>
                         <p class="text-sm text-red-700">{{ $submissionPaten->rejection_reason }}</p>
+                        
+                        @if($submissionPaten->file_review_path)
+                            <div class="mt-4 pt-4 border-t border-red-200">
+                                <div class="flex items-center justify-between bg-white rounded-lg p-3 border border-red-300">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-file-word text-blue-600 text-xl mr-3"></i>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">File Koreksi dari Admin</p>
+                                            <p class="text-xs text-gray-600">{{ $submissionPaten->file_review_name ?? 'File Koreksi.docx' }}</p>
+                                        </div>
+                                    </div>
+                                    <a href="{{ Storage::disk('public')->url($submissionPaten->file_review_path) }}" 
+                                       download
+                                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200 shadow-sm hover:shadow-md">
+                                        <i class="fas fa-download mr-2"></i>Download
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 @endif
 
@@ -742,15 +764,16 @@
                         </div>
 
                         <div>
-                            <label for="document" class="block text-sm font-medium text-gray-700 mb-1">Dokumen PDF Baru</label>
+                            <label for="document" class="block text-sm font-medium text-gray-700 mb-1">Dokumen DOCX Baru</label>
                             <input 
                                 type="file" 
                                 id="document" 
                                 name="document" 
-                                accept=".pdf"
+                                accept=".docx,.doc"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                 required
                             >
+                            <p class="text-xs text-gray-500 mt-1">Upload file DOCX yang sudah diperbaiki (Maks. 5MB)</p>
                         </div>
 
                         <button 
