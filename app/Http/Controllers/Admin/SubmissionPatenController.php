@@ -77,19 +77,40 @@ class SubmissionPatenController extends Controller
         $request->validate([
             'status' => 'required|in:approved,rejected',
             'rejection_reason' => 'required_if:status,rejected',
+            'file_review' => 'nullable|file|mimes:docx,doc',
         ], [
             'status.required' => 'Status harus dipilih.',
             'rejection_reason.required_if' => 'Alasan penolakan harus diisi jika status ditolak.',
+            'file_review.mimes' => 'File harus berformat DOCX atau DOC.',
         ]);
 
         $admin = $this->getCurrentAdmin();
 
-        $submissionPaten->update([
+        // Prepare update data
+        $updateData = [
             'status' => $request->status,
             'rejection_reason' => $request->status === 'rejected' ? $request->rejection_reason : null,
             'reviewed_at' => now(),
             'reviewed_by_admin_id' => $admin->id,
-        ]);
+        ];
+
+        // Handle file upload
+        if ($request->hasFile('file_review')) {
+            // Delete old file if exists
+            if ($submissionPaten->file_review_path && Storage::disk('public')->exists($submissionPaten->file_review_path)) {
+                Storage::disk('public')->delete($submissionPaten->file_review_path);
+            }
+
+            $file = $request->file('file_review');
+            $fileName = 'review_' . $submissionPaten->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('review_files/paten', $fileName, 'public');
+
+            $updateData['file_review_path'] = $filePath;
+            $updateData['file_review_name'] = $file->getClientOriginalName();
+            $updateData['file_review_uploaded_at'] = now();
+        }
+
+        $submissionPaten->update($updateData);
 
         $statusText = $request->status === 'approved' ? 'disetujui' : 'ditolak';
         
@@ -105,16 +126,39 @@ class SubmissionPatenController extends Controller
         $request->validate([
             'status' => 'required|in:approved,rejected',
             'rejection_reason' => 'required_if:status,rejected',
+            'file_review' => 'nullable|file|mimes:docx,doc',
+        ], [
+            'rejection_reason.required_if' => 'Alasan penolakan harus diisi jika status ditolak.',
+            'file_review.mimes' => 'File harus berformat DOCX atau DOC.',
         ]);
 
         $admin = $this->getCurrentAdmin();
 
-        $submissionPaten->update([
+        // Prepare update data
+        $updateData = [
             'status' => $request->status,
             'rejection_reason' => $request->status === 'rejected' ? $request->rejection_reason : null,
             'reviewed_at' => now(),
             'reviewed_by_admin_id' => $admin->id,
-        ]);
+        ];
+
+        // Handle file upload
+        if ($request->hasFile('file_review')) {
+            // Delete old file if exists
+            if ($submissionPaten->file_review_path && Storage::disk('public')->exists($submissionPaten->file_review_path)) {
+                Storage::disk('public')->delete($submissionPaten->file_review_path);
+            }
+
+            $file = $request->file('file_review');
+            $fileName = 'review_' . $submissionPaten->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('review_files/paten', $fileName, 'public');
+
+            $updateData['file_review_path'] = $filePath;
+            $updateData['file_review_name'] = $file->getClientOriginalName();
+            $updateData['file_review_uploaded_at'] = now();
+        }
+
+        $submissionPaten->update($updateData);
 
         $statusText = $request->status === 'approved' ? 'disetujui' : 'ditolak';
         
