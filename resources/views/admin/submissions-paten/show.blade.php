@@ -250,7 +250,7 @@ use Illuminate\Support\Facades\Storage;
                     @endif
                         
                         @if($submissionPaten->status == 'pending')
-                            <form method="POST" action="{{ route('admin.submissions-paten.review', $submissionPaten) }}" class="space-y-4">
+                            <form method="POST" action="{{ route('admin.submissions-paten.review', $submissionPaten) }}" enctype="multipart/form-data" class="space-y-4">
                                 @csrf
                                 
                                 <div>
@@ -284,6 +284,24 @@ use Illuminate\Support\Facades\Storage;
                                         placeholder="Tulis catatan atau alasan penolakan di sini..."></textarea>
                                 </div>
 
+                                <div>
+                                    <label for="file_review" class="block text-sm font-medium text-gray-700 mb-1">
+                                        <i class="fas fa-file-word text-blue-600 mr-1"></i>File Koreksi untuk Pengusul:
+                                        <small class="text-gray-500">(Opsional - Format: DOCX)</small>
+                                    </label>
+                                    <div class="mt-1">
+                                        <input 
+                                            type="file" 
+                                            id="file_review" 
+                                            name="file_review" 
+                                            accept=".docx,.doc"
+                                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                        <p class="mt-1 text-xs text-gray-500">
+                                            <i class="fas fa-info-circle mr-1"></i>Upload file DOCX berisi koreksi/catatan untuk pengusul (bila diperlukan)
+                                        </p>
+                                    </div>
+                                </div>
+
                                 <button type="submit" class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg">
                                     <i class="fas fa-gavel mr-2"></i>SUBMIT REVIEW
                                 </button>
@@ -312,6 +330,25 @@ use Illuminate\Support\Facades\Storage;
                                 </div>
                                 @endif
 
+                                @if($submissionPaten->file_review_path)
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-file-word text-blue-600 text-lg mr-2"></i>
+                                            <div>
+                                                <p class="text-xs font-medium text-blue-900">{{ $submissionPaten->file_review_name ?? 'File Koreksi.docx' }}</p>
+                                                <p class="text-xs text-blue-700">File koreksi ter-upload</p>
+                                            </div>
+                                        </div>
+                                        <a href="{{ Storage::disk('public')->url($submissionPaten->file_review_path) }}" 
+                                           target="_blank"
+                                           class="inline-flex items-center px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition duration-200">
+                                            <i class="fas fa-eye mr-1"></i>Lihat
+                                        </a>
+                                    </div>
+                                </div>
+                                @endif
+
                                 <div class="border-t pt-4">
                                     <p class="text-sm text-gray-600 mb-4 text-center">
                                         <i class="fas fa-edit mr-1"></i>Perlu mengubah keputusan review?
@@ -328,7 +365,7 @@ use Illuminate\Support\Facades\Storage;
                                             </div>
                                         </div>
                                     @else
-                                        <form method="POST" action="{{ route('admin.submissions-paten.update-review', $submissionPaten) }}" class="space-y-4">
+                                        <form method="POST" action="{{ route('admin.submissions-paten.update-review', $submissionPaten) }}" enctype="multipart/form-data" class="space-y-4">
                                             @csrf
                                             
                                             <div>
@@ -360,6 +397,40 @@ use Illuminate\Support\Facades\Storage;
                                                     rows="3"
                                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                                                     placeholder="Tulis catatan atau alasan penolakan di sini...">{{ $submissionPaten->rejection_reason }}</textarea>
+                                            </div>
+
+                                            <div>
+                                                <label for="file_review_edit" class="block text-sm font-medium text-gray-700 mb-1">
+                                                    <i class="fas fa-file-word text-blue-600 mr-1"></i>File Koreksi untuk Pengusul:
+                                                    <small class="text-gray-500">(Opsional - Format: DOCX)</small>
+                                                </label>
+                                                @if($submissionPaten->file_review_path)
+                                                <div class="mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                                                    <div class="flex items-center justify-between">
+                                                        <div class="flex items-center">
+                                                            <i class="fas fa-file-word text-blue-600 mr-2"></i>
+                                                            <span class="text-xs text-blue-900">{{ $submissionPaten->file_review_name ?? 'File Koreksi.docx' }}</span>
+                                                        </div>
+                                                        <a href="{{ Storage::disk('public')->url($submissionPaten->file_review_path) }}" 
+                                                           target="_blank"
+                                                           class="text-xs text-blue-600 hover:text-blue-800">
+                                                            <i class="fas fa-eye mr-1"></i>Lihat
+                                                        </a>
+                                                    </div>
+                                                    <p class="text-xs text-blue-700 mt-1">Upload file baru untuk mengganti file lama</p>
+                                                </div>
+                                                @endif
+                                                <div class="mt-1">
+                                                    <input 
+                                                        type="file" 
+                                                        id="file_review_edit" 
+                                                        name="file_review" 
+                                                        accept=".docx,.doc"
+                                                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                                    <p class="mt-1 text-xs text-gray-500">
+                                                        <i class="fas fa-info-circle mr-1"></i>Upload file DOCX berisi koreksi/catatan untuk pengusul (bila diperlukan)
+                                                    </p>
+                                                </div>
                                             </div>
 
                                             <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
