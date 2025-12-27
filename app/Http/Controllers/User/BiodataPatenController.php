@@ -445,7 +445,7 @@ class BiodataPatenController extends Controller
                 $biodataPaten->submissionPaten->judul_paten ?? '-');
             
             $templateProcessor->setValue('paten_title', 
-                $biodataPaten->submissionPaten->judul_paten ?? '-');
+                strtoupper($biodataPaten->submissionPaten->judul_paten ?? '-'));
             
             $templateProcessor->setValue('kategori_paten', 
                 $biodataPaten->submissionPaten->kategori_paten ?? '-');
@@ -653,7 +653,7 @@ class BiodataPatenController extends Controller
                 $biodataPaten->submissionPaten->judul_paten ?? '-');
             
             $templateProcessor->setValue('paten_title', 
-                $biodataPaten->submissionPaten->judul_paten ?? '-');
+                strtoupper($biodataPaten->submissionPaten->judul_paten ?? '-'));
             
             $templateProcessor->setValue('kategori_paten', 
                 $biodataPaten->submissionPaten->kategori_paten ?? '-');
