@@ -184,6 +184,14 @@ class SubmissionPatenController extends Controller
                 'creator_whatsapp' => 'required|string|max:255',
                 'creator_country_code' => 'required|string|max:5',
                 'document' => 'required|file|mimes:docx|max:5120', // Max 5MB for DOCX
+            ], [
+                'judul_paten.required' => 'Judul paten harus diisi.',
+                'kategori_paten.required' => 'Kategori paten harus dipilih.',
+                'creator_name.required' => 'Nama inventor harus diisi.',
+                'creator_whatsapp.required' => 'Nomor WhatsApp harus diisi.',
+                'document.required' => 'Draft paten harus diunggah.',
+                'document.mimes' => 'Draft paten harus berformat .docx (Microsoft Word).',
+                'document.max' => 'Ukuran draft paten maksimal 5MB.',
             ]);
 
             $file = $request->file('document');
