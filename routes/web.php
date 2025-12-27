@@ -34,7 +34,7 @@ Route::prefix('/')->group(function () {
 });
 
 // User protected routes with /users prefix
-Route::prefix('users')->middleware('auth')->group(function () {
+Route::prefix('users')->middleware(['auth', 'check.user.status'])->group(function () {
     Route::get('/dashboard', function () {
         return view('user.dashboard_modern');
     })->name('user.dashboard');

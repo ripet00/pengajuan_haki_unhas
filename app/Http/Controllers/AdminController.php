@@ -78,7 +78,11 @@ class AdminController extends Controller
         // 2. Ambil data admin yang sedang login dari session.
         $admin = Admin::find(session('admin_id'));
         
-        // 3. Update Data User: Perbarui status user di database.
+        // 3. Check if status is changing from 'active' to something else
+        $wasActive = $user->status === 'active';
+        $nowInactive = $request->status !== 'active';
+        
+        // 4. Update Data User: Perbarui status user di database.
         $user->update([
             'status' => $request->status,
             // Jika statusnya 'active', catat waktu verifikasi dan siapa yang memverifikasi.
@@ -86,7 +90,13 @@ class AdminController extends Controller
             'verified_by_admin_id' => $request->status === 'active' ? $admin->id : null,
         ]);
 
-        // 4. Redirect Kembali: Kembali ke halaman sebelumnya dengan pesan sukses.
+        // 5. Force logout user if status changed from active to inactive
+        if ($wasActive && $nowInactive) {
+            // Delete all sessions for this user to force logout
+            \DB::table('sessions')->where('user_id', $user->id)->delete();
+        }
+
+        // 6. Redirect Kembali: Kembali ke halaman sebelumnya dengan pesan sukses.
         return redirect()->back()->with('success', 'User status updated successfully!');
     }
 
