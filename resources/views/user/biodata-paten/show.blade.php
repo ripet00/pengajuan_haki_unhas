@@ -287,7 +287,7 @@
                                     <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
                                         <li>Silakan <strong>mendownload</strong> formulir pendaftaran paten, surat pengalihan invensi, dan surat pernyataan invensi menggunakan tombol di atas</li>
                                         <li>Silakan <strong>print</strong> semua dokumen yang telah didownload</li>
-                                        <li>Silakan semua inventor <strong>bertandatangan</strong> di atas dokumen tersebut. <strong>Inventor 1 bertandatangan di atas materai Rp10.000</strong></li>
+                                        <li>Silakan semua inventor <strong>bertandatangan asli</strong> di atas dokumen tersebut. <strong>Inventor 1 bertandatangan di atas materai Rp10.000</strong></li>
                                         <li class="text-red-700 font-semibold">
                                             <i class="fas fa-stamp mr-1"></i>
                                             Siapkan <strong>2 materai Rp10.000</strong> - Ada 2 bagian tanda tangan yang harus di atas materai (1x di Surat Pengalihan + 1x di Surat Pernyataan)
@@ -300,7 +300,7 @@
                                             <i class="fas fa-map-marker-alt mr-2 text-red-600"></i>Alamat Kantor HKI Unhas:
                                         </h6>
                                         <p class="text-sm text-gray-700 leading-relaxed">
-                                            Lt. 6 Gedung Rektorat<br>
+                                            Gedung Rektorat Lt. 6 <br>
                                             Universitas Hasanuddin<br>
                                             Jalan Perintis Kemerdekaan Km.10<br>
                                             Makassar, 90245<br>

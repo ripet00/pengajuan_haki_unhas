@@ -274,7 +274,7 @@
                                             <i class="fas fa-map-marker-alt mr-2 text-red-600"></i>Alamat Kantor HKI Unhas:
                                         </h6>
                                         <p class="text-sm text-gray-700 leading-relaxed">
-                                            Lt. 6 Gedung Rektorat<br>
+                                            Gedung Rektorat Lt. 6 <br>
                                             Universitas Hasanuddin<br>
                                             Jalan Perintis Kemerdekaan Km.10<br>
                                             Makassar, 90245<br>
