@@ -196,7 +196,15 @@
                                                     </span>
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
-                                                    {{ $adminItem->phone_number }}
+                                                    <div class="flex items-center space-x-2">
+                                                        <span>{{ $adminItem->phone_number }}</span>
+                                                        <a href="https://wa.me/{{ $adminItem->country_code ?? '62' }}{{ ltrim($adminItem->phone_number, '0') }}" 
+                                                           target="_blank"
+                                                           class="inline-flex items-center px-2 py-1 bg-green-500 hover:bg-green-600 text-white text-xs font-medium rounded transition duration-200"
+                                                           title="Hubungi via WhatsApp">
+                                                            <i class="fab fa-whatsapp"></i>
+                                                        </a>
+                                                    </div>
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden xl:table-cell">
                                                     {{ $adminItem->created_at->format('d M Y H:i') }}
