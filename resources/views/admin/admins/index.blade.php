@@ -154,9 +154,11 @@
                                         <tr>
                                             <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
                                             <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">NIP/NIDN/NIDK/NIM</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Role</th>
                                             <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Nomor WhatsApp</th>
-                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Bergabung</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">Bergabung</th>
                                             <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
@@ -173,6 +175,9 @@
                                                                 <div class="text-xs text-indigo-600 font-medium">(Anda)</div>
                                                             @endif
                                                             <div class="text-xs text-gray-500 md:hidden">{{ $adminItem->nip_nidn_nidk_nim }}</div>
+                                                            <div class="text-xs text-gray-500 sm:hidden">
+                                                                <i class="fas fa-shield-alt mr-1"></i>{{ $adminItem->role_name }}
+                                                            </div>
                                                             <div class="text-xs text-gray-500 lg:hidden">{{ $adminItem->phone_number }}</div>
                                                         </div>
                                                     </div>
@@ -180,16 +185,60 @@
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
                                                     {{ $adminItem->nip_nidn_nidk_nim }}
                                                 </td>
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full
+                                                        @if($adminItem->role === 'super_admin') bg-purple-100 text-purple-800
+                                                        @elseif($adminItem->role === 'admin_hki') bg-blue-100 text-blue-800
+                                                        @elseif($adminItem->role === 'admin_paten') bg-green-100 text-green-800
+                                                        @else bg-orange-100 text-orange-800
+                                                        @endif">
+                                                        <i class="fas fa-shield-alt mr-1"></i>{{ $adminItem->role_name }}
+                                                    </span>
+                                                </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
                                                     {{ $adminItem->phone_number }}
                                                 </td>
-                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden xl:table-cell">
                                                     {{ $adminItem->created_at->format('d M Y H:i') }}
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-                                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                                        <i class="fas fa-check-circle mr-1"></i>Aktif
-                                                    </span>
+                                                    @if($adminItem->is_active)
+                                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                                            <i class="fas fa-check-circle mr-1"></i>Aktif
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                                            <i class="fas fa-times-circle mr-1"></i>Nonaktif
+                                                        </span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm">
+                                                    @if($adminItem->id !== session('admin_id'))
+                                                        <form action="{{ route('admin.admins.update-status', $adminItem) }}" 
+                                                              method="POST" 
+                                                              class="inline-block"
+                                                              onsubmit="return confirm('Apakah Anda yakin ingin {{ $adminItem->is_active ? 'menonaktifkan' : 'mengaktifkan' }} admin ini?')">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <input type="hidden" name="is_active" value="{{ $adminItem->is_active ? '0' : '1' }}">
+                                                            
+                                                            @if($adminItem->is_active)
+                                                                <button type="submit" 
+                                                                        class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-lg transition duration-200">
+                                                                    <i class="fas fa-ban mr-1"></i>Nonaktifkan
+                                                                </button>
+                                                            @else
+                                                                <button type="submit" 
+                                                                        class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition duration-200">
+                                                                    <i class="fas fa-check mr-1"></i>Aktifkan
+                                                                </button>
+                                                            @endif
+                                                        </form>
+                                                    @else
+                                                        <span class="text-xs text-gray-500 italic">
+                                                            <i class="fas fa-info-circle mr-1"></i>Anda sendiri
+                                                        </span>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach

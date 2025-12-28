@@ -143,6 +143,27 @@
                                     </div>
                                 </div>
 
+                                <div>
+                                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class="fas fa-user-tag mr-2 text-gray-400"></i>Role / Peran Admin
+                                    </label>
+                                    <select 
+                                        id="role" 
+                                        name="role"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200"
+                                        required
+                                    >
+                                        @foreach(\App\Models\Admin::getRoles() as $roleValue => $roleLabel)
+                                            <option value="{{ $roleValue }}" {{ old('role', 'super_admin') == $roleValue ? 'selected' : '' }}>
+                                                {{ $roleLabel }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        Super Admin: Akses penuh | Admin HKI: Paten + Hak Cipta | Admin Paten: Paten saja | Admin Hak Cipta: Hak Cipta + Jenis Karya
+                                    </p>
+                                </div>
+
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label for="password" class="block text-sm font-medium text-gray-700 mb-2">

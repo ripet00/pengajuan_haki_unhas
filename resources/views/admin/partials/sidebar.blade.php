@@ -21,6 +21,10 @@
 
     <!-- Navigation - Scrollable Area -->
     <nav class="flex-1 overflow-y-auto py-4">
+        @php
+            $adminId = session('admin_id');
+            $admin = $adminId ? \App\Models\Admin::find($adminId) : null;
+        @endphp
         <ul class="space-y-2 px-4 pb-4">
             <li>
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.dashboard') ? 'sidebar-active' : '' }}">
@@ -39,18 +43,23 @@
                     @endif
                 </a>
             </li>
+            @if($admin && $admin->canManageAdmins())
             <li>
                 <a href="{{ route('admin.admins.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.admins.*') || Request::routeIs('admin.create') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-user-shield mr-3 {{ Request::routeIs('admin.admins.*') || Request::routeIs('admin.create') ? 'text-red-600' : 'text-gray-500' }}"></i>
                     <span class="sidebar-text transition-opacity duration-300">Kelola Admin</span>
                 </a>
             </li>
+            @endif
+            @if($admin && $admin->canAccessJenisKarya())
             <li>
                 <a href="{{ route('admin.jenis-karyas.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.jenis-karyas.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-list mr-3 {{ Request::routeIs('admin.jenis-karyas.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
                     <span class="sidebar-text transition-opacity duration-300">Jenis Karya</span>
                 </a>
             </li>
+            @endif
+            @if($admin && $admin->canAccessHakCipta())
             <li>
                 <a href="{{ route('admin.submissions.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.submissions.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-file-upload mr-3 {{ Request::routeIs('admin.submissions.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
@@ -84,12 +93,16 @@
                     @endif
                 </a>
             </li>
+            @endif
             
             <!-- Divider -->
+            @if($admin && ($admin->canAccessHakCipta() || $admin->canAccessPaten()))
             <li class="my-4">
                 <div class="border-t border-gray-200"></div>
             </li>
+            @endif
             
+            @if($admin && $admin->canAccessPaten())
             <li>
                 <a href="{{ route('admin.submissions-paten.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 group {{ Request::routeIs('admin.submissions-paten.*') && !Request::routeIs('admin.biodata-paten.*') ? 'sidebar-active-paten' : '' }}">
                     <i class="fas fa-lightbulb mr-3 {{ Request::routeIs('admin.submissions-paten.*') && !Request::routeIs('admin.biodata-paten.*') ? 'text-green-600' : 'text-gray-500' }}"></i>
@@ -123,6 +136,7 @@
                     @endif
                 </a>
             </li>
+            @endif
         </ul>
     </nav>
 
