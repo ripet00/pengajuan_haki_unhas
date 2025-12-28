@@ -142,7 +142,6 @@
                                         <p class="text-xs text-gray-500 mt-1">Masukkan nomor dengan format 0xxxxxxxx</p>
                                     </div>
                                 </div>
-                                </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
@@ -189,7 +188,6 @@
                                                 <i id="eyeIconPasswordConfirm" class="fas fa-eye"></i>
                                             </button>
                                         </div>
-                                    </div>
                                     </div>
                                 </div>
 
