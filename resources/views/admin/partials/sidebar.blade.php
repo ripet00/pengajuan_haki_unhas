@@ -2,9 +2,9 @@
 <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
 
 <!-- Sidebar -->
-<div id="sidebar" class="sidebar-transition sidebar-expanded bg-white shadow-lg fixed md:relative z-30 h-full md:flex-shrink-0 border-r-2 border-red-100">
+<div id="sidebar" class="sidebar-transition sidebar-expanded bg-white shadow-lg fixed md:relative z-30 h-screen md:flex-shrink-0 border-r-2 border-red-100 flex flex-col">
     <!-- Logo & Institution Info -->
-    <div class="h-20 border-b border-red-100 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700">
+    <div class="h-20 border-b border-red-100 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 flex-shrink-0">
         <div class="flex items-center h-full sidebar-header-content">
             <div class="sidebar-logo-container">
                 <img src="{{ asset('images/logo-unhas-kecil.png') }}" alt="Logo Unhas" class="w-10 h-10 sidebar-logo">
@@ -19,9 +19,9 @@
         </div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="mt-8 flex-1 overflow-y-auto">
-        <ul class="space-y-2 px-4">
+    <!-- Navigation - Scrollable Area -->
+    <nav class="flex-1 overflow-y-auto py-4">
+        <ul class="space-y-2 px-4 pb-4">
             <li>
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.dashboard') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-tachometer-alt mr-3 {{ Request::routeIs('admin.dashboard') ? 'text-red-600' : 'text-gray-500' }}"></i>
@@ -126,8 +126,8 @@
         </ul>
     </nav>
 
-    <!-- Logout Button -->
-    <div class="p-4 border-t border-gray-200">
+    <!-- Logout Button - Fixed at bottom -->
+    <div class="p-4 border-t border-gray-200 flex-shrink-0">
         <form method="POST" action="{{ route('admin.logout') }}">
             @csrf
             <button type="submit" class="w-full flex items-center px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200">
