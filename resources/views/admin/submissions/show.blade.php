@@ -52,12 +52,26 @@
 use Illuminate\Support\Facades\Storage;
 @endphp
 <div class="space-y-6">
-    <!-- Back Button -->
-    <div>
+    <!-- Back Button and Actions -->
+    <div class="flex justify-between items-center">
         <a href="{{ route('admin.submissions.index') }}" class="inline-flex items-center px-5 py-3 bg-white hover:bg-gray-50 text-gray-800 hover:text-gray-900 border-2 border-gray-500 hover:border-gray-700 rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
             <i class="fas fa-arrow-left mr-2"></i>
             Kembali ke Daftar Pengajuan
         </a>
+        
+        @if(in_array($submission->status, ['pending', 'rejected']) && !$submission->biodata)
+            <form method="POST" action="{{ route('admin.submissions.destroy', $submission) }}" 
+                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan ini? File dan data akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.');"
+                  class="inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" 
+                        class="inline-flex items-center px-5 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-trash mr-2"></i>
+                    Hapus Pengajuan
+                </button>
+            </form>
+        @endif
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">

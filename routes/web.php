@@ -105,6 +105,7 @@ Route::prefix('admin')->group(function () {
         Route::get('submissions/{submission}/download', [AdminSubmissionController::class, 'download'])->name('admin.submissions.download');
         Route::post('submissions/{submission}/review', [AdminSubmissionController::class, 'review'])->name('admin.submissions.review');
         Route::post('submissions/{submission}/update-review', [AdminSubmissionController::class, 'updateReview'])->name('admin.submissions.update-review');
+        Route::delete('submissions/{submission}', [AdminSubmissionController::class, 'destroy'])->name('admin.submissions.destroy');
 
         // Admin biodata routes  
         Route::get('biodata', [\App\Http\Controllers\Admin\BiodataController::class, 'index'])->name('admin.biodata.index');
@@ -139,6 +140,7 @@ Route::prefix('admin')->group(function () {
         Route::get('submissions-paten/{submissionPaten}/download', [AdminSubmissionPatenController::class, 'download'])->name('admin.submissions-paten.download');
         Route::post('submissions-paten/{submissionPaten}/review', [AdminSubmissionPatenController::class, 'review'])->name('admin.submissions-paten.review');
         Route::post('submissions-paten/{submissionPaten}/update-review', [AdminSubmissionPatenController::class, 'updateReview'])->name('admin.submissions-paten.update-review');
+        Route::delete('submissions-paten/{submissionPaten}', [AdminSubmissionPatenController::class, 'destroy'])->name('admin.submissions-paten.destroy');
 
         // Admin biodata paten routes  
         Route::get('biodata-paten', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'index'])->name('admin.biodata-paten.index');

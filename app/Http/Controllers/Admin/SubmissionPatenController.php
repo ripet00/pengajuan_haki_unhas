@@ -165,4 +165,40 @@ class SubmissionPatenController extends Controller
         return redirect()->route('admin.submissions-paten.show', $submissionPaten)
                        ->with('success', "Pengajuan paten berhasil {$statusText}.");
     }
+
+    /**
+     * Delete paten submission (only pending or rejected)
+     */
+    public function destroy(SubmissionPaten $submissionPaten)
+    {
+        // Only allow deletion if status is pending or rejected
+        if (!in_array($submissionPaten->status, ['pending', 'rejected'])) {
+            return back()->with('error', 'Hanya pengajuan dengan status Pending atau Ditolak yang dapat dihapus.');
+        }
+
+        // Check if biodata exists - prevent deletion if biodata uploaded
+        if ($submissionPaten->biodataPaten) {
+            return back()->with('error', 'Tidak dapat menghapus pengajuan karena biodata sudah diupload.');
+        }
+
+        try {
+            // Delete submission file from storage
+            if ($submissionPaten->file_path && Storage::disk('public')->exists($submissionPaten->file_path)) {
+                Storage::disk('public')->delete($submissionPaten->file_path);
+            }
+
+            // Delete review file from storage if exists
+            if ($submissionPaten->file_review_path && Storage::disk('public')->exists($submissionPaten->file_review_path)) {
+                Storage::disk('public')->delete($submissionPaten->file_review_path);
+            }
+
+            // Delete submission from database
+            $submissionPaten->delete();
+
+            return redirect()->route('admin.submissions-paten.index')->with('success', 'Pengajuan paten berhasil dihapus.');
+        } catch (\Exception $e) {
+            Log::error('Error deleting submission paten: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat menghapus pengajuan.');
+        }
+    }
 }

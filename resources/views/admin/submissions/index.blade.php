@@ -335,6 +335,20 @@ use Illuminate\Support\Facades\Storage;
                                             {{ $submission->status == 'approved' ? 'Disetujui' : 'Ditolak' }}
                                         </span>
                                     @endif
+                                    
+                                    @if(in_array($submission->status, ['pending', 'rejected']) && !$submission->biodata)
+                                        <form method="POST" action="{{ route('admin.submissions.destroy', $submission) }}" 
+                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan ini? Tindakan ini tidak dapat dibatalkan.');"
+                                              class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                                <i class="fas fa-trash mr-1"></i>
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
