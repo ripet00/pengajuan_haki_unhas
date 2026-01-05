@@ -478,15 +478,32 @@ class BiodataPatenController extends Controller
                 foreach ($allInventors as $index => $inventor) {
                     $num = $index + 1;
                     
-                    // Susun alamat lengkap
+                    // Susun alamat lengkap - Urutan: alamat jalan, kode pos, kelurahan, kecamatan, kota/kab, provinsi
                     $alamatParts = [];
                     
                     if ($inventor->alamat) {
                         $alamatParts[] = $inventor->alamat;
                     }
                     
+                    if ($inventor->kode_pos) {
+                        $alamatParts[] = $inventor->kode_pos;
+                    }
+                    
                     if ($inventor->kelurahan) {
-                        $alamatParts[] = $inventor->kelurahan;
+                        // Format kelurahan/desa dengan prefix yang jelas
+                        $kelurahan = $inventor->kelurahan;
+                        
+                        // Cek apakah sudah ada prefix KELURAHAN atau DESA di awal nama
+                        if (stripos($kelurahan, 'KELURAHAN') === 0) {
+                            // Jika sudah ada prefix KELURAHAN, gunakan langsung
+                            $alamatParts[] = $kelurahan;
+                        } elseif (stripos($kelurahan, 'DESA') === 0) {
+                            // Jika sudah ada prefix DESA, gunakan langsung
+                            $alamatParts[] = $kelurahan;
+                        } else {
+                            // Jika tidak ada prefix, tambahkan 'Kelurahan' sebagai default
+                            $alamatParts[] = 'Kelurahan ' . $kelurahan;
+                        }
                     }
                     
                     if ($inventor->kecamatan) {
@@ -501,10 +518,6 @@ class BiodataPatenController extends Controller
                         $alamatParts[] = 'Provinsi ' . $inventor->provinsi;
                     }
                     
-                    if ($inventor->kode_pos) {
-                        $alamatParts[] = $inventor->kode_pos;
-                    }
-                    
                     $alamatLengkap = implode(', ', $alamatParts);
                     
                     // HALAMAN 1: Data inventor lengkap
@@ -513,8 +526,8 @@ class BiodataPatenController extends Controller
                     $templateProcessor->setValue("inventor_pekerjaan#$num", $inventor->pekerjaan ?? '-');
                     $templateProcessor->setValue("inventor_alamat#$num", $alamatLengkap ?: '-');
                     
-                    // HALAMAN 2: Signature section
-                    $templateProcessor->setValue("signature_inventor#$num", $inventor->name ?? '-');
+                    // HALAMAN 2: Signature section - Format: "1. Nama", "2. Nama", dst
+                    $templateProcessor->setValue("signature_inventor#$num", $num . '. ' . ($inventor->name ?? '-'));
                     
                     // Materai hanya untuk inventor pertama
                     if ($num === 1) {
@@ -538,7 +551,7 @@ class BiodataPatenController extends Controller
                         $templateProcessor->setValue("inventor_name", $inventor->name ?? '-');
                         $templateProcessor->setValue("inventor_pekerjaan", $inventor->pekerjaan ?? '-');
                         $templateProcessor->setValue("inventor_alamat", $alamatLengkap ?: '-');
-                        $templateProcessor->setValue("signature_inventor", $inventor->name ?? '-');
+                        $templateProcessor->setValue("signature_inventor", $num . '. ' . ($inventor->name ?? '-'));
                         $templateProcessor->setValue("materai", config('hki.materai.text', 'MATERAI'));
                         $templateProcessor->setValue('pejabat_nama', config('hki.pejabat_pengalihan.nama', '-'));
                         $templateProcessor->setValue('pejabat_nip', config('hki.pejabat_pengalihan.nip', '-'));
@@ -678,15 +691,32 @@ class BiodataPatenController extends Controller
                 foreach ($allInventors as $index => $inventor) {
                     $num = $index + 1;
                     
-                    // Susun alamat lengkap
+                    // Susun alamat lengkap - Urutan: alamat jalan, kode pos, kelurahan, kecamatan, kota/kab, provinsi
                     $alamatParts = [];
                     
                     if ($inventor->alamat) {
                         $alamatParts[] = $inventor->alamat;
                     }
                     
+                    if ($inventor->kode_pos) {
+                        $alamatParts[] = $inventor->kode_pos;
+                    }
+                    
                     if ($inventor->kelurahan) {
-                        $alamatParts[] = $inventor->kelurahan;
+                        // Format kelurahan/desa dengan prefix yang jelas
+                        $kelurahan = $inventor->kelurahan;
+                        
+                        // Cek apakah sudah ada prefix KELURAHAN atau DESA di awal nama
+                        if (stripos($kelurahan, 'KELURAHAN') === 0) {
+                            // Jika sudah ada prefix KELURAHAN, gunakan langsung
+                            $alamatParts[] = $kelurahan;
+                        } elseif (stripos($kelurahan, 'DESA') === 0) {
+                            // Jika sudah ada prefix DESA, gunakan langsung
+                            $alamatParts[] = $kelurahan;
+                        } else {
+                            // Jika tidak ada prefix, tambahkan 'Kelurahan' sebagai default
+                            $alamatParts[] = 'Kelurahan ' . $kelurahan;
+                        }
                     }
                     
                     if ($inventor->kecamatan) {
@@ -699,10 +729,6 @@ class BiodataPatenController extends Controller
                     
                     if ($inventor->provinsi) {
                         $alamatParts[] = 'Provinsi ' . $inventor->provinsi;
-                    }
-                    
-                    if ($inventor->kode_pos) {
-                        $alamatParts[] = $inventor->kode_pos;
                     }
                     
                     $alamatLengkap = implode(', ', $alamatParts);
@@ -760,22 +786,23 @@ class BiodataPatenController extends Controller
                         // Kolom KIRI (inventor index: 0, 2, 4, ... = urutan ganjil dalam 1-based)
                         if ($inventorIndex < $inventorCount) {
                             $inventor = $allInventors[$inventorIndex];
-                            // Tambahkan tanda kurung di code
-                            $templateProcessor->setValue("inventor_kiri#$row", '(' . $inventor->name . ')');
+                            $nomorUrut = $inventorIndex + 1;
+                            // Format: "1. Nama", "2. Nama", dst
+                            $templateProcessor->setValue("inventor_kiri#$row", $nomorUrut . '. ' . $inventor->name);
                             
                             // Materai hanya untuk inventor pertama (index 0, row 1, kolom kiri)
                             if ($inventorIndex === 0) {
                                 try {
                                     $templateProcessor->setValue("materai_kiri#$row", config('hki.materai.text', 'MATERAI'));
-                                    Log::info("Set inventor_kiri#{$row} = ({$inventor->name}) WITH MATERAI");
+                                    Log::info("Set inventor_kiri#{$row} = {$nomorUrut}. {$inventor->name} WITH MATERAI");
                                 } catch (\Exception $e) {
-                                    Log::info("Set inventor_kiri#{$row} = ({$inventor->name})");
+                                    Log::info("Set inventor_kiri#{$row} = {$nomorUrut}. {$inventor->name}");
                                 }
                             } else {
                                 try {
                                     $templateProcessor->setValue("materai_kiri#$row", '');
                                 } catch (\Exception $e) {}
-                                Log::info("Set inventor_kiri#{$row} = ({$inventor->name})");
+                                Log::info("Set inventor_kiri#{$row} = {$nomorUrut}. {$inventor->name}");
                             }
                             $inventorIndex++;
                         } else {
@@ -789,9 +816,10 @@ class BiodataPatenController extends Controller
                         // Kolom KANAN (inventor index: 1, 3, 5, ... = urutan genap dalam 1-based)
                         if ($inventorIndex < $inventorCount) {
                             $inventor = $allInventors[$inventorIndex];
-                            // Tambahkan tanda kurung di code
-                            $templateProcessor->setValue("inventor_kanan#$row", '(' . $inventor->name . ')');
-                            Log::info("Set inventor_kanan#{$row} = ({$inventor->name})");
+                            $nomorUrut = $inventorIndex + 1;
+                            // Format: "1. Nama", "2. Nama", dst
+                            $templateProcessor->setValue("inventor_kanan#$row", $nomorUrut . '. ' . $inventor->name);
+                            Log::info("Set inventor_kanan#{$row} = {$nomorUrut}. {$inventor->name}");
                             $inventorIndex++;
                         } else {
                             // Cell kosong - tanpa kurung
@@ -801,8 +829,8 @@ class BiodataPatenController extends Controller
                 } catch (\Exception $e) {
                     Log::warning("CloneRow 'inventor_kiri' failed: " . $e->getMessage());
                     // Fallback jika clone gagal - set single values
-                    $templateProcessor->setValue("inventor_kiri", $allInventors[0]->name ?? '-');
-                    $templateProcessor->setValue("inventor_kanan", isset($allInventors[1]) ? '(' . $allInventors[1]->name . ')' : '');
+                    $templateProcessor->setValue("inventor_kiri", '1. ' . ($allInventors[0]->name ?? '-'));
+                    $templateProcessor->setValue("inventor_kanan", isset($allInventors[1]) ? '2. ' . $allInventors[1]->name : '');
                     $templateProcessor->setValue("materai_kiri", config('hki.materai.text', 'MATERAI'));
                 }
             } else {
