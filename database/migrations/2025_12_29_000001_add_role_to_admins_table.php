@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('admins', function (Blueprint $table) {
             $table->enum('role', ['super_admin', 'admin_hki', 'admin_paten', 'admin_hakcipta'])
                   ->default('super_admin')
-                  ->after('password');
+                  ->change();
         });
     }
 

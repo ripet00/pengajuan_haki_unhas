@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nip_nidn_nidk_nim')->unique();
             $table->string('phone_number')->unique();
             $table->string('password');
+            $table->string('role')->default('admin_hakcipta');
             $table->timestamps();
         });
     }
