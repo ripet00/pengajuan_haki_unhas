@@ -476,10 +476,8 @@ use Illuminate\Support\Facades\Storage;
                                                             <i class="fas fa-info-circle mr-1"></i>Informasi Penting:
                                                         </p>
                                                         <ul class="text-sm text-blue-700 space-y-2 ml-5 list-disc">
-                                                            <li>Silakan tunggu informasi <strong>kode billing pembayaran</strong> dari admin</li>
+                                                            <li>Silakan tunggu informasi <strong>nomor rekening pimpinan</strong> dari admin</li>
                                                             <li>Admin akan menghubungi <strong>inventor pertama</strong> lewat <strong>WhatsApp</strong></li>
-                                                            <li>Batas waktu pembayaran adalah pukul <strong>23.59 WIB</strong> pada hari yang sama kode billing terbit</li>
-                                                            <li>Jika kode billing tidak dibayarkan, maka admin akan mendaftarkan kembali dalam jangka waktu <strong>2 minggu</strong> sejak kode billing hangus</li>
                                                         </ul>
                                                     </div>
                                                     
