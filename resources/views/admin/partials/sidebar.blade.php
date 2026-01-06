@@ -51,6 +51,20 @@
                 </a>
             </li>
             @endif
+            <li>
+                <a href="{{ route('admin.password-reset.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.password-reset.*') ? 'sidebar-active' : '' }}">
+                    <i class="fas fa-key mr-3 {{ Request::routeIs('admin.password-reset.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
+                    <span class="sidebar-text transition-opacity duration-300">Reset Password</span>
+                    @php
+                        $pendingResets = \App\Models\PasswordResetRequest::where('status', 'pending')->count();
+                    @endphp
+                    @if($pendingResets > 0)
+                        <span class="sidebar-badge ml-auto bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
+                            {{ $pendingResets }}
+                        </span>
+                    @endif
+                </a>
+            </li>
             @if($admin && $admin->canAccessJenisKarya())
             <li>
                 <a href="{{ route('admin.jenis-karyas.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.jenis-karyas.*') ? 'sidebar-active' : '' }}">

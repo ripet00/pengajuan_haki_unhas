@@ -4,9 +4,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\Auth\AdminAuthController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\SubmissionController as AdminSubmissionController;
 use App\Http\Controllers\Admin\SubmissionPatenController as AdminSubmissionPatenController;
+use App\Http\Controllers\Admin\PasswordResetManagementController;
 use App\Http\Controllers\User\SubmissionController as UserSubmissionController;
 use App\Http\Controllers\User\SubmissionPatenController as UserSubmissionPatenController;
 
@@ -30,6 +32,12 @@ Route::prefix('/')->group(function () {
         
         Route::get('/register', [UserAuthController::class, 'showRegisterForm'])->name('user.register');
         Route::post('/register', [UserAuthController::class, 'register']);
+        
+        // Password Reset Routes (accessible without authentication)
+        Route::get('/password/forgot', [PasswordResetController::class, 'showForgotForm'])->name('password.forgot');
+        Route::post('/password/request', [PasswordResetController::class, 'submitRequest'])->name('password.request.submit');
+        Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+        Route::post('/password/reset', [PasswordResetController::class, 'resetPassword'])->name('password.reset.submit');
     });
 });
 
@@ -89,6 +97,15 @@ Route::prefix('admin')->group(function () {
     // Admin protected routes
     Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+        
+        // Password Reset Management Routes
+        Route::prefix('password-reset')->group(function () {
+            Route::get('/', [PasswordResetManagementController::class, 'index'])->name('admin.password-reset.index');
+            Route::get('/{id}', [PasswordResetManagementController::class, 'show'])->name('admin.password-reset.show');
+            Route::post('/{id}/approve', [PasswordResetManagementController::class, 'approve'])->name('admin.password-reset.approve');
+            Route::post('/{id}/reject', [PasswordResetManagementController::class, 'reject'])->name('admin.password-reset.reject');
+            Route::delete('/{id}', [PasswordResetManagementController::class, 'destroy'])->name('admin.password-reset.destroy')->middleware('admin.role:super_admin');
+        });
         
         // User management routes - semua role bisa akses
         Route::patch('/users/{user}/status', [AdminController::class, 'updateUserStatus'])->name('admin.users.update-status');
