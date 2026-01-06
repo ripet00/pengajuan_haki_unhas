@@ -130,7 +130,7 @@
                     </div>
                     <div>
                         <dt class="text-sm font-medium text-gray-500">Waktu Request</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ $request->requested_at->format('d F Y, H:i') }} WIB</dd>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $request->requested_at->format('d F Y, H:i') }} WITA</dd>
                     </div>
                     <div>
                         <dt class="text-sm font-medium text-gray-500">IP Address Requester</dt>
@@ -197,7 +197,7 @@
                         </div>
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Waktu Approval</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $request->approved_at?->format('d F Y, H:i') ?? '-' }} WIB</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $request->approved_at?->format('d F Y, H:i') ?? '-' }} WITA</dd>
                         </div>
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Metode Verifikasi</dt>
@@ -212,7 +212,7 @@
                         @if($request->token_expires_at)
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Link Berlaku Hingga</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $request->token_expires_at->format('d F Y, H:i') }} WIB</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $request->token_expires_at->format('d F Y, H:i') }} WITA</dd>
                         </div>
                         @endif
                     @endif
@@ -224,7 +224,7 @@
                         </div>
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Waktu Penolakan</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $request->rejected_at?->format('d F Y, H:i') ?? '-' }} WIB</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $request->rejected_at?->format('d F Y, H:i') ?? '-' }} WITA</dd>
                         </div>
                         @if($request->rejection_reason)
                         <div>
@@ -237,7 +237,7 @@
                     @if($request->used_at)
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Password Diubah Pada</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $request->used_at->format('d F Y, H:i') }} WIB</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $request->used_at->format('d F Y, H:i') }} WITA</dd>
                         </div>
                         <div>
                             <dt class="text-sm font-medium text-gray-500">IP Address Saat Reset</dt>
