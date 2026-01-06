@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biodata Pengaju - Pengajuan HKI</title>
+    <title>Biodata Pencipta - Pengajuan Hak Cipta</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -13,7 +13,7 @@
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            @include('admin.partials.header', ['title' => 'Biodata Pengaju'])
+            @include('admin.partials.header', ['title' => 'Biodata Pencipta'])
 
             <!-- Main Content Area -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
@@ -54,13 +54,13 @@
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                                 <div>
                                     <h1 class="text-2xl font-bold text-gray-900 flex items-center">
-                                        <i class="fas fa-user-friends mr-3 text-red-600"></i>Manajemen Biodata Pengaju
+                                        <i class="fas fa-user-friends mr-3 text-red-600"></i>Manajemen Biodata Pencipta
                                     </h1>
-                                    <p class="text-gray-600 mt-1">Kelola dan review biodata yang disubmit oleh pengguna</p>
+                                    <p class="text-gray-600 mt-1">Kelola dan review biodata yang disubmit oleh pencipta</p>
                                 </div>
                                 <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                                     <!-- Search Bar -->
-                                    <form method="GET" action="{{ route('admin.biodata-pengaju.index') }}" class="flex">
+                                    <form method="GET" action="{{ route('admin.biodata.index') }}" class="flex">
                                         <div class="relative">
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class="fas fa-search text-gray-400"></i>
@@ -81,7 +81,7 @@
                                     </form>
                                     
                                     <!-- Filter Status -->
-                                    <form method="GET" action="{{ route('admin.biodata-pengaju.index') }}" class="flex space-x-2">
+                                    <form method="GET" action="{{ route('admin.biodata.index') }}" class="flex space-x-2">
                                         <select name="status" class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" onchange="this.form.submit()">
                                             <option value="">Semua Status</option>
                                             <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
@@ -121,7 +121,7 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <a href="{{ route('admin.biodata-pengaju.index') }}" 
+                                        <a href="{{ route('admin.biodata.index') }}" 
                                            class="inline-flex items-center px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-sm font-medium rounded-lg transition duration-200">
                                             <i class="fas fa-times mr-1"></i>Hapus Filter
                                         </a>
@@ -328,7 +328,7 @@
                                                     {{ $biodata->created_at->format('d M Y H:i') }}
                                                 </td>
                                                 <td class="px-6 py-4">
-                                                    <a href="{{ route('admin.biodata-pengaju.show', $biodata) }}" 
+                                                    <a href="{{ route('admin.biodata.show', $biodata) }}" 
                                                        class="inline-flex items-center px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                                         <i class="fas fa-eye mr-1"></i>View
                                                     </a>
@@ -361,7 +361,7 @@
                                     @endif
                                 </p>
                                 @if(request('search') || request('status'))
-                                    <a href="{{ route('admin.biodata-pengaju.index') }}" 
+                                    <a href="{{ route('admin.biodata.index') }}" 
                                        class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-200">
                                         <i class="fas fa-times mr-2"></i>Hapus Filter
                                     </a>

@@ -52,12 +52,26 @@
 use Illuminate\Support\Facades\Storage;
 @endphp
 <div class="space-y-6">
-    <!-- Back Button -->
-    <div>
+    <!-- Back Button and Actions -->
+    <div class="flex justify-between items-center">
         <a href="{{ route('admin.submissions.index') }}" class="inline-flex items-center px-5 py-3 bg-white hover:bg-gray-50 text-gray-800 hover:text-gray-900 border-2 border-gray-500 hover:border-gray-700 rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
             <i class="fas fa-arrow-left mr-2"></i>
             Kembali ke Daftar Pengajuan
         </a>
+        
+        @if(in_array($submission->status, ['pending', 'rejected']) && !$submission->biodata)
+            <form method="POST" action="{{ route('admin.submissions.destroy', $submission) }}" 
+                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan ini? File dan data akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.');"
+                  class="inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" 
+                        class="inline-flex items-center px-5 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-trash mr-2"></i>
+                    Hapus Pengajuan
+                </button>
+            </form>
+        @endif
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -520,8 +534,7 @@ use Illuminate\Support\Facades\Storage;
     // Auto-require rejection reason when reject is selected
     document.addEventListener('DOMContentLoaded', function() {
         // Handle both forms - pending review and edit review
-        function setupFormValidation(formSelector) {
-            const form = document.querySelector(formSelector);
+        function setupFormValidation(form) {
             if (!form) return;
             
             const rejectedRadio = form.querySelector('input[value="rejected"]');
@@ -544,10 +557,73 @@ use Illuminate\Support\Facades\Storage;
                     });
                 }
             }
+            
+            // Add confirmation dialog before form submission
+            form.addEventListener('submit', function(e) {
+                // Check if reject is selected
+                if (rejectedRadio && rejectedRadio.checked) {
+                    // Validate rejection reason is filled
+                    if (!rejectionReasonTextarea.value.trim()) {
+                        e.preventDefault();
+                        alert('⚠️ Alasan penolakan harus diisi!');
+                        rejectionReasonTextarea.focus();
+                        rejectionReasonTextarea.style.borderColor = '#ef4444';
+                        rejectionReasonTextarea.style.borderWidth = '2px';
+                        
+                        setTimeout(function() {
+                            rejectionReasonTextarea.style.borderColor = '';
+                            rejectionReasonTextarea.style.borderWidth = '';
+                        }, 3000);
+                        
+                        return false;
+                    }
+                    
+                    // Show confirmation for rejection
+                    e.preventDefault();
+                    const confirmReject = confirm(
+                        '🚫 KONFIRMASI PENOLAKAN PENGAJUAN HAK CIPTA\n\n' +
+                        '⚠️ Apakah Anda yakin ingin MENOLAK pengajuan ini?\n\n' +
+                        'Pastikan:\n' +
+                        '✓ Alasan penolakan sudah jelas dan spesifik\n' +
+                        '✓ User dapat memahami kesalahan dan memperbaikinya\n' +
+                        '✓ Dokumen sudah diperiksa dengan teliti\n\n' +
+                        'Klik OK untuk melanjutkan penolakan, atau Cancel untuk kembali.'
+                    );
+                    
+                    if (confirmReject) {
+                        form.submit();
+                    }
+                    return false;
+                }
+                
+                // Check if approve is selected
+                if (approvedRadio && approvedRadio.checked) {
+                    e.preventDefault();
+                    const confirmApprove = confirm(
+                        '✅ KONFIRMASI PERSETUJUAN PENGAJUAN HAK CIPTA\n\n' +
+                        '⚠️ Apakah Anda yakin ingin MENYETUJUI pengajuan ini?\n\n' +
+                        'Pastikan:\n' +
+                        '✓ Dokumen PDF sudah diperiksa dengan teliti\n' +
+                        '✓ Judul dan informasi karya sudah sesuai\n' +
+                        '✓ Tidak ada duplikasi dengan pengajuan lain\n' +
+                        '✓ Pengajuan siap diproses ke tahap selanjutnya\n\n' +
+                        'Setelah disetujui, user dapat melanjutkan proses pengajuan.\n\n' +
+                        'Klik OK untuk menyetujui, atau Cancel untuk kembali memeriksa.'
+                    );
+                    
+                    if (confirmApprove) {
+                        form.submit();
+                    }
+                    return false;
+                }
+            });
         }
         
-        // Setup validation for both forms
-        setupFormValidation('form'); // This will handle all forms on the page
+        // Setup validation for all forms on the page
+        const forms = document.querySelectorAll('form[action*="review"]');
+        forms.forEach(form => {
+            setupFormValidation(form);
+        });
     });
     </script>
 </body>

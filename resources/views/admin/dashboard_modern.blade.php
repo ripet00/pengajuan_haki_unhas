@@ -157,11 +157,17 @@
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm">
                                                     <div class="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                                                        <a href="https://wa.me/{{ $user->country_code ?? '62' }}{{ ltrim($user->phone_number, '0') }}" 
+                                                           target="_blank"
+                                                           class="w-full sm:w-auto inline-flex items-center justify-center px-2 md:px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                                           title="Hubungi via WhatsApp">
+                                                            <i class="fab fa-whatsapp mr-1"></i><span class="hidden sm:inline">WhatsApp</span>
+                                                        </a>
                                                         <form method="POST" action="{{ route('admin.users.update-status', $user) }}" class="inline">
                                                             @csrf
                                                             @method('PATCH')
                                                             <input type="hidden" name="status" value="active">
-                                                            <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-2 md:px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                                            <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-2 md:px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                                                 <i class="fas fa-check mr-1"></i><span class="hidden sm:inline">Setujui</span>
                                                             </button>
                                                         </form>

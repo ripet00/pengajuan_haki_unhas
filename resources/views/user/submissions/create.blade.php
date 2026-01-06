@@ -30,7 +30,7 @@
             <div class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-lg mb-4">
                 <img src="{{ asset('images/logo-unhas-kecil.png') }}" alt="Logo Unhas" class="w-16 h-16">
             </div>
-            <h1 class="text-2xl font-bold text-white mb-2">Pengajuan HKI Baru</h1>
+            <h1 class="text-2xl font-bold text-white mb-2">Pengajuan Hak Cipta Baru</h1>
             <div class="text-red-100">
                 <p class="font-semibold">Direktorat Inovasi dan Kekayaan Intelektual</p>
                 <p class="text-sm">Universitas Hasanuddin</p>

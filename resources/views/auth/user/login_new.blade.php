@@ -150,6 +150,14 @@
                     <a href="/register" class="block w-full bg-white hover:bg-gray-50 text-red-600 font-semibold py-3 px-4 rounded-lg border border-red-600 transition duration-200">
                         <i class="fas fa-user-plus mr-2"></i>Buat Akun Baru
                     </a>
+                    
+                    <!-- WhatsApp Admin Contact, sesuaikan nomor admin saat prod-->
+                    <a href="https://wa.me/6281234567890?text=Halo%20Admin%2C%20saya%20mengalami%20kendala%20saat%20login" 
+                       target="_blank"
+                       class="block w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 transform hover:scale-105">
+                        <i class="fab fa-whatsapp mr-2"></i>Ada kendala? Hubungi Admin
+                    </a>
+                    
                     <a href="/admin/login" class="text-red-600 hover:text-red-800 text-sm font-medium">
                         <i class="fas fa-shield-alt mr-1"></i>Login sebagai Admin
                     </a>

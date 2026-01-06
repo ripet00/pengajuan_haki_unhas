@@ -20,10 +20,15 @@
                 @endphp
                 @if($admin)
                     <div class="flex items-center">
-                        <div class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
-                            <span class="text-white font-medium text-sm">{{ substr($admin->name, 0, 1) }}</span>
+                        <div class="w-8 h-8 md:w-10 md:h-10 bg-red-600 rounded-full flex items-center justify-center">
+                            <span class="text-white font-medium text-sm md:text-base">{{ substr($admin->name, 0, 1) }}</span>
                         </div>
-                        <span class="ml-2 text-gray-700 font-medium hidden sm:block">{{ $admin->name }}</span>
+                        <div class="ml-2 md:ml-3 hidden sm:block">
+                            <div class="text-gray-900 font-semibold text-sm md:text-base">{{ $admin->name }}</div>
+                            <div class="text-xs text-gray-500">
+                                <i class="fas fa-shield-alt mr-1"></i>{{ $admin->role_name }}
+                            </div>
+                        </div>
                     </div>
                 @endif
             </div>

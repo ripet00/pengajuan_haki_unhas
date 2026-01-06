@@ -115,4 +115,33 @@ class SubmissionController extends Controller
 
         return response()->download($filePath, $submission->file_name);
     }
+
+    // destroy submission (only pending or rejected)
+    public function destroy(Submission $submission)
+    {
+        // Only allow deletion if status is pending or rejected
+        if (!in_array($submission->status, ['pending', 'rejected'])) {
+            return back()->with('error', 'Hanya pengajuan dengan status Pending atau Ditolak yang dapat dihapus.');
+        }
+
+        // Check if biodata exists - prevent deletion if biodata uploaded
+        if ($submission->biodata) {
+            return back()->with('error', 'Tidak dapat menghapus pengajuan karena biodata sudah diupload.');
+        }
+
+        try {
+            // Delete file from storage
+            if ($submission->file_path && \Storage::disk('public')->exists($submission->file_path)) {
+                \Storage::disk('public')->delete($submission->file_path);
+            }
+
+            // Delete submission from database
+            $submission->delete();
+
+            return redirect()->route('admin.submissions.index')->with('success', 'Pengajuan berhasil dihapus.');
+        } catch (\Exception $e) {
+            \Log::error('Error deleting submission: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat menghapus pengajuan.');
+        }
+    }
 }

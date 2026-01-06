@@ -120,7 +120,7 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
             <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition duration-300">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -128,44 +128,60 @@
                     </div>
                     <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Baru</span>
                 </div>
-                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Pengajuan Baru</h3>
-                <p class="text-gray-600 text-xs sm:text-sm mb-4">Ajukan permohonan HKI baru untuk karya Anda</p>
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Pengajuan Hak Cipta</h3>
+                <p class="text-gray-600 text-xs sm:text-sm mb-4">Ajukan permohonan Hak Cipta untuk karya Anda</p>
                 <button 
                     onclick="window.location.href='{{ route('user.submissions.create') }}'"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
-                    <i class="fas fa-plus mr-2"></i>Buat Pengajuan
+                    <i class="fas fa-plus mr-2"></i>Buat Pengajuan Hak Cipta
                 </button>
             </div>
 
             <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition duration-300">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-list text-lg sm:text-xl text-green-600"></i>
+                        <i class="fas fa-lightbulb text-lg sm:text-xl text-green-600"></i>
                     </div>
-                    <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{{ Auth::user()->submissions()->count() ?? 0 }}</span>
+                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Paten</span>
                 </div>
-                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Riwayat Pengajuan</h3>
-                <p class="text-gray-600 text-xs sm:text-sm mb-4">Lihat semua pengajuan HKI yang pernah Anda buat</p>
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Pengajuan Paten</h3>
+                <p class="text-gray-600 text-xs sm:text-sm mb-4">Ajukan permohonan Paten untuk penemuan Anda</p>
                 <button 
-                    onclick="window.location.href='{{ route('user.submissions.index') }}'"
+                    onclick="window.location.href='{{ route('user.submissions-paten.create') }}'"
                     class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
-                    <i class="fas fa-history mr-2"></i>Lihat Riwayat
+                    <i class="fas fa-plus mr-2"></i>Buat Pengajuan Paten
                 </button>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition duration-300 md:col-span-2 lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition duration-300">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-chart-line text-lg sm:text-xl text-purple-600"></i>
+                        <i class="fas fa-history text-lg sm:text-xl text-purple-600"></i>
                     </div>
-                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Info</span>
+                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Hak Cipta</span>
                 </div>
-                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Status Pengajuan</h3>
-                <p class="text-gray-600 text-xs sm:text-sm mb-4">Pantau progress pengajuan HKI Anda</p>
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Riwayat Hak Cipta</h3>
+                <p class="text-gray-600 text-xs sm:text-sm mb-4">Lihat semua riwayat pengajuan Hak Cipta Anda</p>
                 <button 
                     onclick="window.location.href='{{ route('user.submissions.index') }}'"
                     class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
-                    <i class="fas fa-eye mr-2"></i>Cek Status
+                    <i class="fas fa-list mr-2"></i>Lihat Riwayat
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-history text-lg sm:text-xl text-teal-600"></i>
+                    </div>
+                    <span class="bg-teal-100 text-teal-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Paten</span>
+                </div>
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">Riwayat Paten</h3>
+                <p class="text-gray-600 text-xs sm:text-sm mb-4">Lihat semua riwayat pengajuan Paten Anda</p>
+                <button 
+                    onclick="window.location.href='{{ route('user.submissions-paten.index') }}'"
+                    class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded-lg font-medium transition duration-200 text-sm sm:text-base">
+                    <i class="fas fa-list mr-2"></i>Lihat Riwayat
                 </button>
             </div>
         </div>
@@ -178,7 +194,7 @@
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
                         <i class="fas fa-book text-orange-600"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">Panduan HKI</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">Panduan Hak Cipta</h3>
                 </div>
                 <div class="space-y-3">
                     <div class="flex items-start">

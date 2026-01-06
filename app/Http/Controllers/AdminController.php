@@ -78,7 +78,11 @@ class AdminController extends Controller
         // 2. Ambil data admin yang sedang login dari session.
         $admin = Admin::find(session('admin_id'));
         
-        // 3. Update Data User: Perbarui status user di database.
+        // 3. Check if status is changing from 'active' to something else
+        $wasActive = $user->status === 'active';
+        $nowInactive = $request->status !== 'active';
+        
+        // 4. Update Data User: Perbarui status user di database.
         $user->update([
             'status' => $request->status,
             // Jika statusnya 'active', catat waktu verifikasi dan siapa yang memverifikasi.
@@ -86,8 +90,37 @@ class AdminController extends Controller
             'verified_by_admin_id' => $request->status === 'active' ? $admin->id : null,
         ]);
 
-        // 4. Redirect Kembali: Kembali ke halaman sebelumnya dengan pesan sukses.
+        // 5. Force logout user if status changed from active to inactive
+        if ($wasActive && $nowInactive) {
+            // Delete all sessions for this user to force logout
+            \DB::table('sessions')->where('user_id', $user->id)->delete();
+        }
+
+        // 6. Redirect Kembali: Kembali ke halaman sebelumnya dengan pesan sukses.
         return redirect()->back()->with('success', 'User status updated successfully!');
+    }
+
+    // Memproses perubahan status admin (mengaktifkan/menonaktifkan)
+    public function updateAdminStatus(Request $request, Admin $admin)
+    {
+        // 1. Validasi: Pastikan status yang dikirim adalah boolean
+        $request->validate([
+            'is_active' => 'required|boolean'
+        ]);
+
+        // 2. Cegah admin menonaktifkan diri sendiri
+        if ($admin->id === session('admin_id')) {
+            return redirect()->back()->with('error', 'Anda tidak dapat menonaktifkan akun Anda sendiri.');
+        }
+
+        // 3. Update status admin
+        $admin->update([
+            'is_active' => $request->is_active
+        ]);
+
+        $statusText = $request->is_active ? 'diaktifkan' : 'dinonaktifkan';
+        
+        return redirect()->back()->with('success', "Admin {$admin->name} berhasil {$statusText}!");
     }
 
     // Menampilkan halaman form untuk membuat admin baru
@@ -102,9 +135,10 @@ class AdminController extends Controller
         // 1. Validasi Input
         $request->validate([
             'name' => 'required|string|max:255',
-            'nip_nidn_nidk_nim' => 'required|string|unique:admins', // Harus unik
-            'phone_number' => 'required|string|unique:admins', // Harus unik
+            'nip_nidn_nidk_nim' => 'required|string|unique:admins',
+            'phone_number' => 'required|string|unique:admins',
             'country_code' => 'required|string|max:5',
+            'role' => 'required|in:super_admin,admin_hki,admin_paten,admin_hakcipta',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -114,7 +148,8 @@ class AdminController extends Controller
             'nip_nidn_nidk_nim' => $request->nip_nidn_nidk_nim,
             'phone_number' => $request->phone_number,
             'country_code' => $request->country_code,
-            'password' => Hash::make($request->password), // Enkripsi password
+            'role' => $request->role,
+            'password' => Hash::make($request->password),
         ]);
 
         // 3. Redirect ke Dashboard Admin dengan pesan sukses.

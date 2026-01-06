@@ -229,6 +229,14 @@
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm">
                                                     <div class="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                                                        <!-- WhatsApp Button -->
+                                                        <a href="{{ generateWhatsAppUrl($user->phone_number, $user->country_code ?? '+62', 'Halo ' . $user->name . ', kami dari admin HKI Unhas.') }}" 
+                                                           target="_blank"
+                                                           class="w-full sm:w-auto inline-flex items-center justify-center px-2 md:px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400"
+                                                           title="Hubungi via WhatsApp">
+                                                            <i class="fab fa-whatsapp mr-1"></i><span class="hidden sm:inline">WhatsApp</span>
+                                                        </a>
+                                                        
                                                         @if($user->status !== 'active')
                                                             <form method="POST" action="{{ route('admin.users.update-status', $user) }}" class="inline">
                                                                 @csrf

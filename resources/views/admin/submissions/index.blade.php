@@ -57,9 +57,9 @@ use Illuminate\Support\Facades\Storage;
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900 flex items-center">
-                    <i class="fas fa-file-upload mr-3 text-red-600"></i>Manajemen Pengajuan HKI
+                    <i class="fas fa-file-upload mr-3 text-red-600"></i>Manajemen Pengajuan Hak Cipta
                 </h1>
-                <p class="text-gray-600 mt-1">Kelola dan review pengajuan HKI dari pengguna</p>
+                <p class="text-gray-600 mt-1">Kelola dan review pengajuan Hak Cipta dari pengguna</p>
             </div>
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 <!-- Search Bar -->
@@ -334,6 +334,20 @@ use Illuminate\Support\Facades\Storage;
                                             <i class="fas fa-{{ $submission->status == 'approved' ? 'check' : 'times' }} mr-1"></i>
                                             {{ $submission->status == 'approved' ? 'Disetujui' : 'Ditolak' }}
                                         </span>
+                                    @endif
+                                    
+                                    @if(in_array($submission->status, ['pending', 'rejected']) && !$submission->biodata)
+                                        <form method="POST" action="{{ route('admin.submissions.destroy', $submission) }}" 
+                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan ini? Tindakan ini tidak dapat dibatalkan.');"
+                                              class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                                <i class="fas fa-trash mr-1"></i>
+                                                Hapus
+                                            </button>
+                                        </form>
                                     @endif
                                 </div>
                             </td>

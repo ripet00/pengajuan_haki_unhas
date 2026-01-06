@@ -99,8 +99,8 @@
 
         <!-- Page Title -->
         <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Riwayat Pengajuan HKI</h2>
-            <p class="text-gray-600">Berikut adalah daftar semua pengajuan HKI yang pernah Anda buat.</p>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Riwayat Pengajuan Hak Cipta</h2>
+            <p class="text-gray-600">Berikut adalah daftar semua pengajuan Hak Cipta yang pernah Anda buat.</p>
         </div>
 
         @if($submissions->count() > 0)
