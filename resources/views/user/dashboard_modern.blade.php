@@ -187,8 +187,8 @@
         </div>
 
         <!-- Information Cards -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            <!-- Panduan HKI -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
+            <!-- Panduan Hak Cipta -->
             <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
                 <div class="flex items-center mb-4">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
@@ -203,7 +203,7 @@
                         </div>
                         <div>
                             <h4 class="font-medium text-gray-900 text-sm sm:text-base">Upload Dokumen</h4>
-                            <p class="text-xs sm:text-sm text-gray-600">Upload file PDF/MP4 dan tunggu review admin</p>
+                            <p class="text-xs sm:text-sm text-gray-600">Upload file karya Anda dan tunggu review admin</p>
                         </div>
                     </div>
                     <div class="flex items-start">
@@ -221,28 +221,184 @@
                         </div>
                         <div>
                             <h4 class="font-medium text-gray-900 text-sm sm:text-base">Setor Berkas</h4>
-                            <p class="text-xs sm:text-sm text-gray-600">Download & setor form ke kantor (maks 1 bulan)</p>
+                            <p class="text-xs sm:text-sm text-gray-600">Download & setor form ke kantor</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                            <span class="text-yellow-600 text-xs font-semibold">4</span>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Tunggu Kode Billing dari Admin</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Admin akan mengirimkan kode billing untuk pembayaran</p>
                         </div>
                     </div>
                     <div class="flex items-start">
                         <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
-                            <span class="text-green-600 text-xs font-semibold">4</span>
+                            <span class="text-green-600 text-xs font-semibold">5</span>
                         </div>
                         <div>
                             <h4 class="font-medium text-gray-900 text-sm sm:text-base">Terima Sertifikat</h4>
-                            <p class="text-xs sm:text-sm text-gray-600">Sertifikat HKI diterbitkan (estimasi 2 minggu)</p>
+                            <p class="text-xs sm:text-sm text-gray-600">Sertifikat HKI akan diterbitkan</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Statistik Pengajuan -->
+            <!-- Panduan Paten -->
             <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
                 <div class="flex items-center mb-4">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
-                        <i class="fas fa-chart-bar text-indigo-600"></i>
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-lightbulb text-green-600"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">Statistik Pengajuan Anda</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">Panduan Paten</h3>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-start">
+                        <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                            <span class="text-blue-600 text-xs font-semibold">1</span>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Upload Draft Paten</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Upload dokumen draft paten Anda</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                            <span class="text-purple-600 text-xs font-semibold">2</span>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Upload Biodata</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Isi biodata inventor setelah draft disetujui</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                            <span class="text-orange-600 text-xs font-semibold">3</span>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Setor Berkas</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Download & setor form ke kantor</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                            <span class="text-yellow-600 text-xs font-semibold">4</span>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Tunggu Info Pembayaran dari Admin</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Admin akan mengirimkan nomor rekening pimpinan</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                            <span class="text-green-600 text-xs font-semibold">5</span>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900 text-sm sm:text-base">Dokumen Selesai</h4>
+                            <p class="text-xs sm:text-sm text-gray-600">Proses paten telah selesai</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarif dan Waktu Pelayanan -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
+            <!-- Tarif Pendaftaran -->
+            <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-money-bill-wave text-yellow-600"></i>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">Tarif Pendaftaran HKI 2025</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-gray-200">
+                                <th class="text-left py-2 font-semibold text-gray-700">Jenis HKI</th>
+                                <th class="text-right py-2 font-semibold text-gray-700">Universitas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-100">
+                                <td class="py-2 text-gray-600">Hak Cipta (Buku, Buku Panduan, Booklet, dll)</td>
+                                <td class="py-2 text-right font-semibold text-gray-900">Rp 200.000</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="py-2 text-gray-600">Paten Sederhana</td>
+                                <td class="py-2 text-right font-semibold text-gray-900">Rp 700.000</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="py-2 text-gray-600">Paten</td>
+                                <td class="py-2 text-right font-semibold text-gray-900">Rp 850.000</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="py-2 text-gray-600">Desain Industri</td>
+                                <td class="py-2 text-right font-semibold text-gray-900">Rp 250.000</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 text-gray-600">Merek</td>
+                                <td class="py-2 text-right font-semibold text-gray-900">Rp 500.000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Waktu Pelayanan -->
+            <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-clock text-blue-600"></i>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">Waktu Pelayanan Pendaftaran HKI</h3>
+                </div>
+                <div class="space-y-4">
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                        <div class="font-semibold text-blue-800 mb-2">
+                            <i class="fas fa-calendar-week mr-2"></i>Senin - Kamis
+                        </div>
+                        <div class="text-blue-700 space-y-1">
+                            <div class="flex items-center">
+                                <i class="fas fa-sun mr-2 text-yellow-500"></i>
+                                <span>08.00 - 12.00 WITA</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-moon mr-2 text-indigo-500"></i>
+                                <span>13.00 - 15.30 WITA</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <div class="font-semibold text-green-800 mb-2">
+                            <i class="fas fa-calendar-day mr-2"></i>Jumat
+                        </div>
+                        <div class="text-green-700 space-y-1">
+                            <div class="flex items-center">
+                                <i class="fas fa-sun mr-2 text-yellow-500"></i>
+                                <span>08.00 - 12.00 WITA</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-moon mr-2 text-indigo-500"></i>
+                                <span>13.30 - 16.00 WITA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistik Pengajuan -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <!-- Statistik Hak Cipta -->
+            <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-chart-bar text-orange-600"></i>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">Statistik Pengajuan Hak Cipta</h3>
                 </div>
                 <div class="grid grid-cols-2 gap-3 sm:gap-4">
                     <div class="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
@@ -263,92 +419,31 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Information Section -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-12">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Tarif Pendaftaran -->
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-money-bill-wave text-yellow-600"></i>
-                        </div>
-                        <h3 class="text-lg font-semibold text-gray-900">Tarif Pendaftaran HKI 2025</h3>
+            <!-- Statistik Paten -->
+            <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-chart-line text-green-600"></i>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr class="border-b border-gray-200">
-                                    <th class="text-left py-2 font-semibold text-gray-700">Jenis HKI</th>
-                                    <th class="text-right py-2 font-semibold text-gray-700">Universitas</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-b border-gray-100">
-                                    <td class="py-2 text-gray-600">Hak Cipta (Buku, Buku Panduan, Booklet, dll)</td>
-                                    <td class="py-2 text-right font-semibold text-gray-900">Rp 200.000</td>
-                                </tr>
-                                <tr class="border-b border-gray-100">
-                                    <td class="py-2 text-gray-600">Paten Sederhana</td>
-                                    <td class="py-2 text-right font-semibold text-gray-900">Rp 700.000</td>
-                                </tr>
-                                <tr class="border-b border-gray-100">
-                                    <td class="py-2 text-gray-600">Paten</td>
-                                    <td class="py-2 text-right font-semibold text-gray-900">Rp 850.000</td>
-                                </tr>
-                                <tr class="border-b border-gray-100">
-                                    <td class="py-2 text-gray-600">Desain Industri</td>
-                                    <td class="py-2 text-right font-semibold text-gray-900">Rp 250.000</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 text-gray-600">Merek</td>
-                                    <td class="py-2 text-right font-semibold text-gray-900">Rp 500.000</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">Statistik Pengajuan Paten</h3>
                 </div>
-
-                <!-- Waktu Pelayanan -->
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-clock text-blue-600"></i>
-                        </div>
-                        <h3 class="text-lg font-semibold text-gray-900">Waktu Pelayanan Pendaftaran HKI</h3>
+                <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div class="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                        <div class="text-xl sm:text-2xl font-bold text-gray-900">{{ Auth::user()->submissionsPaten()->count() }}</div>
+                        <div class="text-xs sm:text-sm text-gray-600">Total Pengajuan</div>
                     </div>
-                    <div class="space-y-4">
-                        <div class="p-4 bg-blue-50 rounded-lg">
-                            <div class="font-semibold text-blue-800 mb-2">
-                                <i class="fas fa-calendar-week mr-2"></i>Senin - Kamis
-                            </div>
-                            <div class="text-blue-700 space-y-1">
-                                <div class="flex items-center">
-                                    <i class="fas fa-sun mr-2 text-yellow-500"></i>
-                                    <span>08.00 - 12.00 WITA</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-moon mr-2 text-indigo-500"></i>
-                                    <span>13.00 - 15.30 WITA</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-4 bg-green-50 rounded-lg">
-                            <div class="font-semibold text-green-800 mb-2">
-                                <i class="fas fa-calendar-day mr-2"></i>Jumat
-                            </div>
-                            <div class="text-green-700 space-y-1">
-                                <div class="flex items-center">
-                                    <i class="fas fa-sun mr-2 text-yellow-500"></i>
-                                    <span>08.00 - 12.00 WITA</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-moon mr-2 text-indigo-500"></i>
-                                    <span>13.30 - 16.00 WITA</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                        <div class="text-xl sm:text-2xl font-bold text-green-600">{{ Auth::user()->submissionsPaten()->where('status', 'approved')->count() }}</div>
+                        <div class="text-xs sm:text-sm text-gray-600">Disetujui</div>
+                    </div>
+                    <div class="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                        <div class="text-xl sm:text-2xl font-bold text-yellow-600">{{ Auth::user()->submissionsPaten()->where('status', 'pending')->count() }}</div>
+                        <div class="text-xs sm:text-sm text-gray-600">Dalam Proses</div>
+                    </div>
+                    <div class="text-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+                        <div class="text-xl sm:text-2xl font-bold text-red-600">{{ Auth::user()->submissionsPaten()->where('status', 'rejected')->count() }}</div>
+                        <div class="text-xs sm:text-sm text-gray-600">Ditolak</div>
                     </div>
                 </div>
             </div>
