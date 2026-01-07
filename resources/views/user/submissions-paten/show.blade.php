@@ -128,9 +128,30 @@ use Illuminate\Support\Facades\Storage;
             
             <div class="flex items-center justify-between relative">
                 <!-- Progress Line -->
+                @php
+                    $biodata = $submissionPaten->biodataPaten;
+                    $docSubmitted = $biodata && $biodata->document_submitted;
+                    $readyForSigning = $biodata && $biodata->ready_for_signing;
+                    $bStatus = $submissionPaten->biodata_status;
+                    $isBRejected = $bStatus === 'rejected' || $bStatus === 'denied';
+                    
+                    // Calculate progress percentage (0%, 25%, 50%, 75%, 100%)
+                    $progressWidth = '25%'; // Default: Upload done
+                    if ($readyForSigning) {
+                        $progressWidth = '100%'; // Dokumen siap ditandatangani
+                    } elseif ($docSubmitted) {
+                        $progressWidth = '75%'; // Berkas disetor
+                    } elseif ($bStatus == 'approved') {
+                        $progressWidth = '50%'; // Biodata approved
+                    } elseif ($submissionPaten->status == 'approved') {
+                        $progressWidth = '37.5%'; // Dokumen approved
+                    } elseif ($submissionPaten->status == 'rejected') {
+                        $progressWidth = '25%'; // Ditolak di review
+                    }
+                @endphp
                 <div class="absolute top-5 left-0 right-0 h-1 bg-gray-200 rounded-full z-0">
                     <div class="h-full bg-gradient-to-r from-blue-500 to-green-500 rounded-full transition-all duration-500" 
-                         style="width: {{ $submissionPaten->biodata_status == 'approved' ? '100%' : ($submissionPaten->status == 'approved' ? '66%' : ($submissionPaten->status == 'rejected' ? '33%' : '33%')) }}"></div>
+                         style="width: {{ $progressWidth }}"></div>
                 </div>
 
                 <!-- Step 1: Upload Dokumen -->
@@ -163,11 +184,6 @@ use Illuminate\Support\Facades\Storage;
 
                 <!-- Step 3: Upload Biodata -->
                 <div class="relative z-10 flex flex-col items-center">
-                    {{-- normalize checks to accept both 'rejected' and 'denied' values for biodata_status --}}
-                    @php
-                        $bStatus = $submissionPaten->biodata_status;
-                        $isBRejected = $bStatus === 'rejected' || $bStatus === 'denied';
-                    @endphp
                     <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $bStatus == 'approved' || $isBRejected || $bStatus == 'pending' ? ($bStatus == 'approved' ? 'bg-green-500 border-green-500' : ($isBRejected ? 'bg-red-500 border-red-500' : 'bg-yellow-500 border-yellow-500')) : ($submissionPaten->status == 'approved' ? 'bg-blue-500 border-blue-500' : 'bg-gray-200 border-gray-300') }}">
                         @if($bStatus == 'approved')
                             <i class="fas fa-check text-white"></i>
@@ -186,12 +202,28 @@ use Illuminate\Support\Facades\Storage;
                     </span>
                 </div>
 
-                <!-- Step 4: Selesai -->
+                <!-- Step 4: Setor Berkas -->
                 <div class="relative z-10 flex flex-col items-center">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $submissionPaten->biodata_status == 'approved' ? 'bg-green-500 border-green-500' : 'bg-gray-200 border-gray-300' }}">
-                        <i class="fas fa-file-signature {{ $submissionPaten->biodata_status == 'approved' ? 'text-white' : 'text-gray-400' }}"></i>
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $docSubmitted ? 'bg-green-500 border-green-500' : ($bStatus == 'approved' ? 'bg-blue-500 border-blue-500' : 'bg-gray-200 border-gray-300') }}">
+                        @if($docSubmitted)
+                            <i class="fas fa-check text-white"></i>
+                        @elseif($bStatus == 'approved')
+                            <i class="fas fa-folder-open text-white"></i>
+                        @else
+                            <i class="fas fa-folder-open text-gray-400"></i>
+                        @endif
                     </div>
-                    <span class="mt-2 text-xs text-center font-medium {{ $submissionPaten->biodata_status == 'approved' ? 'text-green-600' : 'text-gray-400' }}">
+                    <span class="mt-2 text-xs text-center font-medium {{ $docSubmitted ? 'text-green-600' : ($bStatus == 'approved' ? 'text-blue-600' : 'text-gray-400') }}">
+                        Setor<br>Berkas
+                    </span>
+                </div>
+
+                <!-- Step 5: Selesai -->
+                <div class="relative z-10 flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $readyForSigning ? 'bg-green-500 border-green-500' : 'bg-gray-200 border-gray-300' }}">
+                        <i class="fas fa-file-signature {{ $readyForSigning ? 'text-white' : 'text-gray-400' }}"></i>
+                    </div>
+                    <span class="mt-2 text-xs text-center font-medium {{ $readyForSigning ? 'text-green-600' : 'text-gray-400' }}">
                         Selesai
                     </span>
                 </div>
@@ -200,12 +232,23 @@ use Illuminate\Support\Facades\Storage;
             <!-- Progress Description -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg">
                 @php
+                    $biodata = $submissionPaten->biodataPaten;
+                    $docSubmitted = $biodata && $biodata->document_submitted;
+                    $readyForSigning = $biodata && $biodata->ready_for_signing;
                     $bStatus = $submissionPaten->biodata_status;
                     $isBRejected = $bStatus === 'rejected' || $bStatus === 'denied';
                 @endphp
-                @if($bStatus == 'approved')
+                @if($readyForSigning)
                     <p class="text-sm text-green-700 font-medium">
-                        <i class="fas fa-check-circle mr-2"></i>Pengajuan HKI Anda telah selesai diproses!
+                        <i class="fas fa-check-circle mr-2"></i>Pengajuan Paten Anda telah selesai! Dokumen siap untuk ditandatangani.
+                    </p>
+                @elseif($docSubmitted)
+                    <p class="text-sm text-blue-700 font-medium">
+                        <i class="fas fa-clock mr-2"></i>Berkas sudah disetor. Menunggu proses penyelesaian dokumen.
+                    </p>
+                @elseif($bStatus == 'approved')
+                    <p class="text-sm text-blue-700 font-medium">
+                        <i class="fas fa-arrow-right mr-2"></i>Biodata disetujui! Silakan setor berkas ke kantor untuk melanjutkan proses.
                     </p>
                 @elseif($isBRejected)
                     <p class="text-sm text-red-700 font-medium">
