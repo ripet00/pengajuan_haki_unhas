@@ -138,7 +138,7 @@ class AdminController extends Controller
             'nip_nidn_nidk_nim' => 'required|string|unique:admins',
             'phone_number' => 'required|string|unique:admins',
             'country_code' => 'required|string|max:5',
-            'role' => 'required|in:super_admin,admin_hki,admin_paten,admin_hakcipta',
+            'role' => 'required|in:super_admin,admin_paten,admin_hakcipta',
             'password' => 'required|string|min:8|confirmed',
         ]);
 

@@ -1,6 +1,6 @@
 # Admin Accounts - Role Based Access Control
 
-Sistem admin sekarang menggunakan 4 level role dengan permission yang berbeda-beda:
+Sistem admin sekarang menggunakan 3 level role dengan permission yang berbeda-beda:
 
 ## 1. Super Admin
 **Akses:** Akses penuh ke seluruh sistem
@@ -16,21 +16,7 @@ Sistem admin sekarang menggunakan 4 level role dengan permission yang berbeda-be
 - ✅ Hak Cipta (Pengajuan & Biodata)
 - ✅ Paten (Pengajuan & Biodata)
 
-## 2. Admin HKI
-**Akses:** Mengelola Paten dan Hak Cipta
-- **NIP:** `hki001`
-- **Password:** `hkiunhas123`
-- **Phone:** `081234567890`
-
-**Permissions:**
-- ✅ Dashboard
-- ✅ Kelola User
-- ❌ Kelola Admin
-- ✅ Jenis Karya (CRUD)
-- ✅ Hak Cipta (Pengajuan & Biodata)
-- ✅ Paten (Pengajuan & Biodata)
-
-## 3. Admin Paten
+## 2. Admin Paten
 **Akses:** Mengelola Paten saja
 - **NIP:** `paten001`
 - **Password:** `paten123`
@@ -44,7 +30,7 @@ Sistem admin sekarang menggunakan 4 level role dengan permission yang berbeda-be
 - ❌ Hak Cipta
 - ✅ Paten (Pengajuan & Biodata)
 
-## 4. Admin Hak Cipta
+## 3. Admin Hak Cipta
 **Akses:** Mengelola Hak Cipta dan Jenis Karya
 - **NIP:** `hakcipta001`
 - **Password:** `hakcipta123`
@@ -62,15 +48,15 @@ Sistem admin sekarang menggunakan 4 level role dengan permission yang berbeda-be
 
 ## Role Matrix
 
-| Feature | Super Admin | Admin HKI | Admin Paten | Admin Hak Cipta |
-|---------|:-----------:|:---------:|:-----------:|:---------------:|
-| Dashboard | ✅ | ✅ | ✅ | ✅ |
-| Kelola User | ✅ | ✅ | ✅ | ✅ |
-| Kelola Admin | ✅ | ❌ | ❌ | ❌ |
-| Nonaktifkan/Aktifkan Admin | ✅ | ❌ | ❌ | ❌ |
-| Jenis Karya | ✅ | ✅ | ❌ | ✅ |
-| Hak Cipta | ✅ | ✅ | ❌ | ✅ |
-| Paten | ✅ | ✅ | ✅ | ❌ |
+| Feature | Super Admin | Admin Paten | Admin Hak Cipta |
+|---------|:-----------:|:-----------:|:---------------:|
+| Dashboard | ✅ | ✅ | ✅ |
+| Kelola User | ✅ | ✅ | ✅ |
+| Kelola Admin | ✅ | ❌ | ❌ |
+| Nonaktifkan/Aktifkan Admin | ✅ | ❌ | ❌ |
+| Jenis Karya | ✅ | ❌ | ✅ |
+| Hak Cipta | ✅ | ❌ | ✅ |
+| Paten | ✅ | ✅ | ❌ |
 
 ---
 
@@ -78,7 +64,7 @@ Sistem admin sekarang menggunakan 4 level role dengan permission yang berbeda-be
 
 ### Database
 - Kolom `role` ditambahkan ke tabel `admins`
-- Type: `ENUM('super_admin', 'admin_hki', 'admin_paten', 'admin_hakcipta')`
+- Type: `ENUM('super_admin', 'admin_paten', 'admin_hakcipta')`
 - Default: `super_admin`
 - Kolom `is_active` ditambahkan ke tabel `admins`
 - Type: `BOOLEAN`
@@ -94,7 +80,7 @@ Sistem admin sekarang menggunakan 4 level role dengan permission yang berbeda-be
 
 ### Middleware
 - `CheckAdminRole` middleware untuk proteksi route
-- Usage: `->middleware('admin.role:admin_hki,admin_paten')`
+- Usage: `->middleware('admin.role:admin_paten')`
 - Super admin selalu memiliki akses ke semua route
 
 ### Route Protection
@@ -104,13 +90,13 @@ Route::middleware('admin.role:super_admin')->group(function () {
     // Kelola admin routes
 });
 
-// super_admin, admin_hki, admin_hakcipta
-Route::middleware('admin.role:admin_hki,admin_hakcipta')->group(function () {
+// super_admin, admin_hakcipta
+Route::middleware('admin.role:admin_hakcipta')->group(function () {
     // Hak Cipta & Jenis Karya routes
 });
 
-// super_admin, admin_hki, admin_paten
-Route::middleware('admin.role:admin_hki,admin_paten')->group(function () {
+// super_admin, admin_paten
+Route::middleware('admin.role:admin_paten')->group(function () {
     // Paten routes
 });
 ```

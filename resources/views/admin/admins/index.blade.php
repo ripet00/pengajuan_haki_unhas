@@ -188,7 +188,7 @@
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap hidden sm:table-cell">
                                                     <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full
                                                         @if($adminItem->role === 'super_admin') bg-purple-100 text-purple-800
-                                                        @elseif($adminItem->role === 'admin_hki') bg-blue-100 text-blue-800
+
                                                         @elseif($adminItem->role === 'admin_paten') bg-green-100 text-green-800
                                                         @else bg-orange-100 text-orange-800
                                                         @endif">

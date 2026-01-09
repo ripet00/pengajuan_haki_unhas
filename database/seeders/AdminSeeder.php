@@ -24,17 +24,6 @@ class AdminSeeder extends Seeder
             ]
         );
 
-        // Admin HKI - Access to both Paten & Hak Cipta + User Management
-        Admin::firstOrCreate(
-            ['nip_nidn_nidk_nim' => 'hki001'],
-            [
-                'name' => 'Admin HKI UNHAS',
-                'phone_number' => '081234567890',
-                'password' => Hash::make('hkiunhas123'),
-                'role' => Admin::ROLE_ADMIN_HKI,
-            ]
-        );
-
         // Admin Paten - Access to Paten module + User Management
         Admin::firstOrCreate(
             ['nip_nidn_nidk_nim' => 'paten001'],

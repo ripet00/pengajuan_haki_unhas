@@ -12,7 +12,6 @@ class Admin extends Authenticatable
 
     // Role constants
     const ROLE_SUPER_ADMIN = 'super_admin';
-    const ROLE_ADMIN_HKI = 'admin_hki';
     const ROLE_ADMIN_PATEN = 'admin_paten';
     const ROLE_ADMIN_HAKCIPTA = 'admin_hakcipta';
 
@@ -46,7 +45,6 @@ class Admin extends Authenticatable
     {
         return [
             self::ROLE_SUPER_ADMIN => 'Super Admin',
-            self::ROLE_ADMIN_HKI => 'Admin HKI',
             self::ROLE_ADMIN_PATEN => 'Admin Paten',
             self::ROLE_ADMIN_HAKCIPTA => 'Admin Hak Cipta',
         ];
@@ -76,7 +74,6 @@ class Admin extends Authenticatable
     {
         return in_array($this->role, [
             self::ROLE_SUPER_ADMIN,
-            self::ROLE_ADMIN_HKI,
             self::ROLE_ADMIN_HAKCIPTA
         ]);
     }
@@ -88,7 +85,6 @@ class Admin extends Authenticatable
     {
         return in_array($this->role, [
             self::ROLE_SUPER_ADMIN,
-            self::ROLE_ADMIN_HKI,
             self::ROLE_ADMIN_PATEN
         ]);
     }
@@ -100,7 +96,6 @@ class Admin extends Authenticatable
     {
         return in_array($this->role, [
             self::ROLE_SUPER_ADMIN,
-            self::ROLE_ADMIN_HKI,
             self::ROLE_ADMIN_HAKCIPTA
         ]);
     }

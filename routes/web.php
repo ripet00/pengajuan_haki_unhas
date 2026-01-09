@@ -119,8 +119,8 @@ Route::prefix('admin')->group(function () {
             Route::patch('/admins/{admin}/status', [AdminController::class, 'updateAdminStatus'])->name('admin.admins.update-status');
         });
         
-        // Hak Cipta routes - super_admin, admin_hki, admin_hakcipta
-        Route::middleware('admin.role:admin_hki,admin_hakcipta')->group(function () {
+        // Hak Cipta routes - super_admin, admin_hakcipta
+        Route::middleware('admin.role:admin_hakcipta')->group(function () {
             // Admin submission routes
             Route::get('submissions', [AdminSubmissionController::class, 'index'])->name('admin.submissions.index');
             Route::get('submissions/{submission}', [AdminSubmissionController::class, 'show'])->name('admin.submissions.show');
@@ -144,8 +144,8 @@ Route::prefix('admin')->group(function () {
             Route::get('reports/{biodata}/download-kelengkapan', [\App\Http\Controllers\Admin\ReportController::class, 'downloadKelengkapan'])->name('admin.reports.download-kelengkapan');
         });
 
-        // Jenis Karya management routes - super_admin, admin_hki, admin_hakcipta
-        Route::middleware('admin.role:admin_hki,admin_hakcipta')->group(function () {
+        // Jenis Karya management routes - super_admin, admin_hakcipta
+        Route::middleware('admin.role:admin_hakcipta')->group(function () {
             Route::resource('jenis-karyas', \App\Http\Controllers\Admin\JenisKaryaController::class)->names([
                 'index' => 'admin.jenis-karyas.index',
                 'create' => 'admin.jenis-karyas.create',
@@ -157,8 +157,8 @@ Route::prefix('admin')->group(function () {
             ]);
         });
 
-        // Paten routes - super_admin, admin_hki, admin_paten
-        Route::middleware('admin.role:admin_hki,admin_paten')->group(function () {
+        // Paten routes - super_admin, admin_paten
+        Route::middleware('admin.role:admin_paten')->group(function () {
             // Admin paten submission routes
             Route::get('submissions-paten', [AdminSubmissionPatenController::class, 'index'])->name('admin.submissions-paten.index');
             Route::get('submissions-paten/{submissionPaten}', [AdminSubmissionPatenController::class, 'show'])->name('admin.submissions-paten.show');
