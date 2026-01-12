@@ -14,6 +14,7 @@ class Admin extends Authenticatable
     const ROLE_SUPER_ADMIN = 'super_admin';
     const ROLE_ADMIN_PATEN = 'admin_paten';
     const ROLE_ADMIN_HAKCIPTA = 'admin_hakcipta';
+    const ROLE_PENDAMPING_PATEN = 'pendamping_paten';
 
     protected $fillable = [
         'name',
@@ -22,6 +23,8 @@ class Admin extends Authenticatable
         'country_code',
         'password',
         'role',
+        'fakultas',
+        'program_studi',
         'is_active',
         'remember_token',
     ];
@@ -47,6 +50,7 @@ class Admin extends Authenticatable
             self::ROLE_SUPER_ADMIN => 'Super Admin',
             self::ROLE_ADMIN_PATEN => 'Admin Paten',
             self::ROLE_ADMIN_HAKCIPTA => 'Admin Hak Cipta',
+            self::ROLE_PENDAMPING_PATEN => 'Pendamping Paten',
         ];
     }
 
@@ -115,5 +119,32 @@ class Admin extends Authenticatable
     public function canAccessUserManagement(): bool
     {
         return true; // All admin roles can access user management
+    }
+
+    /**
+     * Check if admin is Pendamping Paten
+     */
+    public function isPendampingPaten(): bool
+    {
+        return $this->role === self::ROLE_PENDAMPING_PATEN;
+    }
+
+    /**
+     * Get assigned paten submissions for Pendamping Paten
+     */
+    public function assignedPatenSubmissions()
+    {
+        return $this->hasMany(SubmissionPaten::class, 'pendamping_paten_id');
+    }
+
+    /**
+     * Get count of active paten submissions being handled
+     * (pending_substance_review or rejected_substance_review)
+     */
+    public function getActivePatenCountAttribute(): int
+    {
+        return $this->assignedPatenSubmissions()
+            ->whereIn('status', ['pending_substance_review', 'rejected_substance_review'])
+            ->count();
     }
 }
