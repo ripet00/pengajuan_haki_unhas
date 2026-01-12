@@ -121,6 +121,8 @@ Route::prefix('admin')->group(function () {
             Route::get('/admins', [AdminController::class, 'adminIndex'])->name('admin.admins.index');
             Route::get('/create-admin', [AdminController::class, 'createAdmin'])->name('admin.create');
             Route::post('/create-admin', [AdminController::class, 'storeAdmin'])->name('admin.store');
+            Route::get('/admins/{admin}/edit', [AdminController::class, 'editAdmin'])->name('admin.admins.edit');
+            Route::put('/admins/{admin}', [AdminController::class, 'updateAdmin'])->name('admin.admins.update');
             Route::patch('/admins/{admin}/status', [AdminController::class, 'updateAdminStatus'])->name('admin.admins.update-status');
             
             // Pendamping Paten detail view - hanya super_admin
