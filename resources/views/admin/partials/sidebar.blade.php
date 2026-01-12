@@ -26,12 +26,44 @@
             $admin = $adminId ? \App\Models\Admin::find($adminId) : null;
         @endphp
         <ul class="space-y-2 px-4 pb-4">
+            <!-- Dashboard - Show for all except Pendamping Paten -->
+            @if($admin && !$admin->isPendampingPaten())
             <li>
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.dashboard') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-tachometer-alt mr-3 {{ Request::routeIs('admin.dashboard') ? 'text-red-600' : 'text-gray-500' }}"></i>
                     <span class="sidebar-text transition-opacity duration-300">Dashboard</span>
                 </a>
             </li>
+            @endif
+
+            <!-- Pendamping Paten Menu - Only for Pendamping Paten -->
+            @if($admin && $admin->isPendampingPaten())
+            <li>
+                <a href="{{ route('admin.pendamping-paten.dashboard') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-purple-50 group {{ Request::routeIs('admin.pendamping-paten.dashboard') ? 'sidebar-active-pendamping' : '' }}">
+                    <i class="fas fa-tachometer-alt mr-3 {{ Request::routeIs('admin.pendamping-paten.dashboard') ? 'text-purple-600' : 'text-gray-500' }}"></i>
+                    <span class="sidebar-text transition-opacity duration-300">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.pendamping-paten.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-purple-50 group {{ Request::routeIs('admin.pendamping-paten.index') || Request::routeIs('admin.pendamping-paten.show') ? 'sidebar-active-pendamping' : '' }}">
+                    <i class="fas fa-microscope mr-3 {{ Request::routeIs('admin.pendamping-paten.index') || Request::routeIs('admin.pendamping-paten.show') ? 'text-purple-600' : 'text-gray-500' }}"></i>
+                    <span class="sidebar-text transition-opacity duration-300">Review Substansi Paten</span>
+                    @php
+                        $pendingSubstanceCount = \App\Models\SubmissionPaten::where('pendamping_paten_id', $adminId)
+                            ->where('status', \App\Models\SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW)
+                            ->count();
+                    @endphp
+                    @if($pendingSubstanceCount > 0)
+                        <span class="sidebar-badge ml-auto bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full transition-all duration-300">
+                            {{ $pendingSubstanceCount }}
+                        </span>
+                    @endif
+                </a>
+            </li>
+            @endif
+
+            <!-- Show other menus only for non-Pendamping Paten roles -->
+            @if($admin && !$admin->isPendampingPaten())
             <li>
                 <a href="{{ route('admin.users.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.users.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-users mr-3 {{ Request::routeIs('admin.users.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
@@ -43,7 +75,7 @@
                     @endif
                 </a>
             </li>
-            @if($admin && $admin->canManageAdmins())
+            @if($admin->canManageAdmins())
             <li>
                 <a href="{{ route('admin.admins.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.admins.*') || Request::routeIs('admin.create') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-user-shield mr-3 {{ Request::routeIs('admin.admins.*') || Request::routeIs('admin.create') ? 'text-red-600' : 'text-gray-500' }}"></i>
@@ -65,7 +97,11 @@
                     @endif
                 </a>
             </li>
-            @if($admin && $admin->canAccessJenisKarya())
+            @endif
+            
+            <!-- Show Jenis Karya and Hak Cipta menus only for non-Pendamping Paten roles -->
+            @if($admin && !$admin->isPendampingPaten())
+            @if($admin->canAccessJenisKarya())
             <li>
                 <a href="{{ route('admin.jenis-karyas.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.jenis-karyas.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-list mr-3 {{ Request::routeIs('admin.jenis-karyas.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
@@ -73,7 +109,7 @@
                 </a>
             </li>
             @endif
-            @if($admin && $admin->canAccessHakCipta())
+            @if($admin->canAccessHakCipta())
             <li>
                 <a href="{{ route('admin.submissions.index') }}" class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 group {{ Request::routeIs('admin.submissions.*') ? 'sidebar-active' : '' }}">
                     <i class="fas fa-file-upload mr-3 {{ Request::routeIs('admin.submissions.*') ? 'text-red-600' : 'text-gray-500' }}"></i>
@@ -110,7 +146,7 @@
             @endif
             
             <!-- Divider -->
-            @if($admin && ($admin->canAccessHakCipta() || $admin->canAccessPaten()))
+            @if($admin && !$admin->isPendampingPaten() && ($admin->canAccessHakCipta() || $admin->canAccessPaten()))
             <li class="my-4">
                 <div class="border-t border-gray-200"></div>
             </li>
@@ -151,6 +187,8 @@
                 </a>
             </li>
             @endif
+
+            @endif
         </ul>
     </nav>
 
@@ -189,6 +227,18 @@
 
 .sidebar-active-paten .sidebar-text {
     color: #059669;
+}
+
+.sidebar-active-pendamping {
+    background-color: rgba(147, 51, 234, 0.1);
+    border-left: 4px solid #9333ea;
+    border-radius: 0.5rem 0.5rem 0.5rem 0;
+    color: #9333ea;
+    font-weight: 600;
+}
+
+.sidebar-active-pendamping .sidebar-text {
+    color: #9333ea;
 }
 
 .sidebar-transition {
