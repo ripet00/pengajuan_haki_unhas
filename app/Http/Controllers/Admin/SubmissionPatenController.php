@@ -78,11 +78,22 @@ class SubmissionPatenController extends Controller
             'status' => 'required|in:approved_format,rejected_format_review',
             'rejection_reason' => 'required_if:status,rejected_format_review',
             'file_review' => 'nullable|file|mimes:docx,doc,pdf',
+            'pendamping_paten_id' => 'required_if:status,approved_format|nullable|exists:admins,id',
         ], [
             'status.required' => 'Status harus dipilih.',
             'rejection_reason.required_if' => 'Alasan penolakan harus diisi jika status ditolak.',
             'file_review.mimes' => 'File harus berformat DOCX, DOC, atau PDF.',
+            'pendamping_paten_id.required_if' => 'Pendamping Paten harus dipilih saat menyetujui format.',
+            'pendamping_paten_id.exists' => 'Pendamping Paten tidak ditemukan.',
         ]);
+
+        // Verify the selected admin is actually a Pendamping Paten (if provided)
+        if ($request->status === 'approved_format' && $request->pendamping_paten_id) {
+            $pendampingPaten = \App\Models\Admin::findOrFail($request->pendamping_paten_id);
+            if ($pendampingPaten->role !== \App\Models\Admin::ROLE_PENDAMPING_PATEN) {
+                return back()->with('error', 'Admin yang dipilih bukan Pendamping Paten.');
+            }
+        }
 
         $admin = $this->getCurrentAdmin();
 
@@ -93,6 +104,13 @@ class SubmissionPatenController extends Controller
             'reviewed_at' => now(),
             'reviewed_by_admin_id' => $admin->id,
         ];
+
+        // If approved, also assign to pendamping and change status to pending_substance_review
+        if ($request->status === 'approved_format' && $request->pendamping_paten_id) {
+            $updateData['pendamping_paten_id'] = $request->pendamping_paten_id;
+            $updateData['assigned_at'] = now();
+            $updateData['status'] = SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW;
+        }
 
         // Handle file upload
         if ($request->hasFile('file_review')) {
@@ -112,10 +130,14 @@ class SubmissionPatenController extends Controller
 
         $submissionPaten->update($updateData);
 
-        $statusText = $request->status === 'approved_format' ? 'disetujui' : 'ditolak';
-        
-        return redirect()->route('admin.submissions-paten.show', $submissionPaten)
-                       ->with('success', "Pengajuan paten berhasil {$statusText}.");
+        if ($request->status === 'approved_format') {
+            $pendampingName = \App\Models\Admin::find($request->pendamping_paten_id)->name ?? 'Pendamping Paten';
+            return redirect()->route('admin.submissions-paten.show', $submissionPaten)
+                           ->with('success', "Format pengajuan paten berhasil disetujui dan ditugaskan kepada {$pendampingName} untuk review substansi.");
+        } else {
+            return redirect()->route('admin.submissions-paten.show', $submissionPaten)
+                           ->with('success', "Format pengajuan paten berhasil ditolak. User dapat melakukan revisi dan submit ulang.");
+        }
     }
 
     /**
