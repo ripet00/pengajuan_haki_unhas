@@ -905,6 +905,9 @@
             </div>
         </div>
 
+        <!-- Riwayat Review -->
+        @include('user.submissions.partials.history-section')
+
         <!-- Floating Next Button -->
         @if($submission->status == 'approved' && !$submission->biodata)
         <div class="fixed bottom-6 right-6 z-50">
