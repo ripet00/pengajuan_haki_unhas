@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SubmissionPaten;
+use App\Models\SubmissionPatenHistory;
 use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -108,7 +109,7 @@ class PendampingPatenController extends Controller
             abort(403, 'Anda tidak memiliki akses ke pengajuan ini.');
         }
 
-        $submissionPaten->load(['user', 'reviewedByAdmin', 'pendampingPaten']);
+        $submissionPaten->load(['user', 'reviewedByAdmin', 'pendampingPaten', 'histories.admin']);
 
         return view('admin.pendamping-paten.show', compact('submissionPaten'));
     }
@@ -179,6 +180,15 @@ class PendampingPatenController extends Controller
         }
 
         $submissionPaten->update($updateData);
+
+        // Save history for substance review
+        SubmissionPatenHistory::create([
+            'submission_paten_id' => $submissionPaten->id,
+            'admin_id' => $pendampingPaten->id,
+            'review_type' => 'substance_review',
+            'action' => $request->status === 'approved_substance' ? 'approved' : 'rejected',
+            'notes' => $request->substance_review_notes ?? null,
+        ]);
 
         $statusText = $request->status === 'approved_substance' ? 'disetujui' : 'ditolak';
         
