@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ReviewSubmissionRequest;
 use App\Models\Submission;
+use App\Models\SubmissionHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -53,7 +54,7 @@ class SubmissionController extends Controller
         if ($submission->reviewed_by_admin_id) {
             $submission->load('reviewedByAdmin');
         }
-        $submission->load(['jenisKarya', 'biodata']);
+        $submission->load(['jenisKarya', 'biodata', 'histories.admin']);
         
         // Get submissions with similar titles (case-insensitive)
         $similarTitles = $submission->getSimilarTitles();
@@ -70,12 +71,22 @@ class SubmissionController extends Controller
         }
 
         $validatedData = $request->validated();
+        $adminId = session('admin_id');
+        
         $submission->status = $validatedData['status'];
         $submission->reviewed_at = now();
-        $submission->reviewed_by_admin_id = session('admin_id'); // Use session admin_id
+        $submission->reviewed_by_admin_id = $adminId; // Use session admin_id
         $submission->rejection_reason = $validatedData['rejection_reason'] ?? null;
         $submission->revisi = false; // after admin review, reset revisi flag
         $submission->save();
+
+        // Save history
+        SubmissionHistory::create([
+            'submission_id' => $submission->id,
+            'admin_id' => $adminId,
+            'action' => $validatedData['status'] === 'approved' ? 'approved' : 'rejected',
+            'notes' => $validatedData['rejection_reason'] ?? null,
+        ]);
 
         return redirect()->route('admin.submissions.show', $submission)->with('success', 'Review tersimpan.');
     }
@@ -95,11 +106,21 @@ class SubmissionController extends Controller
         }
 
         $validatedData = $request->validated();
+        $adminId = session('admin_id');
+        
         $submission->status = $validatedData['status'];
         $submission->reviewed_at = now();
-        $submission->reviewed_by_admin_id = session('admin_id');
+        $submission->reviewed_by_admin_id = $adminId;
         $submission->rejection_reason = $validatedData['rejection_reason'] ?? null;
         $submission->save();
+
+        // Save history
+        SubmissionHistory::create([
+            'submission_id' => $submission->id,
+            'admin_id' => $adminId,
+            'action' => $validatedData['status'] === 'approved' ? 'approved' : 'rejected',
+            'notes' => $validatedData['rejection_reason'] ?? null,
+        ]);
 
         return redirect()->route('admin.submissions.show', $submission)->with('success', 'Review berhasil diupdate.');
     }
