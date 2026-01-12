@@ -287,6 +287,123 @@
                             </div>
                         @endif
                     </div>
+
+                    <!-- Pendamping Paten Table -->
+                    <div class="bg-white shadow rounded-lg overflow-hidden mt-8">
+                        <div class="px-4 md:px-6 py-4 border-b border-purple-200 bg-purple-50">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-base md:text-lg font-medium text-purple-900 flex items-center">
+                                    <i class="fas fa-user-tie mr-2"></i>Daftar Pendamping Paten
+                                </h2>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    {{ $pendampingPatenList->count() }} total pendamping
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            @if($pendampingPatenList->count() > 0)
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pendamping</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">NIP/NIDN/NIDK/NIM</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Fakultas</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">Program Studi</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Beban Kerja</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        @foreach($pendampingPatenList as $pendamping)
+                                            <tr class="hover:bg-purple-50">
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <div class="w-8 h-8 md:w-10 md:h-10 bg-purple-500 rounded-full flex items-center justify-center">
+                                                            <span class="text-white font-medium text-xs md:text-sm">{{ substr($pendamping->name, 0, 1) }}</span>
+                                                        </div>
+                                                        <div class="ml-3 md:ml-4">
+                                                            <div class="text-sm font-medium text-gray-900">{{ $pendamping->name }}</div>
+                                                            <div class="text-xs text-gray-500 md:hidden">{{ $pendamping->nip_nidn_nidk_nim }}</div>
+                                                            <div class="text-xs text-gray-500 lg:hidden">{{ $pendamping->fakultas ?? '-' }}</div>
+                                                            <div class="text-xs text-gray-500 xl:hidden">{{ $pendamping->program_studi ?? '-' }}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
+                                                    {{ $pendamping->nip_nidn_nidk_nim }}
+                                                </td>
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                                                    {{ $pendamping->fakultas ?? '-' }}
+                                                </td>
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden xl:table-cell">
+                                                    {{ $pendamping->program_studi ?? '-' }}
+                                                </td>
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                                        {{ $pendamping->active_paten_count == 0 ? 'bg-green-100 text-green-800' : ($pendamping->active_paten_count <= 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                                        <i class="fas fa-tasks mr-1"></i>{{ $pendamping->active_paten_count }} tugas aktif
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                                    @if($pendamping->is_active)
+                                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                                            <i class="fas fa-check-circle mr-1"></i>Aktif
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                                            <i class="fas fa-times-circle mr-1"></i>Nonaktif
+                                                        </span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                                    <a href="{{ route('admin.pendamping-paten.detail', $pendamping) }}" 
+                                                       class="inline-flex items-center px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-lg transition duration-200">
+                                                        <i class="fas fa-eye mr-1"></i>Detail
+                                                    </a>
+                                                    
+                                                    @if($pendamping->id !== session('admin_id'))
+                                                        <form action="{{ route('admin.admins.update-status', $pendamping) }}" 
+                                                              method="POST" 
+                                                              class="inline-block"
+                                                              onsubmit="return confirm('Apakah Anda yakin ingin {{ $pendamping->is_active ? 'menonaktifkan' : 'mengaktifkan' }} pendamping paten ini?')">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <input type="hidden" name="is_active" value="{{ $pendamping->is_active ? '0' : '1' }}">
+                                                            
+                                                            @if($pendamping->is_active)
+                                                                <button type="submit" 
+                                                                        class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-lg transition duration-200">
+                                                                    <i class="fas fa-ban mr-1"></i>Nonaktifkan
+                                                                </button>
+                                                            @else
+                                                                <button type="submit" 
+                                                                        class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition duration-200">
+                                                                    <i class="fas fa-check mr-1"></i>Aktifkan
+                                                                </button>
+                                                            @endif
+                                                        </form>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @else
+                                <!-- Empty State -->
+                                <div class="p-8 text-center">
+                                    <i class="fas fa-user-tie text-6xl text-gray-300 mb-4"></i>
+                                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Tidak ada Pendamping Paten</h3>
+                                    <p class="text-gray-600 mb-4">Belum ada admin dengan role Pendamping Paten yang terdaftar.</p>
+                                    <a href="{{ route('admin.create') }}" 
+                                       class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                        <i class="fas fa-plus mr-2"></i>Tambah Pendamping Paten
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>
