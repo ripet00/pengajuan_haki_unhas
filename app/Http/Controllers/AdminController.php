@@ -191,6 +191,75 @@ class AdminController extends Controller
         Admin::create($adminData);
 
         // 3. Redirect ke Dashboard Admin dengan pesan sukses.
-        return redirect()->route('admin.admins')->with('success', 'Admin account created successfully!');
+        return redirect()->route('admin.admins.index')->with('success', 'Admin account created successfully!');
+    }
+
+    // Menampilkan halaman form edit admin
+    public function editAdmin(Admin $admin)
+    {
+        // Prevent editing own account
+        if ($admin->id === session('admin_id')) {
+            return redirect()->route('admin.admins.index')->with('error', 'Anda tidak dapat mengedit akun Anda sendiri.');
+        }
+
+        return view('admin.admins.edit', compact('admin'));
+    }
+
+    // Update data admin (semua data kecuali nomor HP)
+    public function updateAdmin(Request $request, Admin $admin)
+    {
+        // Prevent editing own account
+        if ($admin->id === session('admin_id')) {
+            return redirect()->route('admin.admins.index')->with('error', 'Anda tidak dapat mengedit akun Anda sendiri.');
+        }
+
+        // 1. Validasi Input
+        $rules = [
+            'name' => 'required|string|max:255',
+            'nip_nidn_nidk_nim' => 'required|string|unique:admins,nip_nidn_nidk_nim,' . $admin->id,
+            'country_code' => 'required|string|max:5',
+            'role' => 'required|in:super_admin,admin_paten,admin_hakcipta,pendamping_paten',
+        ];
+
+        // Add fakultas and program_studi validation if role is Pendamping Paten
+        if ($request->role === 'pendamping_paten') {
+            $rules['fakultas'] = 'required|string|max:255';
+            $rules['program_studi'] = 'required|string|max:255';
+        }
+
+        // Add password validation if provided
+        if ($request->filled('password')) {
+            $rules['password'] = 'string|min:8|confirmed';
+        }
+
+        $request->validate($rules);
+
+        // 2. Update Admin Data (exclude phone_number)
+        $updateData = [
+            'name' => $request->name,
+            'nip_nidn_nidk_nim' => $request->nip_nidn_nidk_nim,
+            'country_code' => $request->country_code,
+            'role' => $request->role,
+        ];
+
+        // Update fakultas and program_studi if role is Pendamping Paten
+        if ($request->role === 'pendamping_paten') {
+            $updateData['fakultas'] = $request->fakultas;
+            $updateData['program_studi'] = $request->program_studi;
+        } else {
+            // Clear fakultas and program_studi if role changed from Pendamping Paten
+            $updateData['fakultas'] = null;
+            $updateData['program_studi'] = null;
+        }
+
+        // Update password if provided
+        if ($request->filled('password')) {
+            $updateData['password'] = Hash::make($request->password);
+        }
+
+        $admin->update($updateData);
+
+        // 3. Redirect dengan pesan sukses
+        return redirect()->route('admin.admins.index')->with('success', 'Data admin berhasil diperbarui!');
     }
 }
