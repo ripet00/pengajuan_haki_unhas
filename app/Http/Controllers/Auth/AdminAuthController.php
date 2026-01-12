@@ -26,6 +26,12 @@ class AdminAuthController extends Controller
             if ($admin) {
                 // Auto login the admin
                 session(['admin_id' => $admin->id]);
+                
+                // Redirect based on role
+                if ($admin->role === Admin::ROLE_PENDAMPING_PATEN) {
+                    return redirect(route('admin.pendamping-paten.dashboard'));
+                }
+                
                 return redirect('/admin');
             } else {
                 // Invalid remember token, clear cookies
@@ -78,7 +84,12 @@ class AdminAuthController extends Controller
             cookie()->queue('admin_phone_number', $admin->phone_number, 60 * 24 * 30); // 30 days
         }
 
-        // 6. Redirect ke Dashboard: Arahkan admin ke halaman dashboard admin.
+        // 6. Redirect ke Dashboard: Arahkan admin ke halaman dashboard sesuai role
+        // Pendamping Paten diarahkan ke dashboard khusus mereka
+        if ($admin->role === Admin::ROLE_PENDAMPING_PATEN) {
+            return redirect()->intended(route('admin.pendamping-paten.dashboard'));
+        }
+        
         return redirect()->intended('/admin');
     }
 
