@@ -6,12 +6,21 @@ use App\Models\User;
 use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
     // Menampilkan halaman dashboard admin
     public function dashboard()
     {
+        // Get current admin
+        $admin = Admin::find(session('admin_id'));
+        
+        // Redirect Pendamping Paten to their own dashboard
+        if ($admin && $admin->role === Admin::ROLE_PENDAMPING_PATEN) {
+            return redirect()->route('admin.pendamping-paten.dashboard');
+        }
+        
         // 1. Ambil Data: Mengambil data user berdasarkan statusnya dari database.
         $pendingUsers = User::where('status', 'pending')->get();
         $activeUsers = User::where('status', 'active')->count();
@@ -50,7 +59,8 @@ class AdminController extends Controller
     // Menampilkan halaman manajemen admin
     public function adminIndex(Request $request)
     {
-        $q = Admin::orderBy('created_at', 'desc');
+        $q = Admin::where('role', '!=', Admin::ROLE_PENDAMPING_PATEN)
+            ->orderBy('created_at', 'desc');
 
         // Search functionality
         if ($request->filled('search')) {
@@ -64,7 +74,19 @@ class AdminController extends Controller
 
         // Ambil admins dengan pagination dan pertahankan query parameters
         $admins = $q->paginate(15);
-        return view('admin.admins.index', compact('admins'));
+
+        // Get Pendamping Paten list with active paten count
+        $pendampingPatenList = Admin::where('role', Admin::ROLE_PENDAMPING_PATEN)
+            ->withCount(['assignedPatenSubmissions as active_paten_count' => function ($query) {
+                $query->whereIn('status', [
+                    \App\Models\SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW,
+                    \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW
+                ]);
+            }])
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.admins.index', compact('admins', 'pendampingPatenList'));
     }
 
     // Memproses perubahan status user (misal: menyetujui atau menolak)
@@ -93,7 +115,7 @@ class AdminController extends Controller
         // 5. Force logout user if status changed from active to inactive
         if ($wasActive && $nowInactive) {
             // Delete all sessions for this user to force logout
-            \DB::table('sessions')->where('user_id', $user->id)->delete();
+            DB::table('sessions')->where('user_id', $user->id)->delete();
         }
 
         // 6. Redirect Kembali: Kembali ke halaman sebelumnya dengan pesan sukses.
@@ -133,26 +155,42 @@ class AdminController extends Controller
     public function storeAdmin(Request $request)
     {
         // 1. Validasi Input
-        $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'nip_nidn_nidk_nim' => 'required|string|unique:admins',
             'phone_number' => 'required|string|unique:admins',
             'country_code' => 'required|string|max:5',
-            'role' => 'required|in:super_admin,admin_paten,admin_hakcipta',
+            'role' => 'required|in:super_admin,admin_paten,admin_hakcipta,pendamping_paten',
             'password' => 'required|string|min:8|confirmed',
-        ]);
+        ];
+
+        // Add fakultas and program_studi validation if role is Pendamping Paten
+        if ($request->role === 'pendamping_paten') {
+            $rules['fakultas'] = 'required|string|max:255';
+            $rules['program_studi'] = 'required|string|max:255';
+        }
+
+        $request->validate($rules);
 
         // 2. Buat Admin Baru
-        Admin::create([
+        $adminData = [
             'name' => $request->name,
             'nip_nidn_nidk_nim' => $request->nip_nidn_nidk_nim,
             'phone_number' => $request->phone_number,
             'country_code' => $request->country_code,
             'role' => $request->role,
             'password' => Hash::make($request->password),
-        ]);
+        ];
+
+        // Add fakultas and program_studi if role is Pendamping Paten
+        if ($request->role === 'pendamping_paten') {
+            $adminData['fakultas'] = $request->fakultas;
+            $adminData['program_studi'] = $request->program_studi;
+        }
+
+        Admin::create($adminData);
 
         // 3. Redirect ke Dashboard Admin dengan pesan sukses.
-        return redirect()->route('admin.dashboard')->with('success', 'Admin account created successfully!');
+        return redirect()->route('admin.admins')->with('success', 'Admin account created successfully!');
     }
 }
