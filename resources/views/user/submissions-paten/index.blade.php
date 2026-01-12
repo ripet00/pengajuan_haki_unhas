@@ -124,8 +124,20 @@
                             <i class="fas fa-clock text-yellow-600"></i>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-600">Pending</p>
-                            <p class="text-2xl font-semibold text-gray-900">{{ $submissionsPaten->where('status', 'pending')->count() }}</p>
+                            <p class="text-sm font-medium text-gray-600">Review Format</p>
+                            <p class="text-2xl font-semibold text-gray-900">{{ $submissionsPaten->whereIn('status', [\App\Models\SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW, \App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW])->count() }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-microscope text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Review Substansi</p>
+                            <p class="text-2xl font-semibold text-gray-900">{{ $submissionsPaten->whereIn('status', [\App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT, \App\Models\SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW, \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW])->count() }}</p>
                         </div>
                     </div>
                 </div>
@@ -133,23 +145,11 @@
                 <div class="bg-white rounded-lg shadow p-4">
                     <div class="flex items-center">
                         <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-check-circle text-green-600"></i>
+                            <i class="fas fa-check-double text-green-600"></i>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-600">Disetujui</p>
-                            <p class="text-2xl font-semibold text-gray-900">{{ $submissionsPaten->where('status', 'approved')->count() }}</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-lg shadow p-4">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-times-circle text-red-600"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">Ditolak</p>
-                            <p class="text-2xl font-semibold text-gray-900">{{ $submissionsPaten->where('status', 'rejected')->count() }}</p>
+                            <p class="text-sm font-medium text-gray-600">Selesai</p>
+                            <p class="text-2xl font-semibold text-gray-900">{{ $submissionsPaten->where('status', \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE)->count() }}</p>
                         </div>
                     </div>
                 </div>
@@ -174,33 +174,57 @@
                                 <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $submission->judul_paten }}</h3>
                                 
                                 <div class="flex flex-wrap gap-2 mb-3">
+                                    {{-- 1. Jenis Paten --}}
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $submission->kategori_paten == 'Paten' ? 'bg-green-100 text-green-800' : 'bg-emerald-100 text-emerald-800' }}">
                                         <i class="fas fa-{{ $submission->kategori_paten == 'Paten' ? 'certificate' : 'award' }} mr-1"></i>
                                         {{ $submission->kategori_paten }}
                                     </span>
                                     
-                                    {{-- Status Draft --}}
-                                    @if($submission->status == 'pending')
+                                    {{-- 2. Status Review Format --}}
+                                    @if($submission->status == \App\Models\SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW)
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                            <i class="fas fa-clock mr-1"></i>Pending
+                                            <i class="fas fa-clock mr-1"></i>Format: Review
                                         </span>
-                                    @elseif($submission->status == 'approved')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            <i class="fas fa-check-circle mr-1"></i>Disetujui
+                                    @elseif($submission->status == \App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-times-circle mr-1"></i>Format: Ditolak
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                            <i class="fas fa-times-circle mr-1"></i>Ditolak
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check mr-1"></i>Format: Disetujui
                                         </span>
                                     @endif
                                     
-                                    {{-- Status Biodata --}}
+                                    {{-- 3. Status Review Substansi --}}
+                                    @if(in_array($submission->status, [\App\Models\SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW, \App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW]))
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                            <i class="fas fa-lock mr-1"></i>Substansi: Terkunci
+                                        </span>
+                                    @elseif($submission->status == \App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            <i class="fas fa-hourglass-half mr-1"></i>Substansi: Penugasan
+                                        </span>
+                                    @elseif($submission->status == \App\Models\SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <i class="fas fa-microscope mr-1"></i>Substansi: Review
+                                        </span>
+                                    @elseif($submission->status == \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>Substansi: Ditolak
+                                        </span>
+                                    @elseif($submission->status == \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check-double mr-1"></i>Substansi: Disetujui
+                                        </span>
+                                    @endif
+                                    
+                                    {{-- 4. Status Biodata --}}
                                     @if(isset($submission->biodataPaten) && $submission->biodataPaten->status === 'denied')
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                             <i class="fas fa-user-times mr-1"></i>Biodata: Ditolak
                                         </span>
                                     @elseif($submission->biodata_status == 'not_started')
-                                        @if($submission->status == 'approved')
+                                        @if($submission->status == \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE)
                                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                 <i class="fas fa-upload mr-1"></i>Biodata: Siap Upload
                                             </span>
@@ -215,11 +239,32 @@
                                         </span>
                                     @elseif($submission->biodata_status == 'approved')
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            <i class="fas fa-check-double mr-1"></i>Biodata: Selesai
+                                            <i class="fas fa-check-double mr-1"></i>Biodata: Disetujui
                                         </span>
                                     @elseif($submission->biodata_status == 'rejected')
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                             <i class="fas fa-times mr-1"></i>Biodata: Ditolak
+                                        </span>
+                                    @endif
+                                    
+                                    {{-- 5. Status Penyetoran Berkas --}}
+                                    @if(isset($submission->biodataPaten))
+                                        @if($submission->biodataPaten->document_submitted_at)
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                <i class="fas fa-check-circle mr-1"></i>Berkas: Disetor
+                                            </span>
+                                        @elseif($submission->biodataPaten->ready_for_signing)
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                <i class="fas fa-hourglass-half mr-1"></i>Berkas: Siap Setor
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                                <i class="fas fa-lock mr-1"></i>Berkas: Terkunci
+                                            </span>
+                                        @endif
+                                    @else
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                            <i class="fas fa-lock mr-1"></i>Berkas: Terkunci
                                         </span>
                                     @endif
                                 </div>
@@ -236,7 +281,7 @@
                                     <i class="fas fa-eye mr-2"></i>Lihat Detail
                                 </a>
                                 
-                                @if($submission->status == 'rejected' || (isset($submission->biodataPaten) && $submission->biodataPaten->status === 'denied'))
+                                @if(in_array($submission->status, [\App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW, \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW]) || (isset($submission->biodataPaten) && $submission->biodataPaten->status === 'denied'))
                                     <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-center">
                                         <p class="text-xs text-red-700">
                                             <i class="fas fa-info-circle mr-1"></i>
