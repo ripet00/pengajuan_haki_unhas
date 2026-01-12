@@ -75,13 +75,13 @@ class SubmissionPatenController extends Controller
     public function review(Request $request, SubmissionPaten $submissionPaten)
     {
         $request->validate([
-            'status' => 'required|in:approved,rejected',
-            'rejection_reason' => 'required_if:status,rejected',
-            'file_review' => 'nullable|file|mimes:docx,doc',
+            'status' => 'required|in:approved_format,rejected_format_review',
+            'rejection_reason' => 'required_if:status,rejected_format_review',
+            'file_review' => 'nullable|file|mimes:docx,doc,pdf',
         ], [
             'status.required' => 'Status harus dipilih.',
             'rejection_reason.required_if' => 'Alasan penolakan harus diisi jika status ditolak.',
-            'file_review.mimes' => 'File harus berformat DOCX atau DOC.',
+            'file_review.mimes' => 'File harus berformat DOCX, DOC, atau PDF.',
         ]);
 
         $admin = $this->getCurrentAdmin();
@@ -89,7 +89,7 @@ class SubmissionPatenController extends Controller
         // Prepare update data
         $updateData = [
             'status' => $request->status,
-            'rejection_reason' => $request->status === 'rejected' ? $request->rejection_reason : null,
+            'rejection_reason' => $request->status === 'rejected_format_review' ? $request->rejection_reason : null,
             'reviewed_at' => now(),
             'reviewed_by_admin_id' => $admin->id,
         ];
@@ -112,7 +112,7 @@ class SubmissionPatenController extends Controller
 
         $submissionPaten->update($updateData);
 
-        $statusText = $request->status === 'approved' ? 'disetujui' : 'ditolak';
+        $statusText = $request->status === 'approved_format' ? 'disetujui' : 'ditolak';
         
         return redirect()->route('admin.submissions-paten.show', $submissionPaten)
                        ->with('success', "Pengajuan paten berhasil {$statusText}.");
@@ -124,12 +124,12 @@ class SubmissionPatenController extends Controller
     public function updateReview(Request $request, SubmissionPaten $submissionPaten)
     {
         $request->validate([
-            'status' => 'required|in:approved,rejected',
-            'rejection_reason' => 'required_if:status,rejected',
-            'file_review' => 'nullable|file|mimes:docx,doc',
+            'status' => 'required|in:approved_format,rejected_format_review',
+            'rejection_reason' => 'required_if:status,rejected_format_review',
+            'file_review' => 'nullable|file|mimes:docx,doc,pdf',
         ], [
             'rejection_reason.required_if' => 'Alasan penolakan harus diisi jika status ditolak.',
-            'file_review.mimes' => 'File harus berformat DOCX atau DOC.',
+            'file_review.mimes' => 'File harus berformat DOCX, DOC, atau PDF.',
         ]);
 
         $admin = $this->getCurrentAdmin();
@@ -137,7 +137,7 @@ class SubmissionPatenController extends Controller
         // Prepare update data
         $updateData = [
             'status' => $request->status,
-            'rejection_reason' => $request->status === 'rejected' ? $request->rejection_reason : null,
+            'rejection_reason' => $request->status === 'rejected_format_review' ? $request->rejection_reason : null,
             'reviewed_at' => now(),
             'reviewed_by_admin_id' => $admin->id,
         ];
@@ -160,7 +160,7 @@ class SubmissionPatenController extends Controller
 
         $submissionPaten->update($updateData);
 
-        $statusText = $request->status === 'approved' ? 'disetujui' : 'ditolak';
+        $statusText = $request->status === 'approved_format' ? 'disetujui' : 'ditolak';
         
         return redirect()->route('admin.submissions-paten.show', $submissionPaten)
                        ->with('success', "Pengajuan paten berhasil {$statusText}.");
@@ -172,7 +172,11 @@ class SubmissionPatenController extends Controller
     public function destroy(SubmissionPaten $submissionPaten)
     {
         // Only allow deletion if status is pending or rejected
-        if (!in_array($submissionPaten->status, ['pending', 'rejected'])) {
+        if (!in_array($submissionPaten->status, [
+            SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW, 
+            SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW,
+            SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW
+        ])) {
             return back()->with('error', 'Hanya pengajuan dengan status Pending atau Ditolak yang dapat dihapus.');
         }
 
@@ -192,6 +196,11 @@ class SubmissionPatenController extends Controller
                 Storage::disk('public')->delete($submissionPaten->file_review_path);
             }
 
+            // Delete substance review file from storage if exists
+            if ($submissionPaten->substance_review_file && Storage::disk('public')->exists($submissionPaten->substance_review_file)) {
+                Storage::disk('public')->delete($submissionPaten->substance_review_file);
+            }
+
             // Delete submission from database
             $submissionPaten->delete();
 
@@ -200,5 +209,60 @@ class SubmissionPatenController extends Controller
             Log::error('Error deleting submission paten: ' . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan saat menghapus pengajuan.');
         }
+    }
+
+    /**
+     * Assign submission to Pendamping Paten
+     */
+    public function assign(Request $request, SubmissionPaten $submissionPaten)
+    {
+        $request->validate([
+            'pendamping_paten_id' => 'required|exists:admins,id',
+        ], [
+            'pendamping_paten_id.required' => 'Pendamping Paten harus dipilih.',
+            'pendamping_paten_id.exists' => 'Pendamping Paten tidak ditemukan.',
+        ]);
+
+        // Verify the selected admin is actually a Pendamping Paten
+        $pendampingPaten = \App\Models\Admin::findOrFail($request->pendamping_paten_id);
+        if ($pendampingPaten->role !== \App\Models\Admin::ROLE_PENDAMPING_PATEN) {
+            return back()->with('error', 'Admin yang dipilih bukan Pendamping Paten.');
+        }
+
+        // Verify submission status is approved_format
+        if ($submissionPaten->status !== SubmissionPaten::STATUS_APPROVED_FORMAT) {
+            return back()->with('error', 'Hanya pengajuan dengan format yang sudah disetujui yang dapat ditugaskan.');
+        }
+
+        $submissionPaten->update([
+            'pendamping_paten_id' => $request->pendamping_paten_id,
+            'assigned_at' => now(),
+            'status' => SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW,
+        ]);
+
+        return redirect()->route('admin.submissions-paten.show', $submissionPaten)
+                       ->with('success', 'Pendamping Paten berhasil ditugaskan.');
+    }
+
+    /**
+     * Get list of Pendamping Paten for assignment (API endpoint)
+     */
+    public function getPendampingPatenList()
+    {
+        $pendampingPatenList = \App\Models\Admin::where('role', \App\Models\Admin::ROLE_PENDAMPING_PATEN)
+            ->where('is_active', true)
+            ->withCount(['assignedPatenSubmissions as active_paten_count' => function ($query) {
+                $query->whereIn('status', [
+                    SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW,
+                    SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW
+                ]);
+            }])
+            ->orderBy('name')
+            ->get(['id', 'name', 'nip_nidn_nidk_nim', 'fakultas', 'program_studi']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $pendampingPatenList
+        ]);
     }
 }
