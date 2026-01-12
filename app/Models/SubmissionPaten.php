@@ -101,6 +101,14 @@ class SubmissionPaten extends Model
     }
 
     /**
+     * Relationship to SubmissionPatenHistory
+     */
+    public function histories()
+    {
+        return $this->hasMany(SubmissionPatenHistory::class)->orderBy('created_at', 'asc');
+    }
+
+    /**
      * Alias for biodataPaten (for consistency)
      */
     public function biodata()
