@@ -129,28 +129,36 @@ use Illuminate\Support\Facades\Storage;
             <div class="flex items-center justify-between relative">
                 <!-- Progress Line -->
                 @php
+                    use App\Models\SubmissionPaten;
+                    
                     $biodata = $submissionPaten->biodataPaten;
                     $docSubmitted = $biodata && $biodata->document_submitted;
                     $readyForSigning = $biodata && $biodata->ready_for_signing;
                     $bStatus = $submissionPaten->biodata_status;
                     $isBRejected = $bStatus === 'rejected' || $bStatus === 'denied';
                     
-                    // Calculate progress percentage (0%, 25%, 50%, 75%, 100%)
-                    $progressWidth = '25%'; // Default: Upload done
+                    // Calculate progress percentage for 6 steps (0%, 20%, 40%, 60%, 80%, 100%)
+                    $progressWidth = '20%'; // Default: Upload done
                     if ($readyForSigning) {
-                        $progressWidth = '100%'; // Dokumen siap ditandatangani
+                        $progressWidth = '100%'; // Step 6: Dokumen siap ditandatangani
                     } elseif ($docSubmitted) {
-                        $progressWidth = '75%'; // Berkas disetor
+                        $progressWidth = '80%'; // Step 5: Berkas disetor
                     } elseif ($bStatus == 'approved') {
-                        $progressWidth = '50%'; // Biodata approved
-                    } elseif ($submissionPaten->status == 'approved') {
-                        $progressWidth = '37.5%'; // Dokumen approved
-                    } elseif ($submissionPaten->status == 'rejected') {
-                        $progressWidth = '25%'; // Ditolak di review
+                        $progressWidth = '60%'; // Step 4: Biodata approved
+                    } elseif ($submissionPaten->status == SubmissionPaten::STATUS_APPROVED_SUBSTANCE) {
+                        $progressWidth = '60%'; // Substansi approved, lanjut biodata
+                    } elseif ($submissionPaten->status == SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW) {
+                        $progressWidth = '40%'; // Substansi ditolak
+                    } elseif ($submissionPaten->status == SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW) {
+                        $progressWidth = '40%'; // Step 3: Pending review substansi
+                    } elseif ($submissionPaten->status == SubmissionPaten::STATUS_APPROVED_FORMAT) {
+                        $progressWidth = '40%'; // Format approved, siap review substansi
+                    } elseif ($submissionPaten->status == SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW) {
+                        $progressWidth = '20%'; // Format ditolak
                     }
                 @endphp
                 <div class="absolute top-5 left-0 right-0 h-1 bg-gray-200 rounded-full z-0">
-                    <div class="h-full bg-gradient-to-r from-blue-500 to-green-500 rounded-full transition-all duration-500" 
+                    <div class="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 rounded-full transition-all duration-500" 
                          style="width: {{ $progressWidth }}"></div>
                 </div>
 
@@ -164,45 +172,81 @@ use Illuminate\Support\Facades\Storage;
                     </span>
                 </div>
 
-                <!-- Step 2: Review Dokumen -->
+                <!-- Step 2: Review Format (Admin Paten) -->
+                @php
+                    $formatApproved = in_array($submissionPaten->status, [
+                        SubmissionPaten::STATUS_APPROVED_FORMAT,
+                        SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW,
+                        SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW,
+                        SubmissionPaten::STATUS_APPROVED_SUBSTANCE
+                    ]);
+                    $formatRejected = $submissionPaten->status == SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW;
+                    $formatPending = $submissionPaten->status == SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW;
+                @endphp
                 <div class="relative z-10 flex flex-col items-center">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $submissionPaten->status == 'approved' ? 'bg-green-500 border-green-500' : ($submissionPaten->status == 'rejected' ? 'bg-red-500 border-red-500' : ($submissionPaten->status == 'pending' ? 'bg-yellow-500 border-yellow-500' : 'bg-gray-200 border-gray-300')) }}">
-                        @if($submissionPaten->status == 'approved')
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $formatApproved ? 'bg-green-500 border-green-500' : ($formatRejected ? 'bg-red-500 border-red-500' : ($formatPending ? 'bg-yellow-500 border-yellow-500' : 'bg-gray-200 border-gray-300')) }}">
+                        @if($formatApproved)
                             <i class="fas fa-check text-white"></i>
-                        @elseif($submissionPaten->status == 'rejected')
+                        @elseif($formatRejected)
                             <i class="fas fa-times text-white"></i>
-                        @elseif($submissionPaten->status == 'pending')
+                        @elseif($formatPending)
                             <i class="fas fa-clock text-white"></i>
                         @else
-                            <i class="fas fa-gavel text-gray-400"></i>
+                            <i class="fas fa-file-alt text-gray-400"></i>
                         @endif
                     </div>
-                    <span class="mt-2 text-xs text-center font-medium {{ $submissionPaten->status == 'approved' ? 'text-green-600' : ($submissionPaten->status == 'rejected' ? 'text-red-600' : ($submissionPaten->status == 'pending' ? 'text-yellow-600' : 'text-gray-400')) }}">
-                        Review<br>Dokumen
+                    <span class="mt-2 text-xs text-center font-medium {{ $formatApproved ? 'text-green-600' : ($formatRejected ? 'text-red-600' : ($formatPending ? 'text-yellow-600' : 'text-gray-400')) }}">
+                        Review<br>Format
                     </span>
                 </div>
 
-                <!-- Step 3: Upload Biodata -->
+                <!-- Step 3: Review Substansi (Pendamping Paten) -->
+                @php
+                    $substanceApproved = $submissionPaten->status == SubmissionPaten::STATUS_APPROVED_SUBSTANCE;
+                    $substanceRejected = $submissionPaten->status == SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW;
+                    $substancePending = $submissionPaten->status == SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW;
+                    $substanceReady = $submissionPaten->status == SubmissionPaten::STATUS_APPROVED_FORMAT;
+                @endphp
                 <div class="relative z-10 flex flex-col items-center">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $bStatus == 'approved' || $isBRejected || $bStatus == 'pending' ? ($bStatus == 'approved' ? 'bg-green-500 border-green-500' : ($isBRejected ? 'bg-red-500 border-red-500' : 'bg-yellow-500 border-yellow-500')) : ($submissionPaten->status == 'approved' ? 'bg-blue-500 border-blue-500' : 'bg-gray-200 border-gray-300') }}">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $substanceApproved ? 'bg-green-500 border-green-500' : ($substanceRejected ? 'bg-orange-500 border-orange-500' : ($substancePending ? 'bg-blue-500 border-blue-500' : ($substanceReady ? 'bg-purple-500 border-purple-500' : 'bg-gray-200 border-gray-300'))) }}">
+                        @if($substanceApproved)
+                            <i class="fas fa-check text-white"></i>
+                        @elseif($substanceRejected)
+                            <i class="fas fa-times text-white"></i>
+                        @elseif($substancePending)
+                            <i class="fas fa-clock text-white"></i>
+                        @elseif($substanceReady)
+                            <i class="fas fa-user-tie text-white"></i>
+                        @else
+                            <i class="fas fa-microscope text-gray-400"></i>
+                        @endif
+                    </div>
+                    <span class="mt-2 text-xs text-center font-medium {{ $substanceApproved ? 'text-green-600' : ($substanceRejected ? 'text-orange-600' : ($substancePending ? 'text-blue-600' : ($substanceReady ? 'text-purple-600' : 'text-gray-400'))) }}">
+                        Review<br>Substansi
+                    </span>
+                </div>
+
+                <!-- Step 4: Upload Biodata -->
+                <div class="relative z-10 flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $bStatus == 'approved' || $isBRejected || $bStatus == 'pending' ? ($bStatus == 'approved' ? 'bg-green-500 border-green-500' : ($isBRejected ? 'bg-red-500 border-red-500' : 'bg-yellow-500 border-yellow-500')) : ($substanceApproved ? 'bg-blue-500 border-blue-500' : 'bg-gray-200 border-gray-300') }}">
                         @if($bStatus == 'approved')
                             <i class="fas fa-check text-white"></i>
                         @elseif($isBRejected)
                             <i class="fas fa-times text-white"></i>
                         @elseif($bStatus == 'pending')
                             <i class="fas fa-clock text-white"></i>
-                        @elseif($submissionPaten->status == 'approved')
+                        @elseif($substanceApproved)
                             <i class="fas fa-user-plus text-white"></i>
                         @else
                             <i class="fas fa-user-plus text-gray-400"></i>
                         @endif
                     </div>
-                    <span class="mt-2 text-xs text-center font-medium {{ $bStatus == 'approved' ? 'text-green-600' : ($isBRejected ? 'text-red-600' : ($bStatus == 'pending' ? 'text-yellow-600' : ($submissionPaten->status == 'approved' ? 'text-blue-600' : 'text-gray-400'))) }}">
+                    <span class="mt-2 text-xs text-center font-medium {{ $bStatus == 'approved' ? 'text-green-600' : ($isBRejected ? 'text-red-600' : ($bStatus == 'pending' ? 'text-yellow-600' : ($substanceApproved ? 'text-blue-600' : 'text-gray-400'))) }}">
                         Upload<br>Biodata
                     </span>
                 </div>
 
-                <!-- Step 4: Setor Berkas -->
+                <!-- Step 5: Setor Berkas -->
                 <div class="relative z-10 flex flex-col items-center">
                     <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $docSubmitted ? 'bg-green-500 border-green-500' : ($bStatus == 'approved' ? 'bg-blue-500 border-blue-500' : 'bg-gray-200 border-gray-300') }}">
                         @if($docSubmitted)
@@ -218,7 +262,7 @@ use Illuminate\Support\Facades\Storage;
                     </span>
                 </div>
 
-                <!-- Step 5: Selesai -->
+                <!-- Step 6: Selesai -->
                 <div class="relative z-10 flex flex-col items-center">
                     <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $readyForSigning ? 'bg-green-500 border-green-500' : 'bg-gray-200 border-gray-300' }}">
                         <i class="fas fa-file-signature {{ $readyForSigning ? 'text-white' : 'text-gray-400' }}"></i>
@@ -231,13 +275,6 @@ use Illuminate\Support\Facades\Storage;
 
             <!-- Progress Description -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-                @php
-                    $biodata = $submissionPaten->biodataPaten;
-                    $docSubmitted = $biodata && $biodata->document_submitted;
-                    $readyForSigning = $biodata && $biodata->ready_for_signing;
-                    $bStatus = $submissionPaten->biodata_status;
-                    $isBRejected = $bStatus === 'rejected' || $bStatus === 'denied';
-                @endphp
                 @if($readyForSigning)
                     <p class="text-sm text-green-700 font-medium">
                         <i class="fas fa-check-circle mr-2"></i>Pengajuan Paten Anda telah selesai! Dokumen siap untuk ditandatangani.
@@ -258,17 +295,29 @@ use Illuminate\Support\Facades\Storage;
                     <p class="text-sm text-yellow-700 font-medium">
                         <i class="fas fa-clock mr-2"></i>Biodata sedang direview oleh admin.
                     </p>
-                @elseif($submissionPaten->status == 'approved')
+                @elseif($submissionPaten->status == SubmissionPaten::STATUS_APPROVED_SUBSTANCE)
                     <p class="text-sm text-blue-700 font-medium">
-                        <i class="fas fa-arrow-right mr-2"></i>Dokumen disetujui! Silakan upload biodata untuk melanjutkan.
+                        <i class="fas fa-arrow-right mr-2"></i>Substansi paten disetujui oleh Pendamping Paten! Silakan upload biodata untuk melanjutkan.
                     </p>
-                @elseif($submissionPaten->status == 'rejected')
+                @elseif($submissionPaten->status == SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW)
+                    <p class="text-sm text-orange-700 font-medium">
+                        <i class="fas fa-times-circle mr-2"></i>Substansi paten ditolak oleh Pendamping Paten. Perbaiki dan upload ulang dokumen.
+                    </p>
+                @elseif($submissionPaten->status == SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW)
+                    <p class="text-sm text-blue-700 font-medium">
+                        <i class="fas fa-user-tie mr-2"></i>Dokumen sedang direview substansi oleh Pendamping Paten.
+                    </p>
+                @elseif($submissionPaten->status == SubmissionPaten::STATUS_APPROVED_FORMAT)
+                    <p class="text-sm text-purple-700 font-medium">
+                        <i class="fas fa-hourglass-half mr-2"></i>Format dokumen disetujui. Menunggu penugasan Pendamping Paten untuk review substansi.
+                    </p>
+                @elseif($submissionPaten->status == SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW)
                     <p class="text-sm text-red-700 font-medium">
-                        <i class="fas fa-times-circle mr-2"></i>Dokumen ditolak. Perbaiki dan upload ulang dokumen.
+                        <i class="fas fa-times-circle mr-2"></i>Format dokumen ditolak. Perbaiki dan upload ulang dokumen.
                     </p>
                 @else
                     <p class="text-sm text-yellow-700 font-medium">
-                        <i class="fas fa-hourglass-half mr-2"></i>Dokumen sedang direview oleh admin.
+                        <i class="fas fa-hourglass-half mr-2"></i>Dokumen sedang direview format oleh admin.
                     </p>
                 @endif
             </div>
@@ -309,17 +358,29 @@ use Illuminate\Support\Facades\Storage;
 
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Status</label>
-                            @if($submissionPaten->status == 'pending')
+                            @if($submissionPaten->status == SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW)
                                 <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-yellow-100 text-yellow-800">
-                                    <i class="fas fa-clock mr-1"></i>Menunggu Review
+                                    <i class="fas fa-clock mr-1"></i>Menunggu Review Format
                                 </span>
-                            @elseif($submissionPaten->status == 'approved')
-                                <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
-                                    <i class="fas fa-check-circle mr-1"></i>Disetujui
-                                </span>
-                            @else
+                            @elseif($submissionPaten->status == SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW)
                                 <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-red-100 text-red-800">
-                                    <i class="fas fa-times-circle mr-1"></i>Ditolak
+                                    <i class="fas fa-times-circle mr-1"></i>Format Ditolak
+                                </span>
+                            @elseif($submissionPaten->status == SubmissionPaten::STATUS_APPROVED_FORMAT)
+                                <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-purple-100 text-purple-800">
+                                    <i class="fas fa-check-circle mr-1"></i>Format Disetujui - Menunggu Penugasan
+                                </span>
+                            @elseif($submissionPaten->status == SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW)
+                                <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-800">
+                                    <i class="fas fa-microscope mr-1"></i>Review Substansi Berlangsung
+                                </span>
+                            @elseif($submissionPaten->status == SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW)
+                                <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-orange-100 text-orange-800">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>Substansi Ditolak
+                                </span>
+                            @elseif($submissionPaten->status == SubmissionPaten::STATUS_APPROVED_SUBSTANCE)
+                                <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800">
+                                    <i class="fas fa-check-double mr-1"></i>Substansi Disetujui
                                 </span>
                             @endif
                         </div>
@@ -338,7 +399,7 @@ use Illuminate\Support\Facades\Storage;
 
                         @if($submissionPaten->reviewedByAdmin)
                         <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Direview oleh</label>
+                            <label class="block text-sm font-medium text-gray-500 mb-1">Direview Format oleh</label>
                             <p class="text-gray-900">{{ $submissionPaten->reviewedByAdmin->name }}</p>
                         </div>
                         @endif
@@ -411,8 +472,159 @@ use Illuminate\Support\Facades\Storage;
                     </div>
                 </div>
 
+                <!-- Substance Review Notes Section -->
+                @if($submissionPaten->status == SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW && $submissionPaten->substance_review_notes)
+                    <div class="mt-6 bg-orange-50 border-2 border-orange-200 rounded-lg p-5">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-microscope text-orange-600"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <h4 class="text-base font-semibold text-orange-900 mb-2">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>Catatan Review Substansi dari Pendamping Paten
+                                </h4>
+                                <div class="bg-white border border-orange-200 rounded-lg p-4 mb-4">
+                                    <p class="text-sm text-gray-800 whitespace-pre-line">{{ $submissionPaten->substance_review_notes }}</p>
+                                </div>
+                                
+                                @if($submissionPaten->substance_review_file)
+                                    <div class="bg-white border border-orange-200 rounded-lg p-3">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-file-word text-blue-600 text-xl mr-3"></i>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-900">File Review dari Pendamping Paten</p>
+                                                    <p class="text-xs text-gray-600">Catatan koreksi substansi</p>
+                                                </div>
+                                            </div>
+                                            <a href="{{ Storage::disk('public')->url($submissionPaten->substance_review_file) }}" 
+                                               download
+                                               class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200 shadow-sm hover:shadow-md">
+                                                <i class="fas fa-download mr-2"></i>Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <div class="mt-4 p-3 bg-orange-100 border border-orange-300 rounded-lg">
+                                    <p class="text-sm text-orange-800">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Silakan perbaiki substansi paten sesuai catatan di atas, kemudian upload ulang dokumen di bagian bawah.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Revision Form for Substance Review -->
+                        <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <h4 class="text-sm font-semibold text-yellow-800 mb-3">
+                                <i class="fas fa-redo mr-1"></i>Revisi Substansi Paten
+                            </h4>
+                            <p class="text-sm text-yellow-700 mb-4">Anda dapat mengunggah ulang dokumen substansi yang telah diperbaiki sesuai catatan review.</p>
+                            
+                            <form method="POST" action="{{ route('user.submissions-paten.resubmit-substance', $submissionPaten) }}" enctype="multipart/form-data" class="space-y-4">
+                                @csrf
+                                
+                                <div>
+                                    <label for="judul_paten_substance" class="block text-sm font-medium text-gray-700 mb-1">Judul Karya (dapat diubah)</label>
+                                    <input 
+                                        type="text" 
+                                        id="judul_paten_substance" 
+                                        name="judul_paten" 
+                                        value="{{ old('judul_paten', $submissionPaten->judul_paten) }}"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        required
+                                    >
+                                </div>
+
+                                <div>
+                                    <label for="kategori_paten_substance" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                                    <select 
+                                        id="kategori_paten_substance" 
+                                        name="kategori_paten"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        required
+                                    >
+                                        <option value="Paten" {{ old('kategori_paten', $submissionPaten->kategori_paten) == 'Paten' ? 'selected' : '' }}>Paten</option>
+                                        <option value="Paten Sederhana" {{ old('kategori_paten', $submissionPaten->kategori_paten) == 'Paten Sederhana' ? 'selected' : '' }}>Paten Sederhana</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="creator_name_substance" class="block text-sm font-medium text-gray-700 mb-1">Nama Inventor Pertama</label>
+                                    <input 
+                                        type="text" 
+                                        id="creator_name_substance" 
+                                        name="creator_name" 
+                                        value="{{ old('creator_name', $submissionPaten->creator_name) }}"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        required
+                                    >
+                                </div>
+
+                                <div>
+                                    <label for="creator_whatsapp_substance" class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp Inventor Pertama</label>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div class="col-span-1">
+                                            <select 
+                                                id="creator_country_code_substance" 
+                                                name="creator_country_code"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+                                                required
+                                            >
+                                                @foreach(getCountryCodes() as $code => $label)
+                                                    <option value="{{ $code }}" {{ old('creator_country_code', $submissionPaten->creator_country_code ?? '+62') == $code ? 'selected' : '' }}>
+                                                        {{ $label }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-span-2">
+                                            <input 
+                                                type="text" 
+                                                id="creator_whatsapp_substance" 
+                                                name="creator_whatsapp" 
+                                                value="{{ old('creator_whatsapp', $submissionPaten->creator_whatsapp) }}"
+                                                placeholder="081234567890"
+                                                pattern="^0[0-9]{8,13}$"
+                                                title="Nomor harus dimulai dengan 0 dan berisi 9-14 digit"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="file_paten_substance" class="block text-sm font-medium text-gray-700 mb-1">Upload Dokumen Paten Baru</label>
+                                    <div class="mt-1 flex items-center">
+                                        <input 
+                                            type="file" 
+                                            id="file_paten_substance" 
+                                            name="file_paten" 
+                                            accept=".docx"
+                                            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                            required
+                                        >
+                                    </div>
+                                    <p class="mt-1 text-xs text-gray-500">Format: .docx (max 5MB)</p>
+                                </div>
+
+                                <button 
+                                    type="submit"
+                                    class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200"
+                                >
+                                    <i class="fas fa-upload mr-2"></i>Upload Ulang Substansi
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Biodata Management Section -->
-                @if($submissionPaten->status == 'approved')
+                @if($submissionPaten->status == SubmissionPaten::STATUS_APPROVED_SUBSTANCE)
                     @if($submissionPaten->biodataPaten)
                         <!-- Biodata exists - show biodata status and actions -->
                         <div class="mt-6 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
@@ -830,7 +1042,7 @@ use Illuminate\Support\Facades\Storage;
         </div>
 
         <!-- Floating Next Button -->
-        @if($submissionPaten->status == 'approved' && !$submissionPaten->biodataPaten)
+        @if($submissionPaten->status == SubmissionPaten::STATUS_APPROVED_SUBSTANCE && !$submissionPaten->biodataPaten)
         <div class="fixed bottom-6 right-6 z-50">
             <a href="{{ route('user.biodata-paten.create', $submissionPaten) }}" 
                class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition duration-200 transform hover:scale-105">
