@@ -45,5 +45,44 @@ class AdminSeeder extends Seeder
                 'role' => Admin::ROLE_ADMIN_HAKCIPTA,
             ]
         );
+
+        // Pendamping Paten 1 - Fakultas Teknik
+        Admin::firstOrCreate(
+            ['nip_nidn_nidk_nim' => 'pendamping001'],
+            [
+                'name' => 'Dr. Niswar.',
+                'phone_number' => '081234567893',
+                'password' => Hash::make('pendamping123'),
+                'role' => Admin::ROLE_PENDAMPING_PATEN,
+                'fakultas' => 'Fakultas Teknik',
+                'program_studi' => 'Teknik Elektro',
+            ]
+        );
+
+        // Pendamping Paten 2 - Fakultas MIPA
+        Admin::firstOrCreate(
+            ['nip_nidn_nidk_nim' => 'pendamping002'],
+            [
+                'name' => 'Prof. Dr. Siti Aminah, M.Si.',
+                'phone_number' => '081234567894',
+                'password' => Hash::make('pendamping123'),
+                'role' => Admin::ROLE_PENDAMPING_PATEN,
+                'fakultas' => 'Fakultas Matematika dan Ilmu Pengetahuan Alam',
+                'program_studi' => 'Kimia',
+            ]
+        );
+
+        // Pendamping Paten 3 - Fakultas Kedokteran
+        Admin::firstOrCreate(
+            ['nip_nidn_nidk_nim' => 'pendamping003'],
+            [
+                'name' => 'Dr. Ir. Budi Santoso, M.Eng.',
+                'phone_number' => '081234567895',
+                'password' => Hash::make('pendamping123'),
+                'role' => Admin::ROLE_PENDAMPING_PATEN,
+                'fakultas' => 'Fakultas Kedokteran',
+                'program_studi' => 'Farmasi',
+            ]
+        );
     }
 }
