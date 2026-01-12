@@ -1041,6 +1041,9 @@ use Illuminate\Support\Facades\Storage;
             </div>
         </div>
 
+        <!-- Riwayat Review -->
+        @include('user.submissions-paten.partials.history-section')
+
         <!-- Floating Next Button -->
         @if($submissionPaten->status == SubmissionPaten::STATUS_APPROVED_SUBSTANCE && !$submissionPaten->biodataPaten)
         <div class="fixed bottom-6 right-6 z-50">
