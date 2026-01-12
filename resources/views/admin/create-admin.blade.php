@@ -74,158 +74,226 @@
                             <form method="POST" action="{{ route('admin.store') }}" class="space-y-6">
                                 @csrf
                                 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class="fas fa-user mr-2 text-gray-400"></i>Nama Lengkap
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            id="name" 
-                                            name="name" 
-                                            value="{{ old('name') }}"
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200"
-                                            placeholder="Masukkan nama lengkap"
-                                            required
-                                        >
-                                    </div>
-
-                                    <div>
-                                        <label for="nip_nidn_nidk_nim" class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class="fas fa-id-card mr-2 text-gray-400"></i>NIP/NIDN/NIDK/NIM
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            id="nip_nidn_nidk_nim" 
-                                            name="nip_nidn_nidk_nim" 
-                                            value="{{ old('nip_nidn_nidk_nim') }}"
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200"
-                                            placeholder="Masukkan NIP/NIDN/NIDK/NIM"
-                                            required
-                                        >
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <div class="sm:col-span-1">
-                                        <label for="country_code" class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class="fas fa-globe mr-2 text-gray-400"></i>Kode Negara
-                                        </label>
-                                        <select 
-                                            id="country_code" 
-                                            name="country_code"
-                                            class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200 text-sm"
-                                            required
-                                        >
-                                            @foreach(getCountryCodes() as $code => $label)
-                                                <option value="{{ $code }}" {{ old('country_code', '+62') == $code ? 'selected' : '' }}>
-                                                    {{ $label }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="sm:col-span-2">
-                                        <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class="fas fa-phone mr-2 text-gray-400"></i>Nomor WhatsApp
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            id="phone_number" 
-                                            name="phone_number" 
-                                            value="{{ old('phone_number') }}"
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200"
-                                            placeholder="08123456789"
-                                            pattern="^0[0-9]{8,13}$"
-                                            title="Nomor harus dimulai dengan 0 dan berisi 9-14 digit"
-                                            required
-                                        >
-                                        <p class="text-xs text-gray-500 mt-1">Masukkan nomor dengan format 0xxxxxxxx</p>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-user-tag mr-2 text-gray-400"></i>Role / Peran Admin
+                                <!-- Role Selection - FIRST -->
+                                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-lg p-6">
+                                    <label for="role" class="block text-sm font-medium text-gray-900 mb-2">
+                                        <i class="fas fa-user-tag mr-2 text-indigo-600"></i>Role / Peran Admin
+                                        <span class="text-red-500">*</span>
                                     </label>
                                     <select 
                                         id="role" 
                                         name="role"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200"
+                                        class="w-full px-4 py-3 border-2 border-indigo-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-30 transition duration-200 bg-white font-medium"
                                         required
                                     >
+                                        <option value="">-- Pilih Role / Peran Admin --</option>
                                         @foreach(\App\Models\Admin::getRoles() as $roleValue => $roleLabel)
-                                            <option value="{{ $roleValue }}" {{ old('role', 'super_admin') == $roleValue ? 'selected' : '' }}>
+                                            <option value="{{ $roleValue }}" {{ old('role') == $roleValue ? 'selected' : '' }}>
                                                 {{ $roleLabel }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    <p class="text-xs text-gray-500 mt-1">
-                                        Super Admin: Akses penuh | Admin HKI: Paten + Hak Cipta | Admin Paten: Paten saja | Admin Hak Cipta: Hak Cipta + Jenis Karya
-                                    </p>
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class="fas fa-lock mr-2 text-gray-400"></i>Password
-                                        </label>
-                                        <div class="relative">
-                                            <input 
-                                                type="password" 
-                                                id="password" 
-                                                name="password"
-                                                class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200"
-                                                placeholder="••••••••"
-                                                required
-                                            >
-                                            <button 
-                                                type="button" 
-                                                class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 transition duration-200"
-                                                onclick="togglePasswordVisibility('password', 'eyeIconPassword')"
-                                            >
-                                                <i id="eyeIconPassword" class="fas fa-eye"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class="fas fa-lock mr-2 text-gray-400"></i>Konfirmasi Password
-                                        </label>
-                                        <div class="relative">
-                                            <input 
-                                                type="password" 
-                                                id="password_confirmation" 
-                                                name="password_confirmation"
-                                                class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200"
-                                                placeholder="••••••••"
-                                                required
-                                            >
-                                            <button 
-                                                type="button" 
-                                                class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 transition duration-200"
-                                                onclick="togglePasswordVisibility('password_confirmation', 'eyeIconPasswordConfirm')"
-                                            >
-                                                <i id="eyeIconPasswordConfirm" class="fas fa-eye"></i>
-                                            </button>
-                                        </div>
+                                <!-- Notice: Select Role First -->
+                                <div id="selectRoleNotice" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-exclamation-triangle text-yellow-500 mr-3 text-xl"></i>
+                                        <p class="text-sm text-yellow-800 font-medium">
+                                            Silakan pilih Role / Peran Admin terlebih dahulu untuk melanjutkan pengisian form
+                                        </p>
                                     </div>
                                 </div>
 
-                                <!-- Info Box -->
-                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                    <div class="flex">
-                                        <div class="flex-shrink-0">
-                                            <i class="fas fa-info-circle text-blue-400"></i>
+                                <!-- Main Form Fields (Initially Disabled) -->
+                                <div id="mainFormFields" class="space-y-6 opacity-50 pointer-events-none">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-user mr-2 text-gray-400"></i>Nama Lengkap
+                                                <span class="text-red-500">*</span>
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                id="name" 
+                                                name="name" 
+                                                value="{{ old('name') }}"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200"
+                                                placeholder="Masukkan nama lengkap"
+                                                disabled
+                                                required
+                                            >
                                         </div>
-                                        <div class="ml-3">
-                                            <h3 class="text-sm font-medium text-blue-800">Informasi Admin</h3>
-                                            <div class="mt-2 text-sm text-blue-700">
-                                                <ul class="list-disc list-inside space-y-1">
-                                                    <li>Admin yang dibuat akan memiliki akses penuh ke sistem</li>
-                                                    <li>Pastikan data yang dimasukkan sudah benar dan valid</li>
-                                                    <li>Password minimal 8 karakter untuk keamanan</li>
-                                                </ul>
+
+                                        <div>
+                                            <label for="nip_nidn_nidk_nim" class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-id-card mr-2 text-gray-400"></i>NIP/NIDN/NIDK/NIM
+                                                <span class="text-red-500">*</span>
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                id="nip_nidn_nidk_nim" 
+                                                name="nip_nidn_nidk_nim" 
+                                                value="{{ old('nip_nidn_nidk_nim') }}"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200"
+                                                placeholder="Masukkan NIP/NIDN/NIDK/NIM"
+                                                disabled
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div class="sm:col-span-1">
+                                            <label for="country_code" class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-globe mr-2 text-gray-400"></i>Kode Negara
+                                                <span class="text-red-500">*</span>
+                                            </label>
+                                            <select 
+                                                id="country_code" 
+                                                name="country_code"
+                                                class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200 text-sm"
+                                                disabled
+                                                required
+                                            >
+                                                @foreach(getCountryCodes() as $code => $label)
+                                                    <option value="{{ $code }}" {{ old('country_code', '+62') == $code ? 'selected' : '' }}>
+                                                        {{ $label }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="sm:col-span-2">
+                                            <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-phone mr-2 text-gray-400"></i>Nomor WhatsApp
+                                                <span class="text-red-500">*</span>
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                id="phone_number" 
+                                                name="phone_number" 
+                                                value="{{ old('phone_number') }}"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200"
+                                                placeholder="08123456789"
+                                                pattern="^0[0-9]{8,13}$"
+                                                title="Nomor harus dimulai dengan 0 dan berisi 9-14 digit"
+                                                disabled
+                                                required
+                                            >
+                                            <p class="text-xs text-gray-500 mt-1">Masukkan nomor dengan format 0xxxxxxxx</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Pendamping Paten Fields (Conditional) -->
+                                    <div id="pendampingPatenFields" class="space-y-6 hidden">
+                                        <div class="bg-purple-50 border-2 border-purple-300 rounded-lg p-6">
+                                            <h4 class="text-sm font-medium text-purple-900 mb-4 flex items-center">
+                                                <i class="fas fa-user-tie mr-2 text-lg"></i>
+                                                Informasi Khusus Pendamping Paten
+                                            </h4>
+                                            
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label for="fakultas" class="block text-sm font-medium text-gray-700 mb-2">
+                                                        <i class="fas fa-university mr-2 text-gray-400"></i>Fakultas <span class="text-red-500">*</span>
+                                                    </label>
+                                                    <select 
+                                                        id="fakultas" 
+                                                        name="fakultas"
+                                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-20 transition duration-200"
+                                                    >
+                                                        <option value="">-- Pilih Fakultas --</option>
+                                                    </select>
+                                                    <p id="loadingFakultas" class="text-xs text-gray-500 mt-1">
+                                                        <i class="fas fa-spinner fa-spin mr-1"></i>Memuat daftar fakultas...
+                                                    </p>
+                                                </div>
+
+                                                <div>
+                                                    <label for="program_studi" class="block text-sm font-medium text-gray-700 mb-2">
+                                                        <i class="fas fa-graduation-cap mr-2 text-gray-400"></i>Program Studi <span class="text-red-500">*</span>
+                                                    </label>
+                                                    <select 
+                                                        id="program_studi" 
+                                                        name="program_studi"
+                                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-20 transition duration-200"
+                                                        disabled
+                                                    >
+                                                        <option value="">-- Pilih Fakultas Terlebih Dahulu --</option>
+                                                    </select>
+                                                    <p class="text-xs text-gray-500 mt-1">Pilih fakultas terlebih dahulu</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-lock mr-2 text-gray-400"></i>Password
+                                                <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="relative">
+                                                <input 
+                                                    type="password" 
+                                                    id="password" 
+                                                    name="password"
+                                                    class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200"
+                                                    placeholder="••••••••"
+                                                    disabled
+                                                    required
+                                                >
+                                                <button 
+                                                    type="button" 
+                                                    class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 transition duration-200"
+                                                    onclick="togglePasswordVisibility('password', 'eyeIconPassword')"
+                                                >
+                                                    <i id="eyeIconPassword" class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-lock mr-2 text-gray-400"></i>Konfirmasi Password
+                                                <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="relative">
+                                                <input 
+                                                    type="password" 
+                                                    id="password_confirmation" 
+                                                    name="password_confirmation"
+                                                    class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-20 transition duration-200"
+                                                    placeholder="••••••••"
+                                                    disabled
+                                                    required
+                                                >
+                                                <button 
+                                                    type="button" 
+                                                    class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 transition duration-200"
+                                                    onclick="togglePasswordVisibility('password_confirmation', 'eyeIconPasswordConfirm')"
+                                                >
+                                                    <i id="eyeIconPasswordConfirm" class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Info Box -->
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                        <div class="flex">
+                                            <div class="flex-shrink-0">
+                                                <i class="fas fa-info-circle text-blue-400"></i>
+                                            </div>
+                                            <div class="ml-3">
+                                                <h3 class="text-sm font-medium text-blue-800">Informasi Admin</h3>
+                                                <div class="mt-2 text-sm text-blue-700">
+                                                    <ul class="list-disc list-inside space-y-1">
+                                                        <li>Admin yang dibuat akan memiliki akses sesuai role yang dipilih</li>
+                                                        <li>Pastikan data yang dimasukkan sudah benar dan valid</li>
+                                                        <li>Password minimal 8 karakter untuk keamanan</li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -270,6 +338,175 @@
                 eyeIcon.classList.add('fa-eye');
             }
         }
+
+        // Main Form Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleSelect = document.getElementById('role');
+            const selectRoleNotice = document.getElementById('selectRoleNotice');
+            const mainFormFields = document.getElementById('mainFormFields');
+            const pendampingFields = document.getElementById('pendampingPatenFields');
+            const fakultasSelect = document.getElementById('fakultas');
+            const prodiSelect = document.getElementById('program_studi');
+            const loadingFakultas = document.getElementById('loadingFakultas');
+
+            // All input fields that should be disabled initially
+            const formInputs = [
+                document.getElementById('name'),
+                document.getElementById('nip_nidn_nidk_nim'),
+                document.getElementById('country_code'),
+                document.getElementById('phone_number'),
+                document.getElementById('password'),
+                document.getElementById('password_confirmation')
+            ];
+
+            // Enable/Disable form fields based on role selection
+            function toggleFormFields() {
+                const hasRole = roleSelect.value !== '';
+                
+                if (hasRole) {
+                    // Hide notice, enable form
+                    selectRoleNotice.classList.add('hidden');
+                    mainFormFields.classList.remove('opacity-50', 'pointer-events-none');
+                    
+                    // Enable all inputs
+                    formInputs.forEach(input => {
+                        if (input) input.removeAttribute('disabled');
+                    });
+                } else {
+                    // Show notice, disable form
+                    selectRoleNotice.classList.remove('hidden');
+                    mainFormFields.classList.add('opacity-50', 'pointer-events-none');
+                    
+                    // Disable all inputs
+                    formInputs.forEach(input => {
+                        if (input) input.setAttribute('disabled', 'disabled');
+                    });
+                }
+
+                // Handle Pendamping Paten specific fields
+                togglePendampingFields();
+            }
+
+            // Toggle Pendamping Paten fields based on role selection
+            function togglePendampingFields() {
+                if (roleSelect.value === 'pendamping_paten') {
+                    pendampingFields.classList.remove('hidden');
+                    fakultasSelect.setAttribute('required', 'required');
+                    prodiSelect.setAttribute('required', 'required');
+                    
+                    // Load fakultas list if not already loaded
+                    if (fakultasSelect.options.length <= 1) {
+                        loadFakultasList();
+                    }
+                } else {
+                    pendampingFields.classList.add('hidden');
+                    fakultasSelect.removeAttribute('required');
+                    prodiSelect.removeAttribute('required');
+                    fakultasSelect.value = '';
+                    prodiSelect.value = '';
+                }
+            }
+
+            // Load Fakultas List
+            function loadFakultasList() {
+                console.log('Loading fakultas list...');
+                fetch('{{ route("admin.api.fakultas-list") }}')
+                    .then(response => {
+                        console.log('Fakultas response:', response);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Fakultas data:', data);
+                        if (loadingFakultas) loadingFakultas.remove();
+                        
+                        if (data.success && data.data.length > 0) {
+                            console.log('Adding', data.data.length, 'fakultas options');
+                            data.data.forEach(fakultas => {
+                                const option = document.createElement('option');
+                                option.value = fakultas;
+                                option.textContent = fakultas;
+                                fakultasSelect.appendChild(option);
+                            });
+
+                            // Restore old value if exists
+                            const oldFakultas = '{{ old("fakultas") }}';
+                            if (oldFakultas) {
+                                fakultasSelect.value = oldFakultas;
+                                loadProgramStudiList(oldFakultas);
+                            }
+                        } else {
+                            console.warn('No fakultas data received');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading fakultas:', error);
+                        if (loadingFakultas) {
+                            loadingFakultas.textContent = '⚠️ Gagal memuat daftar fakultas';
+                            loadingFakultas.classList.add('text-red-500');
+                        }
+                    });
+            }
+
+            // Load Program Studi based on Fakultas
+            function loadProgramStudiList(fakultas) {
+                console.log('Loading program studi for fakultas:', fakultas);
+                if (!fakultas) {
+                    prodiSelect.disabled = true;
+                    prodiSelect.innerHTML = '<option value="">-- Pilih Fakultas Terlebih Dahulu --</option>';
+                    return;
+                }
+
+                prodiSelect.disabled = true;
+                prodiSelect.innerHTML = '<option value="">Memuat...</option>';
+
+                fetch('{{ route("admin.api.program-studi-list") }}?fakultas=' + encodeURIComponent(fakultas))
+                    .then(response => {
+                        console.log('Program studi response:', response);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Program studi data:', data);
+                        prodiSelect.innerHTML = '<option value="">-- Pilih Program Studi --</option>';
+                        
+                        if (data.success && data.data.length > 0) {
+                            console.log('Adding', data.data.length, 'program studi options');
+                            data.data.forEach(prodi => {
+                                const option = document.createElement('option');
+                                option.value = prodi;
+                                option.textContent = prodi;
+                                prodiSelect.appendChild(option);
+                            });
+                            prodiSelect.disabled = false;
+
+                            // Restore old value if exists
+                            const oldProdi = '{{ old("program_studi") }}';
+                            if (oldProdi) {
+                                prodiSelect.value = oldProdi;
+                            }
+                        } else {
+                            console.warn('No program studi data received');
+                            prodiSelect.innerHTML = '<option value="">Tidak ada program studi</option>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading program studi:', error);
+                        prodiSelect.innerHTML = '<option value="">Gagal memuat data</option>';
+                    });
+            }
+
+            // Event Listeners
+            roleSelect.addEventListener('change', toggleFormFields);
+            fakultasSelect.addEventListener('change', function() {
+                loadProgramStudiList(this.value);
+            });
+
+            // Initial state - check if role is already selected (from old() values)
+            const oldRole = '{{ old("role") }}';
+            if (oldRole) {
+                roleSelect.value = oldRole;
+            }
+            toggleFormFields();
+        });
     </script>
 </body>
 </html>
