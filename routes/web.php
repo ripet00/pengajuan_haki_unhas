@@ -19,6 +19,10 @@ Route::get('/', function () {
         return redirect('/users/dashboard');
     }
     if (session('admin_id')) {
+        $admin = \App\Models\Admin::find(session('admin_id'));
+        if ($admin && $admin->role === \App\Models\Admin::ROLE_PENDAMPING_PATEN) {
+            return redirect()->route('admin.pendamping-paten.dashboard');
+        }
         return redirect('/admin');
     }
     return redirect('/login');
@@ -70,6 +74,7 @@ Route::prefix('users')->middleware(['auth', 'check.user.status'])->group(functio
     Route::get('submissions-paten/{submissionPaten}', [UserSubmissionPatenController::class, 'show'])->name('user.submissions-paten.show');
     Route::get('submissions-paten/{submissionPaten}/download', [UserSubmissionPatenController::class, 'download'])->name('user.submissions-paten.download');
     Route::post('submissions-paten/{submissionPaten}/resubmit', [UserSubmissionPatenController::class, 'resubmit'])->middleware('file.upload')->name('user.submissions-paten.resubmit');
+    Route::post('submissions-paten/{submissionPaten}/resubmit-substance', [UserSubmissionPatenController::class, 'resubmitSubstance'])->middleware('file.upload')->name('user.submissions-paten.resubmit-substance');
     
     // Biodata Paten routes
     Route::get('submissions-paten/{submissionPaten}/biodata-paten/create', [App\Http\Controllers\User\BiodataPatenController::class, 'create'])->name('user.biodata-paten.create');
@@ -117,6 +122,9 @@ Route::prefix('admin')->group(function () {
             Route::get('/create-admin', [AdminController::class, 'createAdmin'])->name('admin.create');
             Route::post('/create-admin', [AdminController::class, 'storeAdmin'])->name('admin.store');
             Route::patch('/admins/{admin}/status', [AdminController::class, 'updateAdminStatus'])->name('admin.admins.update-status');
+            
+            // Pendamping Paten detail view - hanya super_admin
+            Route::get('/pendamping-paten/{admin}/detail', [\App\Http\Controllers\Admin\PendampingPatenController::class, 'detail'])->name('admin.pendamping-paten.detail');
         });
         
         // Hak Cipta routes - super_admin, admin_hakcipta
@@ -165,6 +173,8 @@ Route::prefix('admin')->group(function () {
             Route::get('submissions-paten/{submissionPaten}/download', [AdminSubmissionPatenController::class, 'download'])->name('admin.submissions-paten.download');
             Route::post('submissions-paten/{submissionPaten}/review', [AdminSubmissionPatenController::class, 'review'])->name('admin.submissions-paten.review');
             Route::post('submissions-paten/{submissionPaten}/update-review', [AdminSubmissionPatenController::class, 'updateReview'])->name('admin.submissions-paten.update-review');
+            Route::post('submissions-paten/{submissionPaten}/assign', [AdminSubmissionPatenController::class, 'assign'])->name('admin.submissions-paten.assign');
+            Route::get('api/pendamping-paten-list', [AdminSubmissionPatenController::class, 'getPendampingPatenList'])->name('admin.api.pendamping-paten-list');
             Route::delete('submissions-paten/{submissionPaten}', [AdminSubmissionPatenController::class, 'destroy'])->name('admin.submissions-paten.destroy');
 
             // Admin biodata paten routes  
@@ -179,6 +189,23 @@ Route::prefix('admin')->group(function () {
             Route::get('reports-paten', [\App\Http\Controllers\Admin\ReportPatenController::class, 'index'])->name('admin.reports-paten.index');
             Route::post('reports-paten/{biodataPaten}/mark-document-submitted', [\App\Http\Controllers\Admin\ReportPatenController::class, 'markDocumentSubmitted'])->name('admin.reports-paten.mark-document-submitted');
             Route::post('reports-paten/{biodataPaten}/mark-ready-for-signing', [\App\Http\Controllers\Admin\ReportPatenController::class, 'markReadyForSigning'])->name('admin.reports-paten.mark-ready-for-signing');
+        });
+        
+        // Pendamping Paten routes - super_admin, pendamping_paten
+        Route::middleware('admin.role:pendamping_paten')->group(function () {
+            // Dashboard Pendamping Paten
+            Route::get('pendamping-paten/dashboard', [\App\Http\Controllers\Admin\PendampingPatenController::class, 'dashboard'])->name('admin.pendamping-paten.dashboard');
+            
+            // Pendamping Paten submission routes
+            Route::get('pendamping-paten/submissions', [\App\Http\Controllers\Admin\PendampingPatenController::class, 'index'])->name('admin.pendamping-paten.index');
+            Route::get('pendamping-paten/submissions/{submissionPaten}', [\App\Http\Controllers\Admin\PendampingPatenController::class, 'show'])->name('admin.pendamping-paten.show');
+            Route::get('pendamping-paten/submissions/{submissionPaten}/download', [\App\Http\Controllers\Admin\PendampingPatenController::class, 'download'])->name('admin.pendamping-paten.download');
+            Route::post('pendamping-paten/submissions/{submissionPaten}/review', [\App\Http\Controllers\Admin\PendampingPatenController::class, 'reviewSubstance'])->name('admin.pendamping-paten.review');
+            Route::get('pendamping-paten/submissions/{submissionPaten}/download-review', [\App\Http\Controllers\Admin\PendampingPatenController::class, 'downloadSubstanceReview'])->name('admin.pendamping-paten.download-review');
+            
+            // API untuk dropdown fakultas dan program studi
+            Route::get('api/fakultas-list', [\App\Http\Controllers\Admin\PendampingPatenController::class, 'getFakultasList'])->name('admin.api.fakultas-list');
+            Route::get('api/program-studi-list', [\App\Http\Controllers\Admin\PendampingPatenController::class, 'getProgramStudiList'])->name('admin.api.program-studi-list');
         });
         
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
