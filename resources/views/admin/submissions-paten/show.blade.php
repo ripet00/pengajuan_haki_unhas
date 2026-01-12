@@ -59,7 +59,11 @@ use Illuminate\Support\Facades\Storage;
             Kembali ke Daftar Pengajuan Paten
         </a>
         
-        @if(in_array($submissionPaten->status, ['pending', 'rejected']) && !$submissionPaten->biodataPaten)
+        @if(in_array($submissionPaten->status, [
+            \App\Models\SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW,
+            \App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW,
+            \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW
+        ]) && !$submissionPaten->biodataPaten)
             <form method="POST" action="{{ route('admin.submissions-paten.destroy', $submissionPaten) }}" 
                   onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan paten ini? File dan data akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.');"
                   class="inline">
@@ -112,19 +116,22 @@ use Illuminate\Support\Facades\Storage;
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="font-medium text-gray-700">Status:</div>
                                 <div class="sm:col-span-2">
-                                    @if($submissionPaten->status == 'pending')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                                            <i class="fas fa-clock mr-1"></i>Menunggu Review
-                                        </span>
-                                    @elseif($submissionPaten->status == 'approved')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                            <i class="fas fa-check-circle mr-1"></i>Disetujui
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                                            <i class="fas fa-times-circle mr-1"></i>Ditolak
-                                        </span>
-                                    @endif
+                                    @php
+                                        $statusConfig = [
+                                            \App\Models\SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW => ['icon' => 'clock', 'color' => 'yellow', 'text' => 'Menunggu Review Format'],
+                                            \App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT => ['icon' => 'check-circle', 'color' => 'green', 'text' => 'Format Disetujui'],
+                                            \App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW => ['icon' => 'times-circle', 'color' => 'red', 'text' => 'Format Ditolak'],
+                                            \App\Models\SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW => ['icon' => 'hourglass-half', 'color' => 'blue', 'text' => 'Menunggu Review Substansi'],
+                                            \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE => ['icon' => 'check-double', 'color' => 'green', 'text' => 'Substansi Disetujui'],
+                                            \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW => ['icon' => 'exclamation-triangle', 'color' => 'red', 'text' => 'Substansi Ditolak'],
+                                        ];
+                                        
+                                        $status = $statusConfig[$submissionPaten->status] ?? ['icon' => 'question', 'color' => 'gray', 'text' => 'Status Tidak Diketahui'];
+                                    @endphp
+                                    
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-{{ $status['color'] }}-100 text-{{ $status['color'] }}-800">
+                                        <i class="fas fa-{{ $status['icon'] }} mr-1"></i>{{ $status['text'] }}
+                                    </span>
                                 </div>
                             </div>
 
@@ -244,7 +251,7 @@ use Illuminate\Support\Facades\Storage;
 
                 <!-- Review Panel -->
                 <div class="lg:col-span-1">
-                    @if($submissionPaten->status == 'pending')
+                    @if($submissionPaten->status == \App\Models\SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW)
                         <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg p-6 shadow-lg">
                             <h3 class="text-xl font-bold text-green-900 mb-4 flex items-center">
                                 <i class="fas fa-exclamation-circle mr-2 text-green-600 animate-pulse"></i>
@@ -253,17 +260,17 @@ use Illuminate\Support\Facades\Storage;
                             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
                                 <p class="text-yellow-800 font-medium text-sm">
                                     <i class="fas fa-info-circle mr-2"></i>
-                                    Pengajuan paten ini membutuhkan review Anda. Silakan periksa dokumen dan berikan keputusan.
+                                    Pengajuan paten ini membutuhkan review format. Silakan periksa dokumen dan berikan keputusan.
                                 </p>
                             </div>
                     @else
                         <div class="bg-gray-50 rounded-lg p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                                <i class="fas fa-gavel mr-2 text-green-600"></i>Panel Review
+                                <i class="fas fa-gavel mr-2 text-green-600"></i>Panel Review Format
                             </h3>
                     @endif
                         
-                        @if($submissionPaten->status == 'pending')
+                        @if($submissionPaten->status == \App\Models\SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW)
                             <form method="POST" action="{{ route('admin.submissions-paten.review', $submissionPaten) }}" enctype="multipart/form-data" class="space-y-4">
                                 @csrf
                                 
@@ -271,15 +278,15 @@ use Illuminate\Support\Facades\Storage;
                                     <label class="block text-sm font-medium text-gray-700 mb-3">Keputusan Review:</label>
                                     <div class="space-y-2">
                                         <label class="flex items-center">
-                                            <input type="radio" name="status" value="approved" required class="text-green-600 focus:ring-green-500 border-gray-300">
+                                            <input type="radio" name="status" value="approved_format" required class="text-green-600 focus:ring-green-500 border-gray-300">
                                             <span class="ml-2 text-green-700 font-medium">
-                                                <i class="fas fa-check-circle mr-1"></i>Setujui Pengajuan
+                                                <i class="fas fa-check-circle mr-1"></i>Setujui Format
                                             </span>
                                         </label>
                                         <label class="flex items-center">
-                                            <input type="radio" name="status" value="rejected" required class="text-red-600 focus:ring-red-500 border-gray-300">
+                                            <input type="radio" name="status" value="rejected_format_review" required class="text-red-600 focus:ring-red-500 border-gray-300">
                                             <span class="ml-2 text-red-700 font-medium">
-                                                <i class="fas fa-times-circle mr-1"></i>Tolak Pengajuan
+                                                <i class="fas fa-times-circle mr-1"></i>Tolak Format
                                             </span>
                                         </label>
                                     </div>
@@ -323,7 +330,7 @@ use Illuminate\Support\Facades\Storage;
                         @else
                             <div class="mb-6">
                                 <div class="text-center mb-4">
-                                    @if($submissionPaten->status == 'approved')
+                                    @if(in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT, \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE]))
                                         <i class="fas fa-check-circle text-green-500 text-3xl"></i>
                                         <h4 class="text-green-700 font-semibold mt-2">Status: Disetujui</h4>
                                     @else
@@ -332,7 +339,7 @@ use Illuminate\Support\Facades\Storage;
                                     @endif
                                     
                                     <div class="text-sm text-gray-600 mt-2">
-                                        Direview: {{ $submissionPaten->reviewed_at->format('d F Y, H:i') }} WITA
+                                        Direview: {{ $submissionPaten->reviewed_at ? $submissionPaten->reviewed_at->format('d F Y, H:i') . ' WITA' : '-' }}
                                         <br>
                                         oleh: {{ $submissionPaten->reviewedByAdmin->name ?? 'Admin' }}
                                     </div>
@@ -386,15 +393,15 @@ use Illuminate\Support\Facades\Storage;
                                                 <label class="block text-sm font-medium text-gray-700 mb-3">Ubah Keputusan:</label>
                                                 <div class="space-y-2">
                                                     <label class="flex items-center">
-                                                        <input type="radio" name="status" value="approved" {{ $submissionPaten->status == 'approved' ? 'checked' : '' }} required class="text-green-600 focus:ring-green-500 border-gray-300">
+                                                        <input type="radio" name="status" value="approved_format" {{ in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT, \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE]) ? 'checked' : '' }} required class="text-green-600 focus:ring-green-500 border-gray-300">
                                                         <span class="ml-2 text-green-700 font-medium">
-                                                            <i class="fas fa-check-circle mr-1"></i>Setujui Pengajuan
+                                                            <i class="fas fa-check-circle mr-1"></i>Setujui Format
                                                         </span>
                                                     </label>
                                                     <label class="flex items-center">
-                                                        <input type="radio" name="status" value="rejected" {{ $submissionPaten->status == 'rejected' ? 'checked' : '' }} required class="text-red-600 focus:ring-red-500 border-gray-300">
+                                                        <input type="radio" name="status" value="rejected_format_review" {{ in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW, \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW]) ? 'checked' : '' }} required class="text-red-600 focus:ring-red-500 border-gray-300">
                                                         <span class="ml-2 text-red-700 font-medium">
-                                                            <i class="fas fa-times-circle mr-1"></i>Tolak Pengajuan
+                                                            <i class="fas fa-times-circle mr-1"></i>Tolak Format
                                                         </span>
                                                     </label>
                                                 </div>
@@ -457,6 +464,143 @@ use Illuminate\Support\Facades\Storage;
                         @endif
                     </div>
 
+                    <!-- Assignment Panel - Show when status is approved_format -->
+                    @if($submissionPaten->status == \App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT)
+                        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-lg p-6 shadow-lg mt-6">
+                            <h3 class="text-xl font-bold text-purple-900 mb-4 flex items-center">
+                                <i class="fas fa-user-tie mr-2 text-purple-600"></i>
+                                Penugasan Pendamping Paten
+                            </h3>
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                                <p class="text-blue-800 font-medium text-sm">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    Format pengajuan sudah disetujui. Pilih Pendamping Paten untuk melakukan review substansi.
+                                </p>
+                            </div>
+
+                            @if($submissionPaten->pendampingPaten)
+                                <!-- Already Assigned -->
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-green-900 font-semibold text-sm">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                Ditugaskan kepada:
+                                            </p>
+                                            <p class="text-green-800 text-lg font-bold mt-1">{{ $submissionPaten->pendampingPaten->name }}</p>
+                                            <p class="text-green-700 text-xs mt-1">
+                                                <i class="fas fa-calendar mr-1"></i>
+                                                {{ $submissionPaten->assigned_at ? $submissionPaten->assigned_at->format('d F Y, H:i') . ' WITA' : '-' }}
+                                            </p>
+                                        </div>
+                                        <i class="fas fa-user-check text-green-500 text-3xl"></i>
+                                    </div>
+                                </div>
+                            @else
+                                <!-- Assignment Form -->
+                                <form id="assignForm" method="POST" action="{{ route('admin.submissions-paten.assign', $submissionPaten) }}" class="space-y-4">
+                                    @csrf
+                                    
+                                    <div>
+                                        <label for="pendamping_paten_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Pilih Pendamping Paten: <span class="text-red-500">*</span>
+                                        </label>
+                                        <select 
+                                            id="pendamping_paten_id" 
+                                            name="pendamping_paten_id" 
+                                            required
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                            <option value="">-- Pilih Pendamping Paten --</option>
+                                        </select>
+                                        <p id="loadingPendamping" class="mt-2 text-sm text-gray-500">
+                                            <i class="fas fa-spinner fa-spin mr-1"></i>Memuat daftar pendamping...
+                                        </p>
+                                    </div>
+
+                                    <div id="pendampingInfo" class="bg-gray-50 border border-gray-300 rounded-lg p-3 hidden">
+                                        <p class="text-xs font-semibold text-gray-700 mb-2">Informasi Pendamping:</p>
+                                        <div class="grid grid-cols-2 gap-2 text-xs">
+                                            <div>
+                                                <span class="text-gray-600">Fakultas:</span>
+                                                <p id="infoFakultas" class="font-medium text-gray-900">-</p>
+                                            </div>
+                                            <div>
+                                                <span class="text-gray-600">Program Studi:</span>
+                                                <p id="infoProdi" class="font-medium text-gray-900">-</p>
+                                            </div>
+                                            <div class="col-span-2">
+                                                <span class="text-gray-600">Beban Kerja Aktif:</span>
+                                                <p id="infoWorkload" class="font-medium text-gray-900">-</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-bold py-4 px-6 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg">
+                                        <i class="fas fa-paper-plane mr-2"></i>TUGASKAN PENDAMPING PATEN
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    @endif
+
+                    <!-- Show Assignment Info if pending_substance_review or beyond -->
+                    @if(in_array($submissionPaten->status, [
+                        \App\Models\SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW,
+                        \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW,
+                        \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE
+                    ]) && $submissionPaten->pendampingPaten)
+                        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6 mt-6">
+                            <h3 class="text-lg font-semibold text-indigo-900 mb-4 flex items-center">
+                                <i class="fas fa-user-tie mr-2 text-indigo-600"></i>
+                                Informasi Pendamping Paten
+                            </h3>
+                            
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-3 gap-2 text-sm">
+                                    <div class="font-medium text-gray-700">Nama:</div>
+                                    <div class="col-span-2 text-gray-900">{{ $submissionPaten->pendampingPaten->name }}</div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 text-sm">
+                                    <div class="font-medium text-gray-700">Fakultas:</div>
+                                    <div class="col-span-2 text-gray-900">{{ $submissionPaten->pendampingPaten->fakultas ?? '-' }}</div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 text-sm">
+                                    <div class="font-medium text-gray-700">Program Studi:</div>
+                                    <div class="col-span-2 text-gray-900">{{ $submissionPaten->pendampingPaten->program_studi ?? '-' }}</div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 text-sm">
+                                    <div class="font-medium text-gray-700">Ditugaskan:</div>
+                                    <div class="col-span-2 text-gray-900">{{ $submissionPaten->assigned_at ? $submissionPaten->assigned_at->format('d F Y, H:i') . ' WITA' : '-' }}</div>
+                                </div>
+                                
+                                @if($submissionPaten->substance_reviewed_at)
+                                <div class="grid grid-cols-3 gap-2 text-sm">
+                                    <div class="font-medium text-gray-700">Direview:</div>
+                                    <div class="col-span-2 text-gray-900">{{ $submissionPaten->substance_reviewed_at->format('d F Y, H:i') }} WITA</div>
+                                </div>
+                                @endif
+                                
+                                @if($submissionPaten->substance_review_notes)
+                                <div class="mt-3 pt-3 border-t border-indigo-200">
+                                    <p class="text-xs font-medium text-gray-700 mb-1">Catatan Review Substansi:</p>
+                                    <div class="bg-white border border-indigo-200 rounded p-2">
+                                        <p class="text-sm text-gray-800">{{ $submissionPaten->substance_review_notes }}</p>
+                                    </div>
+                                </div>
+                                @endif
+                                
+                                @if($submissionPaten->substance_review_file)
+                                <div class="mt-3">
+                                    <a href="{{ route('admin.pendamping-paten.download-review', $submissionPaten) }}" 
+                                       class="inline-flex items-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                        <i class="fas fa-download mr-2"></i>Download File Review
+                                    </a>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Quick Actions -->
                     <div class="bg-gray-50 rounded-lg p-6 mt-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -494,14 +638,96 @@ use Illuminate\Support\Facades\Storage;
     @include('admin.partials.sidebar-script')
     
     <script>
+    // Load Pendamping Paten List
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectElement = document.getElementById('pendamping_paten_id');
+        const loadingElement = document.getElementById('loadingPendamping');
+        const infoBox = document.getElementById('pendampingInfo');
+        
+        if (selectElement) {
+            // Load list from API
+            fetch('{{ route("admin.api.pendamping-paten-list") }}')
+                .then(response => response.json())
+                .then(data => {
+                    if (loadingElement) loadingElement.remove();
+                    
+                    if (data.success && data.data.length > 0) {
+                        data.data.forEach(pendamping => {
+                            const option = document.createElement('option');
+                            option.value = pendamping.id;
+                            option.textContent = `${pendamping.name} (${pendamping.active_paten_count} tugas aktif)`;
+                            option.dataset.fakultas = pendamping.fakultas || '-';
+                            option.dataset.prodi = pendamping.program_studi || '-';
+                            option.dataset.workload = pendamping.active_paten_count;
+                            selectElement.appendChild(option);
+                        });
+                    } else {
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = 'Tidak ada Pendamping Paten tersedia';
+                        option.disabled = true;
+                        selectElement.appendChild(option);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading pendamping paten:', error);
+                    if (loadingElement) {
+                        loadingElement.textContent = '⚠️ Gagal memuat daftar pendamping';
+                        loadingElement.classList.add('text-red-500');
+                    }
+                });
+            
+            // Show info when selection changes
+            selectElement.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                
+                if (this.value && infoBox) {
+                    document.getElementById('infoFakultas').textContent = selectedOption.dataset.fakultas || '-';
+                    document.getElementById('infoProdi').textContent = selectedOption.dataset.prodi || '-';
+                    document.getElementById('infoWorkload').textContent = selectedOption.dataset.workload + ' pengajuan aktif';
+                    infoBox.classList.remove('hidden');
+                } else if (infoBox) {
+                    infoBox.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Confirm before assigning
+        const assignForm = document.getElementById('assignForm');
+        if (assignForm) {
+            assignForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const selectElement = document.getElementById('pendamping_paten_id');
+                const selectedOption = selectElement.options[selectElement.selectedIndex];
+                const pendampingName = selectedOption ? selectedOption.textContent.split(' (')[0] : '';
+                
+                const confirmAssign = confirm(
+                    '📋 KONFIRMASI PENUGASAN PENDAMPING PATEN\n\n' +
+                    '⚠️ Apakah Anda yakin ingin menugaskan pengajuan ini kepada:\n\n' +
+                    '👤 ' + pendampingName + '\n\n' +
+                    'Setelah ditugaskan:\n' +
+                    '✓ Pendamping Paten akan menerima tugas review substansi\n' +
+                    '✓ Status akan berubah menjadi "Pending Substance Review"\n' +
+                    '✓ Penugasan tidak dapat dibatalkan\n\n' +
+                    'Klik OK untuk melanjutkan, atau Cancel untuk kembali.'
+                );
+                
+                if (confirmAssign) {
+                    assignForm.submit();
+                }
+            });
+        }
+    });
+    
     // Auto-require rejection reason when reject is selected
     document.addEventListener('DOMContentLoaded', function() {
         // Handle both forms - pending review and edit review
         function setupFormValidation(form) {
             if (!form) return;
             
-            const rejectedRadio = form.querySelector('input[value="rejected"]');
-            const approvedRadio = form.querySelector('input[value="approved"]');
+            const rejectedRadio = form.querySelector('input[value="rejected_format_review"]');
+            const approvedRadio = form.querySelector('input[value="approved_format"]');
             const rejectionReasonTextarea = form.querySelector('textarea[name="rejection_reason"]');
             
             if (rejectedRadio && rejectionReasonTextarea) {
@@ -544,11 +770,11 @@ use Illuminate\Support\Facades\Storage;
                     // Show confirmation for rejection
                     e.preventDefault();
                     const confirmReject = confirm(
-                        '🚫 KONFIRMASI PENOLAKAN PENGAJUAN PATEN\n\n' +
-                        '⚠️ Apakah Anda yakin ingin MENOLAK pengajuan paten ini?\n\n' +
+                        '🚫 KONFIRMASI PENOLAKAN FORMAT PENGAJUAN PATEN\n\n' +
+                        '⚠️ Apakah Anda yakin ingin MENOLAK format pengajuan paten ini?\n\n' +
                         'Pastikan:\n' +
                         '✓ Alasan penolakan sudah jelas dan spesifik\n' +
-                        '✓ User dapat memahami kesalahan dan memperbaikinya\n' +
+                        '✓ User dapat memahami kesalahan format dan memperbaikinya\n' +
                         '✓ Dokumen sudah diperiksa dengan teliti\n\n' +
                         'Klik OK untuk melanjutkan penolakan, atau Cancel untuk kembali.'
                     );
@@ -563,14 +789,14 @@ use Illuminate\Support\Facades\Storage;
                 if (approvedRadio && approvedRadio.checked) {
                     e.preventDefault();
                     const confirmApprove = confirm(
-                        '✅ KONFIRMASI PERSETUJUAN PENGAJUAN PATEN\n\n' +
-                        '⚠️ Apakah Anda yakin ingin MENYETUJUI pengajuan paten ini?\n\n' +
+                        '✅ KONFIRMASI PERSETUJUAN FORMAT PENGAJUAN PATEN\n\n' +
+                        '⚠️ Apakah Anda yakin ingin MENYETUJUI format pengajuan paten ini?\n\n' +
                         'Pastikan:\n' +
                         '✓ Dokumen PDF sudah diperiksa dengan teliti\n' +
+                        '✓ Format dokumen sudah sesuai standar\n' +
                         '✓ Judul paten dan informasi sudah sesuai\n' +
-                        '✓ Kategori paten (Paten/Paten Sederhana) sudah benar\n' +
-                        '✓ Pengajuan siap diproses ke tahap selanjutnya\n\n' +
-                        'Setelah disetujui, user dapat melanjutkan ke proses biodata paten.\n\n' +
+                        '✓ Kategori paten (Paten/Paten Sederhana) sudah benar\n\n' +
+                        'Setelah disetujui, pengajuan dapat ditugaskan ke Pendamping Paten untuk review substansi.\n\n' +
                         'Klik OK untuk menyetujui, atau Cancel untuk kembali memeriksa.'
                     );
                     
