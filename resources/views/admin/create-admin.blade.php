@@ -202,11 +202,26 @@
                                                         name="fakultas"
                                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-20 transition duration-200"
                                                     >
-                                                        <option value="">-- Pilih Fakultas --</option>
+                                                        <option value="">Pilih Fakultas</option>
+                                                        <option value="Fakultas Ekonomi dan Bisnis" {{ old('fakultas') == 'Fakultas Ekonomi dan Bisnis' ? 'selected' : '' }}>Fakultas Ekonomi dan Bisnis</option>
+                                                        <option value="Fakultas Hukum" {{ old('fakultas') == 'Fakultas Hukum' ? 'selected' : '' }}>Fakultas Hukum</option>
+                                                        <option value="Fakultas Kedokteran" {{ old('fakultas') == 'Fakultas Kedokteran' ? 'selected' : '' }}>Fakultas Kedokteran</option>
+                                                        <option value="Fakultas Teknik" {{ old('fakultas') == 'Fakultas Teknik' ? 'selected' : '' }}>Fakultas Teknik</option>
+                                                        <option value="Fakultas Ilmu Sosial dan Ilmu Politik" {{ old('fakultas') == 'Fakultas Ilmu Sosial dan Ilmu Politik' ? 'selected' : '' }}>Fakultas Ilmu Sosial dan Ilmu Politik</option>
+                                                        <option value="Fakultas Ilmu Budaya" {{ old('fakultas') == 'Fakultas Ilmu Budaya' ? 'selected' : '' }}>Fakultas Ilmu Budaya</option>
+                                                        <option value="Fakultas Pertanian" {{ old('fakultas') == 'Fakultas Pertanian' ? 'selected' : '' }}>Fakultas Pertanian</option>
+                                                        <option value="Fakultas Matematika dan Ilmu Pengetahuan Alam" {{ old('fakultas') == 'Fakultas Matematika dan Ilmu Pengetahuan Alam' ? 'selected' : '' }}>Fakultas Matematika dan Ilmu Pengetahuan Alam</option>
+                                                        <option value="Fakultas Peternakan" {{ old('fakultas') == 'Fakultas Peternakan' ? 'selected' : '' }}>Fakultas Peternakan</option>
+                                                        <option value="Fakultas Kedokteran Gigi" {{ old('fakultas') == 'Fakultas Kedokteran Gigi' ? 'selected' : '' }}>Fakultas Kedokteran Gigi</option>
+                                                        <option value="Fakultas Kesehatan Masyarakat" {{ old('fakultas') == 'Fakultas Kesehatan Masyarakat' ? 'selected' : '' }}>Fakultas Kesehatan Masyarakat</option>
+                                                        <option value="Fakultas Ilmu Kelautan dan Perikanan" {{ old('fakultas') == 'Fakultas Ilmu Kelautan dan Perikanan' ? 'selected' : '' }}>Fakultas Ilmu Kelautan dan Perikanan</option>
+                                                        <option value="Fakultas Kehutanan" {{ old('fakultas') == 'Fakultas Kehutanan' ? 'selected' : '' }}>Fakultas Kehutanan</option>
+                                                        <option value="Fakultas Farmasi" {{ old('fakultas') == 'Fakultas Farmasi' ? 'selected' : '' }}>Fakultas Farmasi</option>
+                                                        <option value="Fakultas Keperawatan" {{ old('fakultas') == 'Fakultas Keperawatan' ? 'selected' : '' }}>Fakultas Keperawatan</option>
+                                                        <option value="Fakultas Vokasi" {{ old('fakultas') == 'Fakultas Vokasi' ? 'selected' : '' }}>Fakultas Vokasi</option>
+                                                        <option value="Fakultas Teknologi Pertanian" {{ old('fakultas') == 'Fakultas Teknologi Pertanian' ? 'selected' : '' }}>Fakultas Teknologi Pertanian</option>
+                                                        <option value="Sekolah Pascasarjana" {{ old('fakultas') == 'Sekolah Pascasarjana' ? 'selected' : '' }}>Sekolah Pascasarjana</option>
                                                     </select>
-                                                    <p id="loadingFakultas" class="text-xs text-gray-500 mt-1">
-                                                        <i class="fas fa-spinner fa-spin mr-1"></i>Memuat daftar fakultas...
-                                                    </p>
                                                 </div>
 
                                                 <div>
@@ -347,7 +362,6 @@
             const pendampingFields = document.getElementById('pendampingPatenFields');
             const fakultasSelect = document.getElementById('fakultas');
             const prodiSelect = document.getElementById('program_studi');
-            const loadingFakultas = document.getElementById('loadingFakultas');
 
             // All input fields that should be disabled initially
             const formInputs = [
@@ -393,11 +407,6 @@
                     pendampingFields.classList.remove('hidden');
                     fakultasSelect.setAttribute('required', 'required');
                     prodiSelect.setAttribute('required', 'required');
-                    
-                    // Load fakultas list if not already loaded
-                    if (fakultasSelect.options.length <= 1) {
-                        loadFakultasList();
-                    }
                 } else {
                     pendampingFields.classList.add('hidden');
                     fakultasSelect.removeAttribute('required');
@@ -407,46 +416,7 @@
                 }
             }
 
-            // Load Fakultas List
-            function loadFakultasList() {
-                console.log('Loading fakultas list...');
-                fetch('{{ route("admin.api.fakultas-list") }}')
-                    .then(response => {
-                        console.log('Fakultas response:', response);
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Fakultas data:', data);
-                        if (loadingFakultas) loadingFakultas.remove();
-                        
-                        if (data.success && data.data.length > 0) {
-                            console.log('Adding', data.data.length, 'fakultas options');
-                            data.data.forEach(fakultas => {
-                                const option = document.createElement('option');
-                                option.value = fakultas;
-                                option.textContent = fakultas;
-                                fakultasSelect.appendChild(option);
-                            });
-
-                            // Restore old value if exists
-                            const oldFakultas = '{{ old("fakultas") }}';
-                            if (oldFakultas) {
-                                fakultasSelect.value = oldFakultas;
-                                loadProgramStudiList(oldFakultas);
-                            }
-                        } else {
-                            console.warn('No fakultas data received');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading fakultas:', error);
-                        if (loadingFakultas) {
-                            loadingFakultas.textContent = '⚠️ Gagal memuat daftar fakultas';
-                            loadingFakultas.classList.add('text-red-500');
-                        }
-                    });
-            }
-
+            // Fakultas options are now hardcoded in HTML
             // Program studi is now a manual text input field
             // No loading function needed - users can type directly
 
