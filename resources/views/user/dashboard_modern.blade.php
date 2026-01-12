@@ -518,10 +518,10 @@
                         <div class="flex items-center justify-center mb-2">
                             <i class="fas fa-file-alt text-yellow-600 mr-2"></i>
                             <div class="text-xl font-bold text-yellow-700">
-                                {{ Auth::user()->submissionsPaten()->where('status', 'pending')->count() }}
+                                {{ Auth::user()->submissionsPaten()->where('status', 'pending_format_review')->count() }}
                             </div>
                         </div>
-                        <div class="text-xs text-gray-700 font-medium">Menunggu Review Dokumen</div>
+                        <div class="text-xs text-gray-700 font-medium">Menunggu Review Format</div>
                     </div>
 
                     <!-- 2. Dokumen Disetujui -->
@@ -529,10 +529,10 @@
                         <div class="flex items-center justify-center mb-2">
                             <i class="fas fa-check-circle text-green-600 mr-2"></i>
                             <div class="text-xl font-bold text-green-700">
-                                {{ Auth::user()->submissionsPaten()->where('status', 'approved')->where('biodata_status', 'not_started')->count() }}
+                                {{ Auth::user()->submissionsPaten()->whereIn('status', ['approved_format', 'approved_substance'])->where('biodata_status', 'not_started')->count() }}
                             </div>
                         </div>
-                        <div class="text-xs text-gray-700 font-medium">Dokumen Disetujui</div>
+                        <div class="text-xs text-gray-700 font-medium">Format/Substansi Disetujui</div>
                     </div>
 
                     <!-- 3. Dokumen Ditolak -->
@@ -540,13 +540,24 @@
                         <div class="flex items-center justify-center mb-2">
                             <i class="fas fa-times-circle text-red-600 mr-2"></i>
                             <div class="text-xl font-bold text-red-700">
-                                {{ Auth::user()->submissionsPaten()->where('status', 'rejected')->count() }}
+                                {{ Auth::user()->submissionsPaten()->whereIn('status', ['rejected_format_review', 'rejected_substance_review'])->count() }}
                             </div>
                         </div>
                         <div class="text-xs text-gray-700 font-medium">Dokumen Ditolak</div>
                     </div>
 
-                    <!-- 4. Menunggu Review Biodata -->
+                    <!-- 4. Review Substansi -->
+                    <div class="text-center p-3 bg-blue-50 rounded-lg">
+                        <div class="flex items-center justify-center mb-2">
+                            <i class="fas fa-microscope text-blue-600 mr-2"></i>
+                            <div class="text-xl font-bold text-blue-700">
+                                {{ Auth::user()->submissionsPaten()->where('status', 'pending_substance_review')->count() }}
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-700 font-medium">Review Substansi</div>
+                    </div>
+
+                    <!-- 5. Menunggu Review Biodata -->
                     <div class="text-center p-3 bg-orange-50 rounded-lg">
                         <div class="flex items-center justify-center mb-2">
                             <i class="fas fa-user-clock text-orange-600 mr-2"></i>
@@ -557,7 +568,7 @@
                         <div class="text-xs text-gray-700 font-medium">Menunggu Review Biodata</div>
                     </div>
 
-                    <!-- 5. Biodata Disetujui -->
+                    <!-- 6. Biodata Disetujui -->
                     <div class="text-center p-3 bg-teal-50 rounded-lg">
                         <div class="flex items-center justify-center mb-2">
                             <i class="fas fa-user-check text-teal-600 mr-2"></i>
@@ -568,7 +579,7 @@
                         <div class="text-xs text-gray-700 font-medium">Biodata Disetujui</div>
                     </div>
 
-                    <!-- 6. Biodata Ditolak -->
+                    <!-- 7. Biodata Ditolak -->
                     <div class="text-center p-3 bg-pink-50 rounded-lg">
                         <div class="flex items-center justify-center mb-2">
                             <i class="fas fa-user-times text-pink-600 mr-2"></i>
@@ -579,15 +590,15 @@
                         <div class="text-xs text-gray-700 font-medium">Biodata Ditolak</div>
                     </div>
 
-                    <!-- 7. Selesai -->
-                    <div class="text-center p-3 bg-blue-50 rounded-lg col-span-2">
+                    <!-- 8. Selesai -->
+                    <div class="text-center p-3 bg-purple-50 rounded-lg col-span-2">
                         <div class="flex items-center justify-center mb-2">
-                            <i class="fas fa-award text-blue-600 mr-2"></i>
-                            <div class="text-xl font-bold text-blue-700">
-                                {{ Auth::user()->submissionsPaten()->where('status', 'completed')->count() }}
+                            <i class="fas fa-award text-purple-600 mr-2"></i>
+                            <div class="text-xl font-bold text-purple-700">
+                                {{ Auth::user()->submissionsPaten()->where('status', 'approved_substance')->where('biodata_status', 'approved')->count() }}
                             </div>
                         </div>
-                        <div class="text-xs text-gray-700 font-medium">Selesai (Dokumen Diterima)</div>
+                        <div class="text-xs text-gray-700 font-medium">Selesai (Substansi & Biodata Approved)</div>
                     </div>
                 </div>
             </div>
