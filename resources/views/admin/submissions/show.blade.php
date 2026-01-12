@@ -522,6 +522,9 @@ use Illuminate\Support\Facades\Storage;
                             @endif
                         </div>
                     </div>
+
+                    <!-- Riwayat Review -->
+                    @include('admin.submissions.partials.history-section')
                 </div>
                 </div>
             </main>
