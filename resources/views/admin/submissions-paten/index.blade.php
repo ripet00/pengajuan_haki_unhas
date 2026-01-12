@@ -87,9 +87,12 @@ use Illuminate\Support\Facades\Storage;
                 <form method="GET" action="{{ route('admin.submissions-paten.index') }}" class="flex space-x-2">
                     <select name="status" class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" onchange="this.form.submit()">
                         <option value="">Semua Status</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
-                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                        <option value="pending_format_review" {{ request('status') == 'pending_format_review' ? 'selected' : '' }}>Menunggu Review Format</option>
+                        <option value="rejected_format_review" {{ request('status') == 'rejected_format_review' ? 'selected' : '' }}>Format Ditolak</option>
+                        <option value="approved_format" {{ request('status') == 'approved_format' ? 'selected' : '' }}>Format Disetujui</option>
+                        <option value="pending_substance_review" {{ request('status') == 'pending_substance_review' ? 'selected' : '' }}>Menunggu Review Substansi</option>
+                        <option value="rejected_substance_review" {{ request('status') == 'rejected_substance_review' ? 'selected' : '' }}>Substansi Ditolak</option>
+                        <option value="approved_substance" {{ request('status') == 'approved_substance' ? 'selected' : '' }}>Substansi Disetujui</option>
                     </select>
                     <!-- Preserve existing search when filtering -->
                     @if(request('search'))
@@ -142,30 +145,30 @@ use Illuminate\Support\Facades\Storage;
                         <i class="fas fa-clock text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-semibold text-gray-900">{{ $submissionsPaten->where('status', 'pending')->count() }}</h3>
-                        <p class="text-gray-600">Pending Review</p>
+                        <h3 class="text-lg font-semibold text-gray-900">{{ $submissionsPaten->where('status', 'pending_format_review')->count() }}</h3>
+                        <p class="text-gray-600">Menunggu Review Format</p>
                     </div>
                 </div>
             </div>
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-green-100 text-green-600">
-                        <i class="fas fa-check text-xl"></i>
+                    <div class="p-3 rounded-full bg-orange-100 text-orange-600">
+                        <i class="fas fa-user-check text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-semibold text-gray-900">{{ $submissionsPaten->where('status', 'approved')->count() }}</h3>
-                        <p class="text-gray-600">Disetujui</p>
+                        <h3 class="text-lg font-semibold text-gray-900">{{ $submissionsPaten->where('status', 'approved_format')->count() }}</h3>
+                        <p class="text-gray-600">Siap Ditugaskan</p>
                     </div>
                 </div>
             </div>
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-red-100 text-red-600">
-                        <i class="fas fa-times text-xl"></i>
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <i class="fas fa-clipboard-check text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-semibold text-gray-900">{{ $submissionsPaten->where('status', 'rejected')->count() }}</h3>
-                        <p class="text-gray-600">Ditolak</p>
+                        <h3 class="text-lg font-semibold text-gray-900">{{ $submissionsPaten->where('status', 'pending_substance_review')->count() }}</h3>
+                        <p class="text-gray-600">Review Substansi</p>
                     </div>
                 </div>
             </div>
@@ -235,29 +238,45 @@ use Illuminate\Support\Facades\Storage;
                                 </span>
                             </td>
                             <td class="px-6 py-4">
-                                @if($submission->status == 'pending')
+                                @if($submission->status == 'pending_format_review')
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                        <i class="fas fa-clock mr-1"></i>Pending
+                                        <i class="fas fa-clock mr-1"></i>Menunggu Review Format
                                     </span>
-                                @elseif($submission->status == 'approved')
+                                @elseif($submission->status == 'rejected_format_review')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <i class="fas fa-times-circle mr-1"></i>Format Ditolak
+                                    </span>
+                                @elseif($submission->status == 'approved_format')
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        <i class="fas fa-check mr-1"></i>Disetujui
+                                        <i class="fas fa-check-circle mr-1"></i>Format Disetujui
+                                    </span>
+                                @elseif($submission->status == 'pending_substance_review')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <i class="fas fa-user-clock mr-1"></i>Review Substansi
+                                    </span>
+                                @elseif($submission->status == 'rejected_substance_review')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>Substansi Ditolak
+                                    </span>
+                                @elseif($submission->status == 'approved_substance')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                        <i class="fas fa-check-double mr-1"></i>Substansi Disetujui
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                        <i class="fas fa-times mr-1"></i>Ditolak
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        <i class="fas fa-question mr-1"></i>{{ $submission->status }}
                                     </span>
                                 @endif
                             </td>
                             <td class="px-6 py-4">
                                 @if($submission->biodata_status == 'not_started')
-                                    @if($submission->status == 'approved')
+                                    @if($submission->status == 'approved_substance')
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
                                             <i class="fas fa-hourglass-start mr-1"></i>Siap Upload
                                         </span>
                                     @else
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
-                                            <i class="fas fa-lock mr-1"></i>Menunggu Dokumen
+                                            <i class="fas fa-lock mr-1"></i>Menunggu Review
                                         </span>
                                     @endif
                                 @elseif($submission->biodata_status == 'pending')
@@ -285,11 +304,17 @@ use Illuminate\Support\Facades\Storage;
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-wrap gap-2">
-                                    @if($submission->status == 'pending')
+                                    @if($submission->status == 'pending_format_review' || $submission->status == 'rejected_format_review')
                                         <a href="{{ route('admin.submissions-paten.show', $submission) }}" 
                                            class="inline-flex items-center px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                             <i class="fas fa-gavel mr-1"></i>
-                                            Review
+                                            Review Format
+                                        </a>
+                                    @elseif($submission->status == 'approved_format')
+                                        <a href="{{ route('admin.submissions-paten.show', $submission) }}" 
+                                           class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                            <i class="fas fa-user-plus mr-1"></i>
+                                            Tugaskan
                                         </a>
                                     @else
                                         <a href="{{ route('admin.submissions-paten.show', $submission) }}" 
@@ -306,14 +331,7 @@ use Illuminate\Support\Facades\Storage;
                                         DOCX
                                     </a>
                                     
-                                    @if($submission->status != 'pending')
-                                        <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full {{ $submission->status == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                            <i class="fas fa-{{ $submission->status == 'approved' ? 'check' : 'times' }} mr-1"></i>
-                                            {{ $submission->status == 'approved' ? 'Disetujui' : 'Ditolak' }}
-                                        </span>
-                                    @endif
-                                    
-                                    @if(in_array($submission->status, ['pending', 'rejected']) && !$submission->biodataPaten)
+                                    @if(in_array($submission->status, ['pending_format_review', 'rejected_format_review', 'rejected_substance_review']) && !$submission->biodataPaten)
                                         <form method="POST" action="{{ route('admin.submissions-paten.destroy', $submission) }}" 
                                               onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan paten ini? Tindakan ini tidak dapat dibatalkan.');"
                                               class="inline">
