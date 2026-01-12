@@ -292,6 +292,41 @@ use Illuminate\Support\Facades\Storage;
                                     </div>
                                 </div>
 
+                                <!-- Pendamping Paten Selection (Show when Approve is selected) -->
+                                <div id="pendampingSection" class="hidden">
+                                    <label for="pendamping_paten_id_review" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class="fas fa-user-tie text-purple-600 mr-1"></i>
+                                        Pilih Pendamping Paten: <span class="text-red-500">*</span>
+                                    </label>
+                                    <select 
+                                        id="pendamping_paten_id_review" 
+                                        name="pendamping_paten_id" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        <option value="">-- Pilih Pendamping Paten --</option>
+                                    </select>
+                                    <p id="loadingPendampingReview" class="mt-2 text-sm text-gray-500">
+                                        <i class="fas fa-spinner fa-spin mr-1"></i>Memuat daftar pendamping...
+                                    </p>
+                                    
+                                    <div id="pendampingInfoReview" class="bg-purple-50 border border-purple-200 rounded-lg p-3 mt-3 hidden">
+                                        <p class="text-xs font-semibold text-purple-900 mb-2">Informasi Pendamping:</p>
+                                        <div class="grid grid-cols-2 gap-2 text-xs">
+                                            <div>
+                                                <span class="text-gray-600">Fakultas:</span>
+                                                <p id="infoFakultasReview" class="font-medium text-gray-900">-</p>
+                                            </div>
+                                            <div>
+                                                <span class="text-gray-600">Program Studi:</span>
+                                                <p id="infoProdiReview" class="font-medium text-gray-900">-</p>
+                                            </div>
+                                            <div class="col-span-2">
+                                                <span class="text-gray-600">Beban Kerja Aktif:</span>
+                                                <p id="infoWorkloadReview" class="font-medium text-gray-900">-</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div>
                                     <label for="rejection_reason" class="block text-sm font-medium text-gray-700 mb-1">
                                         Catatan/Alasan Penolakan:
@@ -323,9 +358,12 @@ use Illuminate\Support\Facades\Storage;
                                     </div>
                                 </div>
 
-                                <button type="submit" class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg">
+                                <button type="submit" id="submitReviewBtn" class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg">
                                     <i class="fas fa-gavel mr-2"></i>SUBMIT REVIEW
                                 </button>
+                                <p id="approveNotice" class="text-center text-sm text-purple-700 font-medium hidden mt-2">
+                                    <i class="fas fa-info-circle mr-1"></i>Pendamping paten akan otomatis ditugaskan setelah format disetujui
+                                </p>
                             </form>
                         @else
                             <div class="mb-6">
@@ -464,85 +502,6 @@ use Illuminate\Support\Facades\Storage;
                         @endif
                     </div>
 
-                    <!-- Assignment Panel - Show when status is approved_format -->
-                    @if($submissionPaten->status == \App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT)
-                        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-lg p-6 shadow-lg mt-6">
-                            <h3 class="text-xl font-bold text-purple-900 mb-4 flex items-center">
-                                <i class="fas fa-user-tie mr-2 text-purple-600"></i>
-                                Penugasan Pendamping Paten
-                            </h3>
-                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                                <p class="text-blue-800 font-medium text-sm">
-                                    <i class="fas fa-info-circle mr-2"></i>
-                                    Format pengajuan sudah disetujui. Pilih Pendamping Paten untuk melakukan review substansi.
-                                </p>
-                            </div>
-
-                            @if($submissionPaten->pendampingPaten)
-                                <!-- Already Assigned -->
-                                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-green-900 font-semibold text-sm">
-                                                <i class="fas fa-check-circle mr-1"></i>
-                                                Ditugaskan kepada:
-                                            </p>
-                                            <p class="text-green-800 text-lg font-bold mt-1">{{ $submissionPaten->pendampingPaten->name }}</p>
-                                            <p class="text-green-700 text-xs mt-1">
-                                                <i class="fas fa-calendar mr-1"></i>
-                                                {{ $submissionPaten->assigned_at ? $submissionPaten->assigned_at->format('d F Y, H:i') . ' WITA' : '-' }}
-                                            </p>
-                                        </div>
-                                        <i class="fas fa-user-check text-green-500 text-3xl"></i>
-                                    </div>
-                                </div>
-                            @else
-                                <!-- Assignment Form -->
-                                <form id="assignForm" method="POST" action="{{ route('admin.submissions-paten.assign', $submissionPaten) }}" class="space-y-4">
-                                    @csrf
-                                    
-                                    <div>
-                                        <label for="pendamping_paten_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Pilih Pendamping Paten: <span class="text-red-500">*</span>
-                                        </label>
-                                        <select 
-                                            id="pendamping_paten_id" 
-                                            name="pendamping_paten_id" 
-                                            required
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                            <option value="">-- Pilih Pendamping Paten --</option>
-                                        </select>
-                                        <p id="loadingPendamping" class="mt-2 text-sm text-gray-500">
-                                            <i class="fas fa-spinner fa-spin mr-1"></i>Memuat daftar pendamping...
-                                        </p>
-                                    </div>
-
-                                    <div id="pendampingInfo" class="bg-gray-50 border border-gray-300 rounded-lg p-3 hidden">
-                                        <p class="text-xs font-semibold text-gray-700 mb-2">Informasi Pendamping:</p>
-                                        <div class="grid grid-cols-2 gap-2 text-xs">
-                                            <div>
-                                                <span class="text-gray-600">Fakultas:</span>
-                                                <p id="infoFakultas" class="font-medium text-gray-900">-</p>
-                                            </div>
-                                            <div>
-                                                <span class="text-gray-600">Program Studi:</span>
-                                                <p id="infoProdi" class="font-medium text-gray-900">-</p>
-                                            </div>
-                                            <div class="col-span-2">
-                                                <span class="text-gray-600">Beban Kerja Aktif:</span>
-                                                <p id="infoWorkload" class="font-medium text-gray-900">-</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-bold py-4 px-6 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg">
-                                        <i class="fas fa-paper-plane mr-2"></i>TUGASKAN PENDAMPING PATEN
-                                    </button>
-                                </form>
-                            @endif
-                        </div>
-                    @endif
-
                     <!-- Show Assignment Info if pending_substance_review or beyond -->
                     @if(in_array($submissionPaten->status, [
                         \App\Models\SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW,
@@ -638,18 +597,21 @@ use Illuminate\Support\Facades\Storage;
     @include('admin.partials.sidebar-script')
     
     <script>
-    // Load Pendamping Paten List
+    // Load Pendamping Paten List (for review form only)
     document.addEventListener('DOMContentLoaded', function() {
-        const selectElement = document.getElementById('pendamping_paten_id');
-        const loadingElement = document.getElementById('loadingPendamping');
-        const infoBox = document.getElementById('pendampingInfo');
+        // For review form (during format review)
+        const selectReviewElement = document.getElementById('pendamping_paten_id_review');
+        const loadingReviewElement = document.getElementById('loadingPendampingReview');
+        const infoReviewBox = document.getElementById('pendampingInfoReview');
         
-        if (selectElement) {
-            // Load list from API
+        // Function to load pendamping list
+        function loadPendampingList(selectEl, loadingEl, infoEl, infoFakultasId, infoProdiId, infoWorkloadId) {
+            if (!selectEl) return;
+            
             fetch('{{ route("admin.api.pendamping-paten-list") }}')
                 .then(response => response.json())
                 .then(data => {
-                    if (loadingElement) loadingElement.remove();
+                    if (loadingEl) loadingEl.remove();
                     
                     if (data.success && data.data.length > 0) {
                         data.data.forEach(pendamping => {
@@ -659,62 +621,69 @@ use Illuminate\Support\Facades\Storage;
                             option.dataset.fakultas = pendamping.fakultas || '-';
                             option.dataset.prodi = pendamping.program_studi || '-';
                             option.dataset.workload = pendamping.active_paten_count;
-                            selectElement.appendChild(option);
+                            selectEl.appendChild(option);
                         });
                     } else {
                         const option = document.createElement('option');
                         option.value = '';
                         option.textContent = 'Tidak ada Pendamping Paten tersedia';
                         option.disabled = true;
-                        selectElement.appendChild(option);
+                        selectEl.appendChild(option);
                     }
                 })
                 .catch(error => {
                     console.error('Error loading pendamping paten:', error);
-                    if (loadingElement) {
-                        loadingElement.textContent = '⚠️ Gagal memuat daftar pendamping';
-                        loadingElement.classList.add('text-red-500');
+                    if (loadingEl) {
+                        loadingEl.textContent = '⚠️ Gagal memuat daftar pendamping';
+                        loadingEl.classList.add('text-red-500');
                     }
                 });
             
             // Show info when selection changes
-            selectElement.addEventListener('change', function() {
+            selectEl.addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
                 
-                if (this.value && infoBox) {
-                    document.getElementById('infoFakultas').textContent = selectedOption.dataset.fakultas || '-';
-                    document.getElementById('infoProdi').textContent = selectedOption.dataset.prodi || '-';
-                    document.getElementById('infoWorkload').textContent = selectedOption.dataset.workload + ' pengajuan aktif';
-                    infoBox.classList.remove('hidden');
-                } else if (infoBox) {
-                    infoBox.classList.add('hidden');
+                if (this.value && infoEl) {
+                    document.getElementById(infoFakultasId).textContent = selectedOption.dataset.fakultas || '-';
+                    document.getElementById(infoProdiId).textContent = selectedOption.dataset.prodi || '-';
+                    document.getElementById(infoWorkloadId).textContent = selectedOption.dataset.workload + ' pengajuan aktif';
+                    infoEl.classList.remove('hidden');
+                } else if (infoEl) {
+                    infoEl.classList.add('hidden');
                 }
             });
         }
         
-        // Confirm before assigning
-        const assignForm = document.getElementById('assignForm');
-        if (assignForm) {
-            assignForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const selectElement = document.getElementById('pendamping_paten_id');
-                const selectedOption = selectElement.options[selectElement.selectedIndex];
-                const pendampingName = selectedOption ? selectedOption.textContent.split(' (')[0] : '';
-                
-                const confirmAssign = confirm(
-                    '📋 KONFIRMASI PENUGASAN PENDAMPING PATEN\n\n' +
-                    '⚠️ Apakah Anda yakin ingin menugaskan pengajuan ini kepada:\n\n' +
-                    '👤 ' + pendampingName + '\n\n' +
-                    'Setelah ditugaskan:\n' +
-                    '✓ Pendamping Paten akan menerima tugas review substansi\n' +
-                    '✓ Status akan berubah menjadi "Pending Substance Review"\n' +
-                    '✓ Penugasan tidak dapat dibatalkan\n\n' +
-                    'Klik OK untuk melanjutkan, atau Cancel untuk kembali.'
-                );
-                
-                if (confirmAssign) {
-                    assignForm.submit();
+        // Load for review form only
+        if (selectReviewElement && loadingReviewElement) {
+            loadPendampingList(selectReviewElement, loadingReviewElement, infoReviewBox, 'infoFakultasReview', 'infoProdiReview', 'infoWorkloadReview');
+        }
+        
+        // Handle show/hide pendamping section based on radio selection in review form
+        const approvedRadio = document.querySelector('input[name="status"][value="approved_format"]');
+        const rejectedRadio = document.querySelector('input[name="status"][value="rejected_format_review"]');
+        const pendampingSection = document.getElementById('pendampingSection');
+        const pendampingSelect = document.getElementById('pendamping_paten_id_review');
+        const approveNotice = document.getElementById('approveNotice');
+        
+        if (approvedRadio && rejectedRadio && pendampingSection) {
+            approvedRadio.addEventListener('change', function() {
+                if (this.checked) {
+                    pendampingSection.classList.remove('hidden');
+                    if (pendampingSelect) pendampingSelect.required = true;
+                    if (approveNotice) approveNotice.classList.remove('hidden');
+                }
+            });
+            
+            rejectedRadio.addEventListener('change', function() {
+                if (this.checked) {
+                    pendampingSection.classList.add('hidden');
+                    if (pendampingSelect) {
+                        pendampingSelect.required = false;
+                        pendampingSelect.value = '';
+                    }
+                    if (infoReviewBox) infoReviewBox.classList.add('hidden');
+                    if (approveNotice) approveNotice.classList.add('hidden');
                 }
             });
         }
@@ -788,17 +757,39 @@ use Illuminate\Support\Facades\Storage;
                 // Check if approve is selected
                 if (approvedRadio && approvedRadio.checked) {
                     e.preventDefault();
-                    const confirmApprove = confirm(
-                        '✅ KONFIRMASI PERSETUJUAN FORMAT PENGAJUAN PATEN\n\n' +
+                    
+                    // Get selected pendamping info (only for initial review form)
+                    const pendampingSelect = form.querySelector('select[name="pendamping_paten_id"]');
+                    let confirmMessage = '✅ KONFIRMASI PERSETUJUAN FORMAT PENGAJUAN PATEN\n\n' +
                         '⚠️ Apakah Anda yakin ingin MENYETUJUI format pengajuan paten ini?\n\n' +
                         'Pastikan:\n' +
-                        '✓ Dokumen PDF sudah diperiksa dengan teliti\n' +
+                        '✓ Dokumen sudah diperiksa dengan teliti\n' +
                         '✓ Format dokumen sudah sesuai standar\n' +
                         '✓ Judul paten dan informasi sudah sesuai\n' +
-                        '✓ Kategori paten (Paten/Paten Sederhana) sudah benar\n\n' +
-                        'Setelah disetujui, pengajuan dapat ditugaskan ke Pendamping Paten untuk review substansi.\n\n' +
-                        'Klik OK untuk menyetujui, atau Cancel untuk kembali memeriksa.'
-                    );
+                        '✓ Kategori paten (Paten/Paten Sederhana) sudah benar\n\n';
+                    
+                    if (pendampingSelect && pendampingSelect.value) {
+                        // Validate pendamping is selected
+                        if (!pendampingSelect.value) {
+                            alert('⚠️ Silakan pilih Pendamping Paten terlebih dahulu!');
+                            pendampingSelect.focus();
+                            return false;
+                        }
+                        
+                        const selectedOption = pendampingSelect.options[pendampingSelect.selectedIndex];
+                        const pendampingName = selectedOption.textContent.split(' (')[0];
+                        
+                        confirmMessage += '📋 PENUGASAN OTOMATIS:\n' +
+                            '👤 Pendamping: ' + pendampingName + '\n' +
+                            '✓ Status akan berubah ke "Pending Substance Review"\n' +
+                            '✓ Pendamping akan langsung ditugaskan untuk review substansi\n\n';
+                    } else {
+                        confirmMessage += 'Setelah disetujui, pengajuan dapat ditugaskan ke Pendamping Paten untuk review substansi.\n\n';
+                    }
+                    
+                    confirmMessage += 'Klik OK untuk menyetujui, atau Cancel untuk kembali memeriksa.';
+                    
+                    const confirmApprove = confirm(confirmMessage);
                     
                     if (confirmApprove) {
                         form.submit();
