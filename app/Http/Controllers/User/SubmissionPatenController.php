@@ -136,7 +136,7 @@ class SubmissionPatenController extends Controller
             abort(403, 'Unauthorized access to this submission.');
         }
 
-        $submissionPaten->load(['reviewedByAdmin', 'biodataReviewedByAdmin', 'biodataPaten.inventors']);
+        $submissionPaten->load(['reviewedByAdmin', 'biodataReviewedByAdmin', 'biodataPaten.inventors', 'histories.admin']);
         
         return view('user.submissions-paten.show', compact('submissionPaten'));
     }
