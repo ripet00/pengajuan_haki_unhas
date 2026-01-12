@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SubmissionPaten;
+use App\Models\SubmissionPatenHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -50,7 +51,7 @@ class SubmissionPatenController extends Controller
      */
     public function show(SubmissionPaten $submissionPaten)
     {
-        $submissionPaten->load(['user', 'reviewedByAdmin', 'biodataReviewedByAdmin', 'biodataPaten.inventors']);
+        $submissionPaten->load(['user', 'reviewedByAdmin', 'biodataReviewedByAdmin', 'biodataPaten.inventors', 'histories.admin']);
         
         return view('admin.submissions-paten.show', compact('submissionPaten'));
     }
@@ -130,6 +131,15 @@ class SubmissionPatenController extends Controller
 
         $submissionPaten->update($updateData);
 
+        // Save history for format review
+        SubmissionPatenHistory::create([
+            'submission_paten_id' => $submissionPaten->id,
+            'admin_id' => $admin->id,
+            'review_type' => 'format_review',
+            'action' => $request->status === 'approved_format' ? 'approved' : 'rejected',
+            'notes' => $request->rejection_reason ?? null,
+        ]);
+
         if ($request->status === 'approved_format') {
             $pendampingName = \App\Models\Admin::find($request->pendamping_paten_id)->name ?? 'Pendamping Paten';
             return redirect()->route('admin.submissions-paten.show', $submissionPaten)
@@ -173,6 +183,15 @@ class SubmissionPatenController extends Controller
 
             $file = $request->file('file_review');
             $fileName = 'review_' . $submissionPaten->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+        // Save history for format review update
+        SubmissionPatenHistory::create([
+            'submission_paten_id' => $submissionPaten->id,
+            'admin_id' => $admin->id,
+            'review_type' => 'format_review',
+            'action' => $request->status === 'approved_format' ? 'approved' : 'rejected',
+            'notes' => $request->rejection_reason ?? null,
+        ]);
+
             $filePath = $file->storeAs('review_files/paten', $fileName, 'public');
 
             $updateData['file_review_path'] = $filePath;
