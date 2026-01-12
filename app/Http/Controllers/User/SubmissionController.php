@@ -116,7 +116,7 @@ class SubmissionController extends Controller
     // Show a user's submission
     public function show(Submission $submission) {
         $this->authorizeOwnership($submission);
-        $submission->load('jenisKarya');
+        $submission->load(['jenisKarya', 'histories.admin']);
         $jenisKaryas = JenisKarya::active()->orderBy('nama')->get();
         return view('user.submissions.show', compact('submission', 'jenisKaryas'));
     }
