@@ -11,6 +11,14 @@ class SubmissionPaten extends Model
 
     protected $table = 'submissions_paten';
 
+    // Status constants
+    const STATUS_PENDING_FORMAT_REVIEW = 'pending_format_review';
+    const STATUS_REJECTED_FORMAT_REVIEW = 'rejected_format_review';
+    const STATUS_APPROVED_FORMAT = 'approved_format';
+    const STATUS_PENDING_SUBSTANCE_REVIEW = 'pending_substance_review';
+    const STATUS_REJECTED_SUBSTANCE_REVIEW = 'rejected_substance_review';
+    const STATUS_APPROVED_SUBSTANCE = 'approved_substance';
+
     protected $fillable = [
         'user_id',
         'judul_paten',
@@ -29,6 +37,11 @@ class SubmissionPaten extends Model
         'file_review_uploaded_at',
         'revisi',
         'reviewed_by_admin_id',
+        'pendamping_paten_id',
+        'assigned_at',
+        'substance_review_notes',
+        'substance_review_file',
+        'substance_reviewed_at',
         'biodata_status',
         'biodata_rejection_reason',
         'biodata_submitted_at',
@@ -40,6 +53,8 @@ class SubmissionPaten extends Model
         'revisi' => 'boolean',
         'reviewed_at' => 'datetime',
         'file_review_uploaded_at' => 'datetime',
+        'assigned_at' => 'datetime',
+        'substance_reviewed_at' => 'datetime',
         'biodata_submitted_at' => 'datetime',
         'biodata_reviewed_at' => 'datetime',
         'file_size' => 'integer',
@@ -70,6 +85,14 @@ class SubmissionPaten extends Model
     }
 
     /**
+     * Relationship to Pendamping Paten who handles substance review (Many-to-One)
+     */
+    public function pendampingPaten()
+    {
+        return $this->belongsTo(Admin::class, 'pendamping_paten_id');
+    }
+
+    /**
      * Relationship to BiodataPaten (One-to-One)
      */
     public function biodataPaten()
@@ -86,27 +109,33 @@ class SubmissionPaten extends Model
     }
 
     /**
-     * Check if submission is approved
+     * Check if submission is approved (substance review passed)
      */
     public function isApproved()
     {
-        return $this->status === 'approved';
+        return $this->status === self::STATUS_APPROVED_SUBSTANCE;
     }
 
     /**
-     * Check if submission is rejected
+     * Check if submission is rejected (format or substance)
      */
     public function isRejected()
     {
-        return $this->status === 'rejected';
+        return in_array($this->status, [
+            self::STATUS_REJECTED_FORMAT_REVIEW,
+            self::STATUS_REJECTED_SUBSTANCE_REVIEW
+        ]);
     }
 
     /**
-     * Check if submission is pending
+     * Check if submission is pending (format or substance review)
      */
     public function isPending()
     {
-        return $this->status === 'pending';
+        return in_array($this->status, [
+            self::STATUS_PENDING_FORMAT_REVIEW,
+            self::STATUS_PENDING_SUBSTANCE_REVIEW
+        ]);
     }
 
     /**
@@ -119,11 +148,11 @@ class SubmissionPaten extends Model
 
     /**
      * Check if user can create biodata
-     * (submission must be approved and biodata not yet started or rejected)
+     * (substance must be approved and biodata not yet started or rejected)
      */
     public function canCreateBiodata()
     {
-        return $this->isApproved() && 
+        return $this->status === self::STATUS_APPROVED_SUBSTANCE && 
                in_array($this->biodata_status, ['not_started', 'rejected']);
     }
 
@@ -140,5 +169,80 @@ class SubmissionPaten extends Model
         }
         
         return round($bytes, 2) . ' ' . $units[$i];
+    }
+
+    /**
+     * Check if status is approved_format (ready for assignment)
+     */
+    public function isApprovedFormat()
+    {
+        return $this->status === self::STATUS_APPROVED_FORMAT;
+    }
+
+    /**
+     * Check if status is pending_substance_review
+     */
+    public function isPendingSubstanceReview()
+    {
+        return $this->status === self::STATUS_PENDING_SUBSTANCE_REVIEW;
+    }
+
+    /**
+     * Check if status is rejected_substance_review
+     */
+    public function isRejectedSubstanceReview()
+    {
+        return $this->status === self::STATUS_REJECTED_SUBSTANCE_REVIEW;
+    }
+
+    /**
+     * Check if status is approved_substance
+     */
+    public function isApprovedSubstance()
+    {
+        return $this->status === self::STATUS_APPROVED_SUBSTANCE;
+    }
+
+    /**
+     * Check if can be assigned to Pendamping Paten
+     */
+    public function canBeAssigned()
+    {
+        return $this->status === self::STATUS_APPROVED_FORMAT && !$this->pendamping_paten_id;
+    }
+
+    /**
+     * Check if substance review is active (being handled by Pendamping Paten)
+     */
+    public function isSubstanceReviewActive()
+    {
+        return in_array($this->status, [
+            self::STATUS_PENDING_SUBSTANCE_REVIEW, 
+            self::STATUS_REJECTED_SUBSTANCE_REVIEW
+        ]);
+    }
+
+    /**
+     * Get all available statuses
+     */
+    public static function getStatuses(): array
+    {
+        return [
+            self::STATUS_PENDING_FORMAT_REVIEW => 'Menunggu Review Format',
+            self::STATUS_REJECTED_FORMAT_REVIEW => 'Format Ditolak',
+            self::STATUS_APPROVED_FORMAT => 'Format Disetujui',
+            self::STATUS_PENDING_SUBSTANCE_REVIEW => 'Menunggu Review Substansi',
+            self::STATUS_REJECTED_SUBSTANCE_REVIEW => 'Substansi Ditolak',
+            self::STATUS_APPROVED_SUBSTANCE => 'Substansi Disetujui',
+        ];
+    }
+
+    /**
+     * Get status display name
+     */
+    public function getStatusNameAttribute(): string
+    {
+        $statuses = self::getStatuses();
+        return $statuses[$this->status] ?? 'Unknown';
     }
 }
