@@ -71,6 +71,12 @@ class Submission extends Model
         return $this->hasOne(Biodata::class);
     }
 
+    // Relasi ke model SubmissionHistory
+    public function histories()
+    {
+        return $this->hasMany(SubmissionHistory::class)->orderBy('created_at', 'asc');
+    }
+
     /**
      * Check if submission can have biodata created
      */
