@@ -222,26 +222,35 @@
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm">
                                                     @if($adminItem->id !== session('admin_id'))
-                                                        <form action="{{ route('admin.admins.update-status', $adminItem) }}" 
-                                                              method="POST" 
-                                                              class="inline-block"
-                                                              onsubmit="return confirm('Apakah Anda yakin ingin {{ $adminItem->is_active ? 'menonaktifkan' : 'mengaktifkan' }} admin ini?')">
-                                                            @csrf
-                                                            @method('PATCH')
-                                                            <input type="hidden" name="is_active" value="{{ $adminItem->is_active ? '0' : '1' }}">
-                                                            
-                                                            @if($adminItem->is_active)
-                                                                <button type="submit" 
-                                                                        class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-lg transition duration-200">
-                                                                    <i class="fas fa-ban mr-1"></i>Nonaktifkan
-                                                                </button>
-                                                            @else
-                                                                <button type="submit" 
-                                                                        class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition duration-200">
-                                                                    <i class="fas fa-check mr-1"></i>Aktifkan
-                                                                </button>
-                                                            @endif
-                                                        </form>
+                                                        <div class="flex items-center gap-2">
+                                                            <!-- Edit Button -->
+                                                            <a href="{{ route('admin.admins.edit', $adminItem) }}" 
+                                                               class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition duration-200">
+                                                                <i class="fas fa-edit mr-1"></i>Edit
+                                                            </a>
+
+                                                            <!-- Status Toggle Form -->
+                                                            <form action="{{ route('admin.admins.update-status', $adminItem) }}" 
+                                                                  method="POST" 
+                                                                  class="inline-block"
+                                                                  onsubmit="return confirm('Apakah Anda yakin ingin {{ $adminItem->is_active ? 'menonaktifkan' : 'mengaktifkan' }} admin ini?')">
+                                                                @csrf
+                                                                @method('PATCH')
+                                                                <input type="hidden" name="is_active" value="{{ $adminItem->is_active ? '0' : '1' }}">
+                                                                
+                                                                @if($adminItem->is_active)
+                                                                    <button type="submit" 
+                                                                            class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-lg transition duration-200">
+                                                                        <i class="fas fa-ban mr-1"></i>Nonaktifkan
+                                                                    </button>
+                                                                @else
+                                                                    <button type="submit" 
+                                                                            class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition duration-200">
+                                                                        <i class="fas fa-check mr-1"></i>Aktifkan
+                                                                    </button>
+                                                                @endif
+                                                            </form>
+                                                        </div>
                                                     @else
                                                         <span class="text-xs text-gray-500 italic">
                                                             <i class="fas fa-info-circle mr-1"></i>Anda sendiri
@@ -361,6 +370,11 @@
                                                     <a href="{{ route('admin.pendamping-paten.detail', $pendamping) }}" 
                                                        class="inline-flex items-center px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-lg transition duration-200">
                                                         <i class="fas fa-eye mr-1"></i>Detail
+                                                    </a>
+
+                                                    <a href="{{ route('admin.admins.edit', $pendamping) }}" 
+                                                       class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition duration-200">
+                                                        <i class="fas fa-edit mr-1"></i>Edit
                                                     </a>
                                                     
                                                     @if($pendamping->id !== session('admin_id'))
