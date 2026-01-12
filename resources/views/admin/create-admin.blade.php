@@ -213,15 +213,15 @@
                                                     <label for="program_studi" class="block text-sm font-medium text-gray-700 mb-2">
                                                         <i class="fas fa-graduation-cap mr-2 text-gray-400"></i>Program Studi <span class="text-red-500">*</span>
                                                     </label>
-                                                    <select 
+                                                    <input 
+                                                        type="text" 
                                                         id="program_studi" 
                                                         name="program_studi"
                                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-20 transition duration-200"
-                                                        disabled
+                                                        placeholder="Contoh: Teknik Informatika"
+                                                        value="{{ old('program_studi') }}"
                                                     >
-                                                        <option value="">-- Pilih Fakultas Terlebih Dahulu --</option>
-                                                    </select>
-                                                    <p class="text-xs text-gray-500 mt-1">Pilih fakultas terlebih dahulu</p>
+                                                    <p class="text-xs text-gray-500 mt-1">Ketik nama program studi secara manual</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -447,58 +447,12 @@
                     });
             }
 
-            // Load Program Studi based on Fakultas
-            function loadProgramStudiList(fakultas) {
-                console.log('Loading program studi for fakultas:', fakultas);
-                if (!fakultas) {
-                    prodiSelect.disabled = true;
-                    prodiSelect.innerHTML = '<option value="">-- Pilih Fakultas Terlebih Dahulu --</option>';
-                    return;
-                }
-
-                prodiSelect.disabled = true;
-                prodiSelect.innerHTML = '<option value="">Memuat...</option>';
-
-                fetch('{{ route("admin.api.program-studi-list") }}?fakultas=' + encodeURIComponent(fakultas))
-                    .then(response => {
-                        console.log('Program studi response:', response);
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Program studi data:', data);
-                        prodiSelect.innerHTML = '<option value="">-- Pilih Program Studi --</option>';
-                        
-                        if (data.success && data.data.length > 0) {
-                            console.log('Adding', data.data.length, 'program studi options');
-                            data.data.forEach(prodi => {
-                                const option = document.createElement('option');
-                                option.value = prodi;
-                                option.textContent = prodi;
-                                prodiSelect.appendChild(option);
-                            });
-                            prodiSelect.disabled = false;
-
-                            // Restore old value if exists
-                            const oldProdi = '{{ old("program_studi") }}';
-                            if (oldProdi) {
-                                prodiSelect.value = oldProdi;
-                            }
-                        } else {
-                            console.warn('No program studi data received');
-                            prodiSelect.innerHTML = '<option value="">Tidak ada program studi</option>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading program studi:', error);
-                        prodiSelect.innerHTML = '<option value="">Gagal memuat data</option>';
-                    });
-            }
+            // Program studi is now a manual text input field
+            // No loading function needed - users can type directly
 
             // Event Listeners
             roleSelect.addEventListener('change', toggleFormFields);
-            fakultasSelect.addEventListener('change', function() {
-                loadProgramStudiList(this.value);
-            });
+            // Program studi is now manual text input, no need to load options on fakultas change
 
             // Initial state - check if role is already selected (from old() values)
             const oldRole = '{{ old("role") }}';
