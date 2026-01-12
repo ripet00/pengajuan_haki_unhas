@@ -413,7 +413,17 @@ use Illuminate\Support\Facades\Storage;
                                         <i class="fas fa-edit mr-1"></i>Perlu mengubah keputusan review?
                                     </p>
                                     
-                                    @if($submissionPaten->biodataPaten)
+                                    @if($submissionPaten->pendamping_paten_id && in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW, \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE, \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW]))
+                                        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                                            <div class="flex items-start">
+                                                <i class="fas fa-lock text-red-600 mt-1 mr-2"></i>
+                                                <div>
+                                                    <p class="text-sm text-red-800 font-medium">Update Review Tidak Diizinkan</p>
+                                                    <p class="text-xs text-red-700 mt-1">Review format sudah disetujui dan ditugaskan kepada <strong>{{ $submissionPaten->pendampingPaten->name ?? 'Pendamping Paten' }}</strong> untuk review substansi. Perubahan review tidak diizinkan untuk menjaga integritas proses review multi-tahap.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @elseif($submissionPaten->biodataPaten)
                                         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
                                             <div class="flex items-start">
                                                 <i class="fas fa-lock text-yellow-600 mt-1 mr-2"></i>

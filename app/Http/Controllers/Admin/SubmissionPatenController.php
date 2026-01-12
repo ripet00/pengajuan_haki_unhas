@@ -51,7 +51,7 @@ class SubmissionPatenController extends Controller
      */
     public function show(SubmissionPaten $submissionPaten)
     {
-        $submissionPaten->load(['user', 'reviewedByAdmin', 'biodataReviewedByAdmin', 'biodataPaten.inventors', 'histories.admin']);
+        $submissionPaten->load(['user', 'reviewedByAdmin', 'biodataReviewedByAdmin', 'biodataPaten.inventors', 'histories.admin', 'pendampingPaten']);
         
         return view('admin.submissions-paten.show', compact('submissionPaten'));
     }
@@ -155,6 +155,20 @@ class SubmissionPatenController extends Controller
      */
     public function updateReview(Request $request, SubmissionPaten $submissionPaten)
     {
+        // Prevent update if format already approved and assigned to Pendamping Paten
+        if ($submissionPaten->pendamping_paten_id && in_array($submissionPaten->status, [
+            SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW,
+            SubmissionPaten::STATUS_APPROVED_SUBSTANCE,
+            SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW
+        ])) {
+            return back()->withErrors(['status' => 'Tidak dapat mengubah review format karena sudah disetujui dan ditugaskan kepada Pendamping Paten untuk review substansi. Perubahan review tidak diizinkan untuk menjaga integritas proses review.']);
+        }
+
+        // Prevent update if user has already uploaded biodata
+        if ($submissionPaten->biodataPaten) {
+            return back()->withErrors(['status' => 'Tidak dapat mengubah review karena user sudah mengupload biodata. Untuk mencegah inkonsistensi data, silakan hubungi user untuk koordinasi lebih lanjut.']);
+        }
+
         $request->validate([
             'status' => 'required|in:approved_format,rejected_format_review',
             'rejection_reason' => 'required_if:status,rejected_format_review',
