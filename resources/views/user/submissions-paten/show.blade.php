@@ -472,6 +472,53 @@ use Illuminate\Support\Facades\Storage;
                     </div>
                 </div>
 
+                <!-- Format Review Rejection Notes Section -->
+                @if($submissionPaten->status == SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW && $submissionPaten->rejection_reason)
+                    <div class="mt-6 bg-red-50 border-2 border-red-200 rounded-lg p-5">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-file-alt text-red-600"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <h4 class="text-base font-semibold text-red-900 mb-2">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>Catatan Review Format dari Admin Paten
+                                </h4>
+                                <div class="bg-white border border-red-200 rounded-lg p-4 mb-4">
+                                    <p class="text-sm text-gray-800 whitespace-pre-line">{{ $submissionPaten->rejection_reason }}</p>
+                                </div>
+                                
+                                @if($submissionPaten->file_review_path)
+                                    <div class="bg-white border border-red-200 rounded-lg p-3">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-file-word text-blue-600 text-xl mr-3"></i>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-900">File Review dari Admin Paten</p>
+                                                    <p class="text-xs text-gray-600">Catatan koreksi format - {{ $submissionPaten->file_review_name ?? 'File Koreksi.docx' }}</p>
+                                                </div>
+                                            </div>
+                                            <a href="{{ Storage::disk('public')->url($submissionPaten->file_review_path) }}" 
+                                               download
+                                               class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200 shadow-sm hover:shadow-md">
+                                                <i class="fas fa-download mr-2"></i>Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <div class="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg">
+                                    <p class="text-sm text-red-800">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Silakan perbaiki format paten sesuai catatan di atas, kemudian upload ulang dokumen di bagian bawah.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Substance Review Notes Section -->
                 @if($submissionPaten->status == SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW && $submissionPaten->substance_review_notes)
                     <div class="mt-6 bg-orange-50 border-2 border-orange-200 rounded-lg p-5">
@@ -935,12 +982,12 @@ use Illuminate\Support\Facades\Storage;
                 @endif
 
                 <!-- Revision Section -->
-                @if($submissionPaten->status == 'rejected')
-                <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <h4 class="text-sm font-semibold text-yellow-800 mb-3">
-                        <i class="fas fa-redo mr-1"></i>Revisi Pengajuan
+                @if($submissionPaten->status == SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW)
+                <div class="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <h4 class="text-sm font-semibold text-red-800 mb-3">
+                        <i class="fas fa-redo mr-1"></i>Revisi Format Paten
                     </h4>
-                    <p class="text-sm text-yellow-700 mb-4">Anda dapat mengunggah ulang dokumen yang telah diperbaiki.</p>
+                    <p class="text-sm text-red-700 mb-4">Format dokumen ditolak oleh admin. Silakan perbaiki dan upload ulang dokumen yang telah diperbaiki.</p>
                     
                     <form method="POST" action="{{ route('user.submissions-paten.resubmit', $submissionPaten) }}" enctype="multipart/form-data" class="space-y-4">
                         @csrf
