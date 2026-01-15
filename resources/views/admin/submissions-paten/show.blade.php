@@ -368,12 +368,15 @@ use Illuminate\Support\Facades\Storage;
                         @else
                             <div class="mb-6">
                                 <div class="text-center mb-4">
-                                    @if(in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT, \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE]))
+                                    @if(in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT, \App\Models\SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW, \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE]))
                                         <i class="fas fa-check-circle text-green-500 text-3xl"></i>
                                         <h4 class="text-green-700 font-semibold mt-2">Status: Disetujui</h4>
-                                    @else
+                                    @elseif($submissionPaten->status == \App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW)
                                         <i class="fas fa-times-circle text-red-500 text-3xl"></i>
                                         <h4 class="text-red-700 font-semibold mt-2">Status: Ditolak</h4>
+                                    @else
+                                        <i class="fas fa-question-circle text-orange-500 text-3xl"></i>
+                                        <h4 class="text-orange-700 font-semibold mt-2">Status: {{ ucfirst($submissionPaten->status) }}</h4>
                                     @endif
                                     
                                     <div class="text-sm text-gray-600 mt-2">
