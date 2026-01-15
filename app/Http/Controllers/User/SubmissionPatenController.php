@@ -170,9 +170,9 @@ class SubmissionPatenController extends Controller
             abort(403, 'Unauthorized access to this submission.');
         }
 
-        // Check if submission is rejected
-        if ($submissionPaten->status !== 'rejected') {
-            return back()->with('error', 'Hanya submission yang ditolak yang dapat diajukan ulang.');
+        // Check if submission is rejected (format review)
+        if ($submissionPaten->status !== SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW) {
+            return back()->with('error', 'Hanya submission dengan format yang ditolak yang dapat diajukan ulang.');
         }
 
         try {
@@ -219,15 +219,14 @@ class SubmissionPatenController extends Controller
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
                 'file_size' => $file->getSize(),
-                'status' => 'pending',
+                'status' => SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW,
                 'rejection_reason' => null,
-                'revisi' => true,
                 'reviewed_at' => null,
                 'reviewed_by_admin_id' => null,
             ]);
 
             return redirect()->route('user.submissions-paten.show', $submissionPaten)
-                           ->with('success', 'Pengajuan paten berhasil diajukan ulang. Menunggu review admin.');
+                           ->with('success', 'Pengajuan paten berhasil diajukan ulang. Menunggu review format dari admin.');
 
         } catch (\Exception $e) {
             Log::error('Paten resubmission error: ' . $e->getMessage());
