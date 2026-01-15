@@ -449,8 +449,8 @@ use Illuminate\Support\Facades\Storage;
 
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Jenis File</label>
-                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
-                                <i class="fas fa-file-pdf mr-1"></i>PDF
+                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                                <i class="fas fa-file-word mr-1"></i>DOCX
                             </span>
                         </div>
 
@@ -460,7 +460,7 @@ use Illuminate\Support\Facades\Storage;
                                 <a href="{{ asset('storage/' . $submissionPaten->file_path) }}" 
                                    target="_blank"
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                    <i class="fas fa-eye mr-2"></i>Lihat File PDF
+                                    <i class="fas fa-eye mr-2"></i>Lihat File DOCX
                                 </a>
                                 <a href="{{ asset('storage/' . $submissionPaten->file_path) }}" 
                                    download="{{ $submissionPaten->file_name }}"
