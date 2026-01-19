@@ -437,25 +437,64 @@ use Illuminate\Support\Facades\Storage;
                                             </div>
                                         </div>
                                     @else
-                                        <form method="POST" action="{{ route('admin.submissions-paten.update-review', $submissionPaten) }}" enctype="multipart/form-data" class="space-y-4">
+                                        <form method="POST" action="{{ route('admin.submissions-paten.update-review', $submissionPaten) }}" enctype="multipart/form-data" class="space-y-4" id="editReviewForm">
                                             @csrf
                                             
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-700 mb-3">Ubah Keputusan:</label>
                                                 <div class="space-y-2">
                                                     <label class="flex items-center">
-                                                        <input type="radio" name="status" value="approved_format" {{ in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT, \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE]) ? 'checked' : '' }} required class="text-green-600 focus:ring-green-500 border-gray-300">
+                                                        <input type="radio" name="status" value="approved_format" {{ in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT, \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE]) ? 'checked' : '' }} required class="text-green-600 focus:ring-green-500 border-gray-300" id="approvedRadioEdit">
                                                         <span class="ml-2 text-green-700 font-medium">
                                                             <i class="fas fa-check-circle mr-1"></i>Setujui Format
                                                         </span>
                                                     </label>
                                                     <label class="flex items-center">
-                                                        <input type="radio" name="status" value="rejected_format_review" {{ in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW, \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW]) ? 'checked' : '' }} required class="text-red-600 focus:ring-red-500 border-gray-300">
+                                                        <input type="radio" name="status" value="rejected_format_review" {{ in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW, \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW]) ? 'checked' : '' }} required class="text-red-600 focus:ring-red-500 border-gray-300" id="rejectedRadioEdit">
                                                         <span class="ml-2 text-red-700 font-medium">
                                                             <i class="fas fa-times-circle mr-1"></i>Tolak Format
                                                         </span>
                                                     </label>
                                                 </div>
+                                            </div>
+
+                                            <!-- Pendamping Paten Selection for Edit (Show when Approve is selected) -->
+                                            <div id="pendampingSectionEdit" class="{{ in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW, \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW]) ? 'hidden' : '' }}">
+                                                <label for="pendamping_paten_id_edit" class="block text-sm font-medium text-gray-700 mb-2">
+                                                    <i class="fas fa-user-tie text-purple-600 mr-1"></i>
+                                                    Pilih Pendamping Paten: <span class="text-red-500">*</span>
+                                                </label>
+                                                <select 
+                                                    id="pendamping_paten_id_edit" 
+                                                    name="pendamping_paten_id" 
+                                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                                    {{ in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT, \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE]) ? 'required' : '' }}>
+                                                    <option value="">-- Pilih Pendamping Paten --</option>
+                                                </select>
+                                                <p id="loadingPendampingEdit" class="mt-2 text-sm text-gray-500">
+                                                    <i class="fas fa-spinner fa-spin mr-1"></i>Memuat daftar pendamping...
+                                                </p>
+                                                
+                                                <div id="pendampingInfoEdit" class="bg-purple-50 border border-purple-200 rounded-lg p-3 mt-3 hidden">
+                                                    <p class="text-xs font-semibold text-purple-900 mb-2">Informasi Pendamping:</p>
+                                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                                        <div>
+                                                            <span class="text-gray-600">Fakultas:</span>
+                                                            <p id="infoFakultasEdit" class="font-medium text-gray-900">-</p>
+                                                        </div>
+                                                        <div>
+                                                            <span class="text-gray-600">Program Studi:</span>
+                                                            <p id="infoProdiEdit" class="font-medium text-gray-900">-</p>
+                                                        </div>
+                                                        <div class="col-span-2">
+                                                            <span class="text-gray-600">Beban Kerja Aktif:</span>
+                                                            <p id="infoWorkloadEdit" class="font-medium text-gray-900">-</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <p id="approveNoticeEdit" class="text-center text-sm text-purple-700 font-medium mt-2 {{ in_array($submissionPaten->status, [\App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW, \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW]) ? 'hidden' : '' }}">
+                                                    <i class="fas fa-info-circle mr-1"></i>Pendamping paten akan otomatis ditugaskan setelah format disetujui
+                                                </p>
                                             </div>
 
                                             <div>
@@ -675,6 +714,15 @@ use Illuminate\Support\Facades\Storage;
             loadPendampingList(selectReviewElement, loadingReviewElement, infoReviewBox, 'infoFakultasReview', 'infoProdiReview', 'infoWorkloadReview');
         }
         
+        // Load for edit review form
+        const selectEditElement = document.getElementById('pendamping_paten_id_edit');
+        const loadingEditElement = document.getElementById('loadingPendampingEdit');
+        const infoEditBox = document.getElementById('pendampingInfoEdit');
+        
+        if (selectEditElement && loadingEditElement) {
+            loadPendampingList(selectEditElement, loadingEditElement, infoEditBox, 'infoFakultasEdit', 'infoProdiEdit', 'infoWorkloadEdit');
+        }
+        
         // Handle show/hide pendamping section based on radio selection in review form
         const approvedRadio = document.querySelector('input[name="status"][value="approved_format"]');
         const rejectedRadio = document.querySelector('input[name="status"][value="rejected_format_review"]');
@@ -700,6 +748,35 @@ use Illuminate\Support\Facades\Storage;
                     }
                     if (infoReviewBox) infoReviewBox.classList.add('hidden');
                     if (approveNotice) approveNotice.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Handle show/hide pendamping section for EDIT REVIEW form
+        const approvedRadioEdit = document.getElementById('approvedRadioEdit');
+        const rejectedRadioEdit = document.getElementById('rejectedRadioEdit');
+        const pendampingSectionEdit = document.getElementById('pendampingSectionEdit');
+        const pendampingSelectEdit = document.getElementById('pendamping_paten_id_edit');
+        const approveNoticeEdit = document.getElementById('approveNoticeEdit');
+        
+        if (approvedRadioEdit && rejectedRadioEdit && pendampingSectionEdit) {
+            approvedRadioEdit.addEventListener('change', function() {
+                if (this.checked) {
+                    pendampingSectionEdit.classList.remove('hidden');
+                    if (pendampingSelectEdit) pendampingSelectEdit.required = true;
+                    if (approveNoticeEdit) approveNoticeEdit.classList.remove('hidden');
+                }
+            });
+            
+            rejectedRadioEdit.addEventListener('change', function() {
+                if (this.checked) {
+                    pendampingSectionEdit.classList.add('hidden');
+                    if (pendampingSelectEdit) {
+                        pendampingSelectEdit.required = false;
+                        pendampingSelectEdit.value = '';
+                    }
+                    if (infoEditBox) infoEditBox.classList.add('hidden');
+                    if (approveNoticeEdit) approveNoticeEdit.classList.add('hidden');
                 }
             });
         }

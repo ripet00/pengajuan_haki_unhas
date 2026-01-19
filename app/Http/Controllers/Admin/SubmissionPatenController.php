@@ -173,9 +173,12 @@ class SubmissionPatenController extends Controller
             'status' => 'required|in:approved_format,rejected_format_review',
             'rejection_reason' => 'required_if:status,rejected_format_review',
             'file_review' => 'nullable|file|mimes:docx,doc,pdf',
+            'pendamping_paten_id' => 'required_if:status,approved_format|nullable|exists:admins,id',
         ], [
             'rejection_reason.required_if' => 'Alasan penolakan harus diisi jika status ditolak.',
             'file_review.mimes' => 'File harus berformat DOCX, DOC, atau PDF.',
+            'pendamping_paten_id.required_if' => 'Pendamping Paten harus dipilih jika format disetujui.',
+            'pendamping_paten_id.exists' => 'Pendamping Paten tidak ditemukan.',
         ]);
 
         $admin = $this->getCurrentAdmin();
@@ -187,6 +190,13 @@ class SubmissionPatenController extends Controller
             'reviewed_at' => now(),
             'reviewed_by_admin_id' => $admin->id,
         ];
+        
+        // Handle pendamping_paten_id for approved format
+        if ($request->status === 'approved_format' && $request->filled('pendamping_paten_id')) {
+            $updateData['pendamping_paten_id'] = $request->pendamping_paten_id;
+            $updateData['assigned_at'] = now();
+            $updateData['status'] = SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW;
+        }
 
         // Handle file upload
         if ($request->hasFile('file_review')) {
@@ -197,15 +207,6 @@ class SubmissionPatenController extends Controller
 
             $file = $request->file('file_review');
             $fileName = 'review_' . $submissionPaten->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-        // Save history for format review update
-        SubmissionPatenHistory::create([
-            'submission_paten_id' => $submissionPaten->id,
-            'admin_id' => $admin->id,
-            'review_type' => 'format_review',
-            'action' => $request->status === 'approved_format' ? 'approved' : 'rejected',
-            'notes' => $request->rejection_reason ?? null,
-        ]);
-
             $filePath = $file->storeAs('review_files/paten', $fileName, 'public');
 
             $updateData['file_review_path'] = $filePath;
@@ -214,6 +215,15 @@ class SubmissionPatenController extends Controller
         }
 
         $submissionPaten->update($updateData);
+        
+        // Save history for format review update
+        SubmissionPatenHistory::create([
+            'submission_paten_id' => $submissionPaten->id,
+            'admin_id' => $admin->id,
+            'review_type' => 'format_review',
+            'action' => $request->status === 'approved_format' ? 'approved' : 'rejected',
+            'notes' => $request->rejection_reason ?? null,
+        ]);
 
         $statusText = $request->status === 'approved_format' ? 'disetujui' : 'ditolak';
         
