@@ -59,7 +59,7 @@ class BiodataPatenController extends Controller
 
         $signingOverdue = BiodataPaten::where('status', 'approved')
             ->where('document_submitted', true)
-            ->where('ready_for_signing', false)
+            ->whereNull('application_document')
             ->get()
             ->filter(function($biodataPaten) {
                 return $biodataPaten->isSigningOverdue();
@@ -250,25 +250,40 @@ class BiodataPatenController extends Controller
             return back()->with('error', 'Admin session tidak valid.');
         }
 
-        // Only approved biodata with submitted documents can be marked ready for signing
+        // This method is deprecated - use ReportPatenController::uploadApplicationDocument instead
+        return back()->with('error', 'Fitur ini sudah diganti. Silakan gunakan menu Laporan Paten untuk upload dokumen permohonan.');
+    }
+
+    /**
+     * Mark certificate as issued for biodata paten
+     */
+    public function markCertificateIssued(BiodataPaten $biodataPaten)
+    {
+        $admin = $this->getCurrentAdmin();
+        
+        if (!$admin) {
+            return back()->with('error', 'Admin session tidak valid.');
+        }
+
+        // Only approved biodata with submitted documents can have certificates issued
         if ($biodataPaten->status !== 'approved') {
-            return back()->with('error', 'Hanya biodata yang disetujui yang dapat ditandai siap ditandatangani.');
+            return back()->with('error', 'Hanya biodata yang disetujui yang dapat ditandai sertifikat terbit.');
         }
 
         if (!$biodataPaten->document_submitted) {
-            return back()->with('error', 'Berkas harus disetor terlebih dahulu sebelum dapat ditandai siap ditandatangani pimpinan.');
+            return back()->with('error', 'Berkas harus disetor terlebih dahulu sebelum sertifikat dapat ditandai terbit.');
         }
 
-        // Check if already marked
-        if ($biodataPaten->ready_for_signing) {
-            return back()->with('error', 'Dokumen sudah ditandai sebagai siap ditandatangani sebelumnya.');
+        // Check if already issued
+        if ($biodataPaten->certificate_issued) {
+            return back()->with('error', 'Sertifikat sudah ditandai sebagai terbit sebelumnya.');
         }
 
         $biodataPaten->update([
-            'ready_for_signing' => true,
-            'ready_for_signing_at' => now(),
+            'certificate_issued' => true,
+            'certificate_issued_at' => now(),
         ]);
 
-        return back()->with('success', 'Dokumen paten berhasil ditandai sebagai siap ditandatangani pimpinan pada ' . now()->format('d F Y, H:i') . ' WITA');
+        return back()->with('success', 'Sertifikat Paten berhasil ditandai sebagai sudah terbit pada ' . now()->format('d F Y, H:i') . ' WITA');
     }
 }
