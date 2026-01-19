@@ -247,15 +247,15 @@
                                         </span>
                                     @endif
                                     
-                                    {{-- 5. Status Penyetoran Berkas --}}
+                                    {{-- 5. Status Penyetoran Berkas & Dokumen --}}
                                     @if(isset($submission->biodataPaten))
-                                        @if($submission->biodataPaten->document_submitted_at)
+                                        @if($submission->biodataPaten->application_document)
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                <i class="fas fa-file-pdf mr-1"></i>Dokumen: Terbit
+                                            </span>
+                                        @elseif($submission->biodataPaten->document_submitted_at)
                                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 <i class="fas fa-check-circle mr-1"></i>Berkas: Disetor
-                                            </span>
-                                        @elseif($submission->biodataPaten->ready_for_signing)
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                <i class="fas fa-hourglass-half mr-1"></i>Berkas: Siap Setor
                                             </span>
                                         @else
                                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
