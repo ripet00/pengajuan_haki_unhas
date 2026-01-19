@@ -484,6 +484,17 @@
                                             <i class="fas fa-edit mr-1"></i>Perlu mengubah keputusan review?
                                         </p>
                                         
+                                        @if($biodataPaten->document_submitted)
+                                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                                <div class="flex items-start">
+                                                    <i class="fas fa-lock text-yellow-600 mt-1 mr-2"></i>
+                                                    <div>
+                                                        <p class="text-sm text-yellow-800 font-medium">Update Review Tidak Tersedia</p>
+                                                        <p class="text-xs text-yellow-700 mt-1">User sudah menyetor berkas fisik. Untuk mencegah inkonsistensi data, perubahan review tidak diizinkan. Silakan hubungi user untuk koordinasi lebih lanjut jika ada perubahan yang diperlukan.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @else
                                         <form id="editReviewForm" method="POST" action="{{ route('admin.biodata-paten.review', $biodataPaten) }}" class="space-y-4">
                                             @csrf
 
@@ -569,6 +580,7 @@
                                                 <i class="fas fa-edit mr-2"></i>UPDATE REVIEW
                                             </button>
                                         </form>
+                                        @endif
                                     </div>
                                 </div>
                             @endif
