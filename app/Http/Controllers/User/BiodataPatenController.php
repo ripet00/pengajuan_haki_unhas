@@ -88,10 +88,10 @@ class BiodataPatenController extends Controller
             abort(403, 'Unauthorized access to this submission.');
         }
 
-        // Check if submission is approved
-        if ($submissionPaten->status !== 'approved') {
+        // Check if submission is approved (substance review passed)
+        if ($submissionPaten->status !== SubmissionPaten::STATUS_APPROVED_SUBSTANCE) {
             return redirect()->route('user.submissions-paten.show', $submissionPaten)
-                ->with('error', 'Biodata hanya dapat dibuat untuk pengajuan paten yang telah disetujui.');
+                ->with('error', 'Biodata hanya dapat dibuat untuk pengajuan paten yang substansinya telah disetujui.');
         }
 
         // Validate the request
