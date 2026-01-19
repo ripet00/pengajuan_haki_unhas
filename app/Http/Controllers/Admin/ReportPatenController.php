@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BiodataPaten;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ReportPatenController extends Controller
 {
@@ -31,10 +32,10 @@ class ReportPatenController extends Controller
                     break;
                 case 'document_submitted':
                     $query->where('document_submitted', true)
-                          ->where('ready_for_signing', false);
+                          ->whereNull('application_document');
                     break;
-                case 'ready_for_signing':
-                    $query->where('ready_for_signing', true);
+                case 'document_issued':
+                    $query->whereNotNull('application_document');
                     break;
                 case 'document_overdue':
                     // Will filter in collection
@@ -69,7 +70,7 @@ class ReportPatenController extends Controller
                 });
             } elseif ($request->tracking_status === 'signing_overdue') {
                 $biodataPatens = $biodataPatens->filter(function($biodata) {
-                    return $biodata->document_submitted && !$biodata->ready_for_signing && $biodata->isSigningOverdue();
+                    return $biodata->document_submitted && !$biodata->application_document && $biodata->isSigningOverdue();
                 });
             }
         }
@@ -94,11 +95,11 @@ class ReportPatenController extends Controller
         
         $documentSubmitted = BiodataPaten::where('status', 'approved')
             ->where('document_submitted', true)
-            ->where('ready_for_signing', false)
+            ->whereNull('application_document')
             ->count();
         
-        $readyForSigning = BiodataPaten::where('status', 'approved')
-            ->where('ready_for_signing', true)
+        $documentIssued = BiodataPaten::where('status', 'approved')
+            ->whereNotNull('application_document')
             ->count();
 
         $documentOverdue = BiodataPaten::where('status', 'approved')
@@ -111,7 +112,7 @@ class ReportPatenController extends Controller
 
         $signingOverdue = BiodataPaten::where('status', 'approved')
             ->where('document_submitted', true)
-            ->where('ready_for_signing', false)
+            ->whereNull('application_document')
             ->get()
             ->filter(function($biodata) {
                 return $biodata->isSigningOverdue();
@@ -123,7 +124,7 @@ class ReportPatenController extends Controller
             'totalApproved',
             'documentPending',
             'documentSubmitted',
-            'readyForSigning',
+            'documentIssued',
             'documentOverdue',
             'signingOverdue'
         ));
@@ -157,9 +158,9 @@ class ReportPatenController extends Controller
     }
 
     /**
-     * Mark biodata paten document as ready for signing by leadership
+     * Upload application document (Dokumen Permohonan)
      */
-    public function markReadyForSigning(BiodataPaten $biodataPaten)
+    public function uploadApplicationDocument(Request $request, BiodataPaten $biodataPaten)
     {
         $admin = $this->getCurrentAdmin();
         
@@ -168,22 +169,45 @@ class ReportPatenController extends Controller
         }
 
         if ($biodataPaten->status !== 'approved') {
-            return back()->with('error', 'Hanya biodata yang disetujui yang dapat ditandai siap ditandatangani.');
+            return back()->with('error', 'Hanya biodata yang disetujui yang dapat diunggah dokumen permohonan.');
         }
 
         if (!$biodataPaten->document_submitted) {
-            return back()->with('error', 'Berkas harus disetor terlebih dahulu sebelum dapat ditandai siap ditandatangani pimpinan.');
+            return back()->with('error', 'Berkas harus disetor terlebih dahulu sebelum dapat mengunggah dokumen permohonan.');
         }
 
-        if ($biodataPaten->ready_for_signing) {
-            return back()->with('error', 'Dokumen sudah ditandai sebagai siap ditandatangani sebelumnya.');
+        if ($biodataPaten->application_document) {
+            return back()->with('error', 'Dokumen permohonan sudah diunggah sebelumnya.');
         }
 
-        $biodataPaten->update([
-            'ready_for_signing' => true,
-            'ready_for_signing_at' => now(),
+        $request->validate([
+            'application_document' => [
+                'required',
+                'file',
+                'mimetypes:application/pdf,application/x-pdf,application/acrobat,applications/vnd.pdf,text/pdf,text/x-pdf',
+                'max:20480' // max 20MB
+            ],
+        ], [
+            'application_document.required' => 'File dokumen permohonan wajib diunggah.',
+            'application_document.file' => 'File yang diunggah tidak valid.',
+            'application_document.mimetypes' => 'Dokumen permohonan harus berformat PDF.',
+            'application_document.max' => 'Ukuran file maksimal 20MB.',
         ]);
 
-        return back()->with('success', 'Dokumen paten berhasil ditandai sebagai siap ditandatangani pimpinan pada ' . now()->format('d F Y, H:i') . ' WITA');
+        try {
+            $file = $request->file('application_document');
+            $filename = 'dokumen_permohonan_paten_' . $biodataPaten->id . '_' . time() . '.pdf';
+            $path = $file->storeAs('application_documents', $filename, 'public');
+
+            $biodataPaten->update([
+                'application_document' => $path,
+                'document_issued_at' => now(),
+            ]);
+
+            return back()->with('success', 'Dokumen permohonan paten berhasil diunggah dan diterbitkan pada ' . now()->format('d F Y, H:i') . ' WITA');
+        } catch (\Exception $e) {
+            Log::error('Error uploading application document: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat mengunggah dokumen: ' . $e->getMessage());
+        }
     }
 }
