@@ -20,16 +20,15 @@ class BiodataPaten extends Model
         'reviewed_by',
         'document_submitted',
         'document_submitted_at',
-        'ready_for_signing',
-        'ready_for_signing_at',
+        'application_document',
+        'document_issued_at',
     ];
 
     protected $casts = [
         'reviewed_at' => 'datetime',
         'document_submitted_at' => 'datetime',
-        'ready_for_signing_at' => 'datetime',
+        'document_issued_at' => 'datetime',
         'document_submitted' => 'boolean',
-        'ready_for_signing' => 'boolean',
     ];
 
     /**
@@ -190,7 +189,7 @@ class BiodataPaten extends Model
      */
     public function isSigningOverdue()
     {
-        if (!$this->ready_for_signing && $this->getSigningDeadline()) {
+        if (!$this->application_document && $this->getSigningDeadline()) {
             return now()->isAfter($this->getSigningDeadline());
         }
         return false;
