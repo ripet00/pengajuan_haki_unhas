@@ -661,96 +661,150 @@
                                 @endif
                             </div>
 
-                            <!-- Certificate Issue Status -->
-                            <div>
+                            <!-- Upload Application Document Status -->
+                            @if($biodataPaten->document_submitted)
+                            <div class="mb-6 pb-6 border-b border-gray-200">
                                 <div class="flex items-center justify-between mb-3">
                                     <h4 class="font-semibold text-gray-800">
-                                        <i class="fas fa-certificate mr-2 text-blue-500"></i>Status Sertifikat Paten
+                                        <i class="fas fa-file-pdf mr-2 text-purple-500"></i>Dokumen Permohonan Paten
                                     </h4>
-                                    @if($biodataPaten->certificate_issued)
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    @if($biodataPaten->application_document)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                             <i class="fas fa-check-double mr-1"></i>Sudah Terbit
                                         </span>
-                                    @elseif($biodataPaten->document_submitted)
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                            <i class="fas fa-hourglass-half mr-1"></i>Dalam Proses
-                                        </span>
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            <i class="fas fa-minus-circle mr-1"></i>Menunggu Berkas
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            <i class="fas fa-hourglass-half mr-1"></i>Belum Upload
                                         </span>
                                     @endif
                                 </div>
 
-                                @if($biodataPaten->certificate_issued)
+                                @if($biodataPaten->application_document)
+                                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-3">
+                                        <p class="text-sm text-purple-800">
+                                            <i class="fas fa-calendar-check mr-1"></i>
+                                            Terbit pada: <strong>{{ $biodataPaten->document_issued_at->format('d F Y, H:i') }} WITA</strong>
+                                        </p>
+                                        <p class="text-xs text-purple-700 mt-1">
+                                            {{ $biodataPaten->document_issued_at->diffForHumans() }}
+                                        </p>
+                                        <div class="mt-3">
+                                            <a href="{{ Storage::url($biodataPaten->application_document) }}" 
+                                               target="_blank"
+                                               class="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded transition duration-200">
+                                                <i class="fas fa-download mr-2"></i>Download Dokumen Permohonan
+                                            </a>
+                                        </div>
+                                    </div>
+                                @else
                                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
                                         <p class="text-sm text-blue-800">
-                                            <i class="fas fa-calendar-check mr-1"></i>
-                                            Terbit pada: <strong>{{ $biodataPaten->certificate_issued_at->format('d F Y, H:i') }} WITA</strong>
-                                        </p>
-                                        <p class="text-xs text-blue-700 mt-1">
-                                            {{ $biodataPaten->certificate_issued_at->diffForHumans() }}
-                                        </p>
-                                    </div>
-                                @elseif($biodataPaten->document_submitted)
-                                    @php
-                                        $certDeadline = $biodataPaten->getSigningDeadline();
-                                        $certDaysRemaining = $biodataPaten->getDaysUntilSigningDeadline();
-                                        $isCertOverdue = $biodataPaten->isSigningOverdue();
-                                    @endphp
-                                    
-                                    @if($isCertOverdue)
-                                        <div class="bg-red-50 border border-red-300 rounded-lg p-3 mb-3">
-                                            <p class="text-sm font-semibold text-red-900">
-                                                <i class="fas fa-exclamation-triangle mr-1"></i>
-                                                TERLAMBAT! Estimasi selesai: {{ $certDeadline->format('d F Y') }}
-                                            </p>
-                                            <p class="text-xs text-red-700 mt-1">
-                                                Terlambat {{ abs($certDaysRemaining) }} hari. Segera proses penerbitan sertifikat!
-                                            </p>
-                                        </div>
-                                    @elseif($certDaysRemaining <= 5)
-                                        <div class="bg-orange-50 border border-orange-300 rounded-lg p-3 mb-3">
-                                            <p class="text-sm font-semibold text-orange-900">
-                                                <i class="fas fa-hourglass-half mr-1"></i>
-                                                Estimasi selesai: {{ $certDeadline->format('d F Y') }}
-                                            </p>
-                                            <p class="text-xs text-orange-700 mt-1">
-                                                Sisa {{ $certDaysRemaining }} hari lagi (2 minggu sejak berkas disetor)
-                                            </p>
-                                        </div>
-                                    @else
-                                        <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
-                                            <p class="text-sm text-green-800">
-                                                <i class="fas fa-calendar-alt mr-1"></i>
-                                                Estimasi selesai: {{ $certDeadline->format('d F Y') }}
-                                            </p>
-                                            <p class="text-xs text-green-700 mt-1">
-                                                Sisa {{ $certDaysRemaining }} hari lagi (2 minggu sejak berkas disetor)
-                                            </p>
-                                        </div>
-                                    @endif
-                                @else
-                                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-3">
-                                        <p class="text-sm text-gray-700">
                                             <i class="fas fa-info-circle mr-1"></i>
-                                            Menunggu user menyetor berkas terlebih dahulu
+                                            Upload dokumen permohonan paten yang sudah ditandatangani pimpinan (PDF, Max 20MB)
                                         </p>
                                     </div>
-                                @endif
 
-                                <!-- Mark as Issued Form -->
-                                @if($biodataPaten->document_submitted && !$biodataPaten->certificate_issued)
-                                    <form method="POST" action="{{ route('admin.biodata-paten.mark-certificate-issued', $biodataPaten) }}" class="mt-3">
+                                    <!-- Upload Form -->
+                                    <form method="POST" 
+                                          action="{{ route('admin.reports-paten.upload-application-document', $biodataPaten) }}"
+                                          enctype="multipart/form-data"
+                                          id="upload-form-{{ $biodataPaten->id }}"
+                                          onsubmit="return confirmUpload{{ $biodataPaten->id }}()"
+                                          class="mt-3">
                                         @csrf
-                                        <button type="submit" 
-                                                onclick="return confirm('Apakah Anda yakin sertifikat Paten sudah terbit?')"
-                                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 text-sm">
-                                            <i class="fas fa-certificate mr-2"></i>Tandai Sertifikat Sudah Terbit
-                                        </button>
+                                        <div class="flex gap-2">
+                                            <input type="file" 
+                                                   name="application_document" 
+                                                   id="file-{{ $biodataPaten->id }}"
+                                                   accept=".pdf"
+                                                   required
+                                                   onchange="validateFile{{ $biodataPaten->id }}(this)"
+                                                   class="flex-1 text-sm border border-gray-300 rounded px-3 py-2">
+                                            <button type="submit" 
+                                                    id="submit-btn-{{ $biodataPaten->id }}"
+                                                    disabled
+                                                    class="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white text-sm font-semibold py-2 px-4 rounded transition duration-200">
+                                                <i class="fas fa-upload mr-2"></i>Upload Dokumen
+                                            </button>
+                                        </div>
+                                        <small class="text-gray-500 text-xs mt-1 block">Format: PDF, Ukuran Maksimal: 20MB</small>
                                     </form>
+                                    
+                                    <script>
+                                        function validateFile{{ $biodataPaten->id }}(input) {
+                                            const submitBtn = document.getElementById('submit-btn-{{ $biodataPaten->id }}');
+                                            
+                                            if (input.files && input.files[0]) {
+                                                const file = input.files[0];
+                                                
+                                                // Validate file type - accept various PDF MIME types
+                                                const validPdfMimeTypes = [
+                                                    'application/pdf',
+                                                    'application/x-pdf',
+                                                    'application/acrobat',
+                                                    'applications/vnd.pdf',
+                                                    'text/pdf',
+                                                    'text/x-pdf'
+                                                ];
+                                                
+                                                const isValidMime = validPdfMimeTypes.includes(file.type);
+                                                const isValidExtension = file.name.toLowerCase().endsWith('.pdf');
+                                                
+                                                if (!isValidMime && !isValidExtension) {
+                                                    alert('❌ File harus berformat PDF!\n\nFile yang dipilih: ' + file.name + '\nTipe: ' + file.type);
+                                                    input.value = '';
+                                                    submitBtn.disabled = true;
+                                                    return false;
+                                                }
+                                                
+                                                // Validate file size (20MB = 20 * 1024 * 1024 bytes)
+                                                const maxSize = 20 * 1024 * 1024;
+                                                if (file.size > maxSize) {
+                                                    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                                                    alert('❌ Ukuran file melebihi batas maksimal!\n\n' +
+                                                          'File: ' + file.name + '\n' +
+                                                          'Ukuran: ' + fileSizeMB + ' MB\n' +
+                                                          'Maksimal: 20 MB');
+                                                    input.value = '';
+                                                    submitBtn.disabled = true;
+                                                    return false;
+                                                }
+                                                
+                                                // File is valid - enable submit button
+                                                submitBtn.disabled = false;
+                                            } else {
+                                                submitBtn.disabled = true;
+                                            }
+                                        }
+                                        
+                                        function confirmUpload{{ $biodataPaten->id }}() {
+                                            const input = document.getElementById('file-{{ $biodataPaten->id }}');
+                                            if (!input.files || !input.files[0]) {
+                                                alert('Silakan pilih file terlebih dahulu!');
+                                                return false;
+                                            }
+                                            
+                                            const file = input.files[0];
+                                            const fileName = file.name;
+                                            const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+                                            
+                                            const confirmMessage = '📄 KONFIRMASI UPLOAD DOKUMEN PERMOHONAN PATEN\n\n' +
+                                                       '━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
+                                                       'Biodata ID: {{ $biodataPaten->id }}\n' +
+                                                       'Judul Paten: {{ Str::limit($biodataPaten->submissionPaten->judul_paten, 40) }}\n\n' +
+                                                       'File yang akan diupload:\n' +
+                                                       '📎 ' + fileName + '\n' +
+                                                       '📊 Ukuran: ' + fileSize + ' MB\n\n' +
+                                                       '━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
+                                                       '⚠️ Pastikan file sudah benar!\n\n' +
+                                                       'Lanjutkan upload dokumen permohonan?';
+                                            
+                                            return confirm(confirmMessage);
+                                        }
+                                    </script>
                                 @endif
                             </div>
+                            @endif
                         </div>
                         @endif
 
