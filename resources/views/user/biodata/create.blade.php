@@ -170,7 +170,7 @@
         @endif
 
         <!-- Form Section -->
-        <form method="POST" action="{{ route('user.biodata.store', $submission) }}" class="space-y-6">
+        <form method="POST" action="{{ route('user.biodata.store', $submission) }}" class="space-y-6" onsubmit="return confirm('=== KONFIRMASI ===\n\nApakah Anda yakin ingin mengirim biodata Hak Cipta ini?\n\nSetelah dikirim, biodata akan diproses oleh admin untuk review.');">
             @csrf
             
             <!-- Biodata Information -->

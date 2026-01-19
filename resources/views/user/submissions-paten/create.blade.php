@@ -87,7 +87,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('user.submissions-paten.store') }}" enctype="multipart/form-data" class="space-y-6">
+            <form method="POST" action="{{ route('user.submissions-paten.store') }}" enctype="multipart/form-data" class="space-y-6" onsubmit="return confirm('=== KONFIRMASI ===\n\nApakah Anda yakin ingin mengajukan pengajuan Paten ini?\n\nPastikan semua data yang Anda isi sudah benar.');">
                 @csrf
                 
                 <div>
