@@ -309,7 +309,7 @@
                                                             <p class="text-gray-500 text-xs mb-1">Biodata Approved</p>
                                                             <p class="font-semibold text-gray-900">
                                                                 <i class="fas fa-calendar-check mr-1 text-green-500"></i>
-                                                                {{ $biodata->reviewed_at->format('d M Y') }}
+                                                                {{ $biodata->reviewed_at->translatedFormat('d M Y') }}
                                                             </p>
                                                         </div>
                                                         
@@ -318,7 +318,7 @@
                                                             <p class="text-gray-500 text-xs mb-1">Berkas Disetor</p>
                                                             <p class="font-semibold text-gray-900">
                                                                 <i class="fas fa-file-upload mr-1 text-green-500"></i>
-                                                                {{ $biodata->document_submitted_at->format('d M Y') }}
+                                                                {{ $biodata->document_submitted_at->translatedFormat('d M Y') }}
                                                             </p>
                                                         </div>
                                                         @endif
@@ -328,7 +328,7 @@
                                                             <p class="text-gray-500 text-xs mb-1">Sertifikat Terbit</p>
                                                             <p class="font-semibold text-gray-900">
                                                                 <i class="fas fa-certificate mr-1 text-purple-500"></i>
-                                                                {{ $biodata->certificate_issued_at->format('d M Y') }}
+                                                                {{ $biodata->certificate_issued_at->translatedFormat('d M Y') }}
                                                             </p>
                                                         </div>
                                                         @endif

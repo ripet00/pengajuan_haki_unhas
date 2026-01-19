@@ -271,7 +271,7 @@
                                 
                                 <div class="text-sm text-gray-600">
                                     <i class="fas fa-calendar-alt mr-1"></i>
-                                    Diajukan: {{ $submission->created_at->format('d F Y, H:i') }} WITA
+                                    Diajukan: {{ $submission->created_at->translatedFormat('d F Y, H:i') }} WITA
                                 </div>
                             </div>
                             

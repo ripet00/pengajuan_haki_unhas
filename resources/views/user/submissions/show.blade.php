@@ -338,13 +338,13 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Tanggal Pengajuan</label>
-                            <p class="text-gray-900">{{ $submission->created_at->format('d F Y, H:i') }} WITA</p>
+                            <p class="text-gray-900">{{ $submission->created_at->translatedFormat('d F Y, H:i') }} WITA</p>
                         </div>
 
                         @if($submission->reviewed_at)
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Tanggal Review</label>
-                            <p class="text-gray-900">{{ $submission->reviewed_at->format('d F Y, H:i') }} WITA</p>
+                            <p class="text-gray-900">{{ $submission->reviewed_at->translatedFormat('d F Y, H:i') }} WITA</p>
                         </div>
                         @endif
 
@@ -485,7 +485,7 @@
                                         
                                         @if($submission->biodata->created_at)
                                             <p class="text-sm text-gray-600">
-                                                Dibuat: {{ $submission->biodata->created_at->format('d F Y, H:i') }} WITA
+                                                Dibuat: {{ $submission->biodata->created_at->translatedFormat('d F Y, H:i') }} WITA
                                             </p>
                                         @endif
                                         
@@ -544,7 +544,7 @@
                                                         <i class="fas fa-check-circle mr-1"></i>Terima Kasih Telah Mengumpulkan Berkas HKI
                                                     </h5>
                                                     <p class="text-sm text-blue-700 mb-3">
-                                                        Berkas HKI Anda telah diterima pada <strong>{{ $biodata->document_submitted_at->format('d F Y') }}</strong>.
+                                                        Berkas HKI Anda telah diterima pada <strong>{{ $biodata->document_submitted_at->translatedFormat('d F Y') }}</strong>.
                                                     </p>
                                                     
                                                     <div class="bg-blue-100 border border-blue-200 rounded-lg p-3 mb-3">

@@ -161,8 +161,8 @@
                                                     </span>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <div class="font-semibold">{{ $jenisKarya->created_at->format('d/m/Y') }}</div>
-                                                    <div class="text-xs font-medium text-gray-600">{{ $jenisKarya->created_at->format('H:i') }}</div>
+                                                    <div class="font-semibold">{{ $jenisKarya->created_at->translatedFormat('d/m/Y') }}</div>
+                                                    <div class="text-xs font-medium text-gray-600">{{ $jenisKarya->created_at->translatedFormat('H:i') }}</div>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                                     <div class="flex justify-center space-x-2">

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -293,7 +293,7 @@
                                                             <!-- Document Status -->
                                                             @if($biodata->document_submitted)
                                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
-                                                                    <i class="fas fa-check-circle mr-1"></i>Berkas ✓
+                                                                    <i class="fas fa-check-circle mr-1"></i>Berkas ?
                                                                 </span>
                                                             @elseif($biodata->isDocumentOverdue())
                                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
@@ -308,7 +308,7 @@
                                                             <!-- Certificate Status -->
                                                             @if($biodata->certificate_issued)
                                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                                                    <i class="fas fa-certificate mr-1"></i>Sertifikat ✓
+                                                                    <i class="fas fa-certificate mr-1"></i>Sertifikat ?
                                                                 </span>
                                                             @elseif($biodata->document_submitted && $biodata->isSigningOverdue())
                                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-800">
@@ -325,7 +325,7 @@
                                                     @endif
                                                 </td>
                                                 <td class="px-6 py-4 text-sm text-gray-500">
-                                                    {{ $biodata->created_at->format('d M Y H:i') }}
+                                                    {{ $biodata->created_at->translatedFormat('d M Y H:i') }}
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     <a href="{{ route('admin.biodata-paten.show', $biodata) }}" 

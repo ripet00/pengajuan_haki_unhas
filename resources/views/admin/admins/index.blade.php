@@ -74,7 +74,7 @@
                                     <div class="ml-3 md:ml-5 w-0 flex-1">
                                         <dl>
                                             <dt class="text-xs md:text-sm font-medium text-gray-500 truncate">Admin Terbaru</dt>
-                                            <dd class="text-sm font-medium text-gray-900">{{ $admins->first()?->created_at?->format('d M Y') ?? 'Belum ada' }}</dd>
+                                            <dd class="text-sm font-medium text-gray-900">{{ $admins->first()?->created_at?->translatedFormat('d M Y') ?? 'Belum ada' }}</dd>
                                         </dl>
                                     </div>
                                 </div>
@@ -207,7 +207,7 @@
                                                     </div>
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden xl:table-cell">
-                                                    {{ $adminItem->created_at->format('d M Y H:i') }}
+                                                    {{ $adminItem->created_at->translatedFormat('d M Y H:i') }}
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap">
                                                     @if($adminItem->is_active)

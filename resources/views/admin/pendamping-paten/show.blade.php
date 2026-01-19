@@ -111,13 +111,13 @@ use Illuminate\Support\Facades\Storage;
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="font-medium text-gray-700">Ditugaskan:</div>
-                                <div class="sm:col-span-2 text-gray-900">{{ $submissionPaten->assigned_at ? $submissionPaten->assigned_at->format('d F Y, H:i') . ' WITA' : '-' }}</div>
+                                <div class="sm:col-span-2 text-gray-900">{{ $submissionPaten->assigned_at ? $submissionPaten->assigned_at->translatedFormat('d F Y, H:i') . ' WITA' : '-' }}</div>
                             </div>
 
                             @if($submissionPaten->substance_reviewed_at)
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="font-medium text-gray-700">Direview:</div>
-                                <div class="sm:col-span-2 text-gray-900">{{ $submissionPaten->substance_reviewed_at->format('d F Y, H:i') }} WITA</div>
+                                <div class="sm:col-span-2 text-gray-900">{{ $submissionPaten->substance_reviewed_at->translatedFormat('d F Y, H:i') }} WITA</div>
                             </div>
                             @endif
                         </div>
@@ -298,7 +298,7 @@ use Illuminate\Support\Facades\Storage;
                                     @endif
                                     
                                     <div class="text-sm text-gray-600 mt-2">
-                                        Direview: {{ $submissionPaten->substance_reviewed_at ? $submissionPaten->substance_reviewed_at->format('d F Y, H:i') . ' WITA' : '-' }}
+                                        Direview: {{ $submissionPaten->substance_reviewed_at ? $submissionPaten->substance_reviewed_at->translatedFormat('d F Y, H:i') . ' WITA' : '-' }}
                                     </div>
                                 </div>
 

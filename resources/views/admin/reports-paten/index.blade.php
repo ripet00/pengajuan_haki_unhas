@@ -309,7 +309,7 @@
                                                             <p class="text-gray-500 text-xs mb-1">Biodata Approved</p>
                                                             <p class="font-semibold text-gray-900">
                                                                 <i class="fas fa-calendar-check mr-1 text-green-500"></i>
-                                                                {{ $biodataPaten->reviewed_at->format('d M Y') }}
+                                                                {{ $biodataPaten->reviewed_at->translatedFormat('d M Y') }}
                                                             </p>
                                                         </div>
                                                         
@@ -318,7 +318,7 @@
                                                             <p class="text-gray-500 text-xs mb-1">Berkas Disetor</p>
                                                             <p class="font-semibold text-gray-900">
                                                                 <i class="fas fa-file-upload mr-1 text-green-500"></i>
-                                                                {{ $biodataPaten->document_submitted_at->format('d M Y') }}
+                                                                {{ $biodataPaten->document_submitted_at->translatedFormat('d M Y') }}
                                                             </p>
                                                         </div>
                                                         @endif
@@ -328,7 +328,7 @@
                                                             <p class="text-gray-500 text-xs mb-1">Dokumen Terbit</p>
                                                             <p class="font-semibold text-gray-900">
                                                                 <i class="fas fa-file-pdf mr-1 text-purple-500"></i>
-                                                                {{ $biodataPaten->document_issued_at->format('d M Y') }}
+                                                                {{ $biodataPaten->document_issued_at->translatedFormat('d M Y') }}
                                                             </p>
                                                         </div>
                                                         @endif

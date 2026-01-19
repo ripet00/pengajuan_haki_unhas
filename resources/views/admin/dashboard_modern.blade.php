@@ -148,7 +148,7 @@
                                                     {{ $user->faculty }}
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
-                                                    {{ $user->created_at->format('d M Y') }}
+                                                    {{ $user->created_at->translatedFormat('d M Y') }}
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap">
                                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">

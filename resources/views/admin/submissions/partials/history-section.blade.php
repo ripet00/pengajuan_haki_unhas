@@ -32,7 +32,7 @@
                     </span>
                 </div>
                 <p class="text-xs text-gray-500 mb-2">
-                    {{ $history->created_at->format('d F Y, H:i') }} WITA
+                    {{ $history->created_at->translatedFormat('d F Y, H:i') }} WITA
                 </p>
                 @if($history->notes)
                     <div class="mt-2 bg-gray-50 rounded-lg p-3">

@@ -166,7 +166,7 @@
                             </p>
                             @if($biodataPaten->reviewed_at && $biodataPaten->reviewedBy)
                                 <p class="text-sm text-green-600 mt-2">
-                                    Disetujui oleh: {{ $biodataPaten->reviewedBy->name }} pada {{ $biodataPaten->reviewed_at->format('d M Y H:i') }}
+                                    Disetujui oleh: {{ $biodataPaten->reviewedBy->name }} pada {{ $biodataPaten->reviewed_at->translatedFormat('d M Y H:i') }}
                                 </p>
                             @endif
                         </div>
@@ -183,7 +183,7 @@
                                             <i class="fas fa-check-double mr-1"></i>Sertifikat Paten Telah Terbit
                                         </h4>
                                         <p class="text-sm text-blue-800 mb-2">
-                                            Selamat! Sertifikat paten untuk invensi Anda telah diterbitkan pada <strong>{{ $biodataPaten->certificate_issued_at->format('d F Y') }}</strong>.
+                                            Selamat! Sertifikat paten untuk invensi Anda telah diterbitkan pada <strong>{{ $biodataPaten->certificate_issued_at->translatedFormat('d F Y') }}</strong>.
                                         </p>
                                         <p class="text-sm text-blue-700">
                                             <i class="fas fa-info-circle mr-1"></i>
@@ -199,11 +199,11 @@
                                     <i class="fas fa-check-circle mr-1"></i>Berkas Telah Disetor
                                 </h4>
                                 <p class="text-sm text-blue-700">
-                                    Berkas pendaftaran paten telah diterima pada <strong>{{ $biodataPaten->document_submitted_at->format('d F Y') }}</strong>.
+                                    Berkas pendaftaran paten telah diterima pada <strong>{{ $biodataPaten->document_submitted_at->translatedFormat('d F Y') }}</strong>.
                                 </p>
                                 <p class="text-sm text-blue-700 mt-2">
                                     <i class="fas fa-hourglass-half mr-1"></i>
-                                    Dokumen permohonan paten sedang dalam proses penerbitan. Estimasi selesai: <strong>{{ $biodataPaten->getSigningDeadline()->format('d F Y') }}</strong>
+                                    Dokumen permohonan paten sedang dalam proses penerbitan. Estimasi selesai: <strong>{{ $biodataPaten->getSigningDeadline()->translatedFormat('d F Y') }}</strong>
                                 </p>
                             </div>
                         @else
@@ -224,7 +224,7 @@
                                     <div class="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg">
                                         <p class="text-sm font-semibold text-red-900">
                                             <i class="fas fa-exclamation-triangle mr-1"></i>
-                                            DEADLINE TERLEWAT! Batas waktu penyetoran: {{ $deadline->format('d F Y') }}
+                                            DEADLINE TERLEWAT! Batas waktu penyetoran: {{ $deadline->translatedFormat('d F Y') }}
                                         </p>
                                         <p class="text-xs text-red-700 mt-1">
                                             Segera hubungi admin untuk informasi lebih lanjut.
@@ -234,7 +234,7 @@
                                     <div class="mb-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
                                         <p class="text-sm font-semibold text-yellow-900">
                                             <i class="fas fa-clock mr-1"></i>
-                                            Sisa waktu: <strong>{{ $daysRemaining }} hari</strong> (Deadline: {{ $deadline->format('d F Y') }})
+                                            Sisa waktu: <strong>{{ $daysRemaining }} hari</strong> (Deadline: {{ $deadline->translatedFormat('d F Y') }})
                                         </p>
                                         <p class="text-xs text-yellow-700 mt-1">
                                             Segera selesaikan penyetoran berkas!
@@ -244,7 +244,7 @@
                                     <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                                         <p class="text-sm text-blue-800">
                                             <i class="fas fa-calendar-alt mr-1"></i>
-                                            Deadline penyetoran berkas: <strong>{{ $deadline->format('d F Y') }}</strong> ({{ $daysRemaining }} hari lagi)
+                                            Deadline penyetoran berkas: <strong>{{ $deadline->translatedFormat('d F Y') }}</strong> ({{ $daysRemaining }} hari lagi)
                                         </p>
                                     </div>
                                 @endif
@@ -346,7 +346,7 @@
                     
                     <div>
                         <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Dibuat Pada</h4>
-                        <p class="mt-1 text-lg text-gray-900">{{ $biodataPaten->created_at->format('d F Y H:i') }}</p>
+                        <p class="mt-1 text-lg text-gray-900">{{ $biodataPaten->created_at->translatedFormat('d F Y H:i') }}</p>
                     </div>
                 </div>
             </div>

@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\Biodata;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Set Carbon locale to Indonesian
+        Carbon::setLocale('id');
+        
         // Share pending counts with admin sidebar
         View::composer('admin.partials.sidebar', function ($view) {
             // Count pending certificates (berkas disetor, belum terbit sertifikat)

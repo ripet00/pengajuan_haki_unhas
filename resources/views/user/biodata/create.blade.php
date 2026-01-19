@@ -230,7 +230,7 @@
                             <input type="date" 
                                    id="tanggal_ciptaan" 
                                    name="tanggal_ciptaan" 
-                                   value="{{ old('tanggal_ciptaan', $biodata && $biodata->tanggal_ciptaan ? $biodata->tanggal_ciptaan->format('Y-m-d') : '') }}"
+                                   value="{{ old('tanggal_ciptaan', $biodata && $biodata->tanggal_ciptaan ? $biodata->tanggal_ciptaan->translatedFormat('Y-m-d') : '') }}"
                                    class="w-full px-3 py-2 border {{ $biodata && $biodata->error_tanggal_ciptaan ? 'border-red-300 bg-red-50' : 'border-gray-300' }} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                    required>
                             @error('tanggal_ciptaan')

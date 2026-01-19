@@ -210,7 +210,7 @@
                                                     {{ $user->faculty }}
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
-                                                    {{ $user->created_at->format('d M Y H:i') }}
+                                                    {{ $user->created_at->translatedFormat('d M Y H:i') }}
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap">
                                                     @if($user->status === 'active')

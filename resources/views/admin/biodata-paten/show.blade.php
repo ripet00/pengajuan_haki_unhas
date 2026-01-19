@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -464,7 +464,7 @@
                                         
                                         <div class="text-sm text-gray-600 mt-2">
                                             @if($biodataPaten->reviewed_at)
-                                                Direview: {{ $biodataPaten->reviewed_at->format('d F Y, H:i') }} WITA
+                                                Direview: {{ $biodataPaten->reviewed_at->translatedFormat('d F Y, H:i') }} WITA
                                                 <br>
                                             @endif
                                             @if($biodataPaten->reviewedBy)
@@ -602,7 +602,7 @@
                                     <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
                                         <p class="text-sm text-green-800">
                                             <i class="fas fa-calendar-check mr-1"></i>
-                                            Disetor pada: <strong>{{ $biodataPaten->document_submitted_at->format('d F Y, H:i') }} WITA</strong>
+                                            Disetor pada: <strong>{{ $biodataPaten->document_submitted_at->translatedFormat('d F Y, H:i') }} WITA</strong>
                                         </p>
                                         <p class="text-xs text-green-700 mt-1">
                                             {{ $biodataPaten->document_submitted_at->diffForHumans() }}
@@ -619,7 +619,7 @@
                                         <div class="bg-red-50 border border-red-300 rounded-lg p-3 mb-3">
                                             <p class="text-sm font-semibold text-red-900">
                                                 <i class="fas fa-exclamation-triangle mr-1"></i>
-                                                TERLAMBAT! Deadline: {{ $deadline->format('d F Y') }}
+                                                TERLAMBAT! Deadline: {{ $deadline->translatedFormat('d F Y') }}
                                             </p>
                                             <p class="text-xs text-red-700 mt-1">
                                                 Terlambat {{ abs($daysRemaining) }} hari
@@ -629,7 +629,7 @@
                                         <div class="bg-orange-50 border border-orange-300 rounded-lg p-3 mb-3">
                                             <p class="text-sm font-semibold text-orange-900">
                                                 <i class="fas fa-hourglass-half mr-1"></i>
-                                                Deadline mendekat: {{ $deadline->format('d F Y') }}
+                                                Deadline mendekat: {{ $deadline->translatedFormat('d F Y') }}
                                             </p>
                                             <p class="text-xs text-orange-700 mt-1">
                                                 Sisa {{ $daysRemaining }} hari lagi
@@ -639,7 +639,7 @@
                                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
                                             <p class="text-sm text-blue-800">
                                                 <i class="fas fa-calendar-alt mr-1"></i>
-                                                Deadline: {{ $deadline->format('d F Y') }}
+                                                Deadline: {{ $deadline->translatedFormat('d F Y') }}
                                             </p>
                                             <p class="text-xs text-blue-700 mt-1">
                                                 Sisa {{ $daysRemaining }} hari lagi
@@ -683,7 +683,7 @@
                                     <div class="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-3">
                                         <p class="text-sm text-purple-800">
                                             <i class="fas fa-calendar-check mr-1"></i>
-                                            Terbit pada: <strong>{{ $biodataPaten->document_issued_at->format('d F Y, H:i') }} WITA</strong>
+                                            Terbit pada: <strong>{{ $biodataPaten->document_issued_at->translatedFormat('d F Y, H:i') }} WITA</strong>
                                         </p>
                                         <p class="text-xs text-purple-700 mt-1">
                                             {{ $biodataPaten->document_issued_at->diffForHumans() }}
@@ -751,7 +751,7 @@
                                                 const isValidExtension = file.name.toLowerCase().endsWith('.pdf');
                                                 
                                                 if (!isValidMime && !isValidExtension) {
-                                                    alert('❌ File harus berformat PDF!\n\nFile yang dipilih: ' + file.name + '\nTipe: ' + file.type);
+                                                    alert('? File harus berformat PDF!\n\nFile yang dipilih: ' + file.name + '\nTipe: ' + file.type);
                                                     input.value = '';
                                                     submitBtn.disabled = true;
                                                     return false;
@@ -761,7 +761,7 @@
                                                 const maxSize = 20 * 1024 * 1024;
                                                 if (file.size > maxSize) {
                                                     const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-                                                    alert('❌ Ukuran file melebihi batas maksimal!\n\n' +
+                                                    alert('? Ukuran file melebihi batas maksimal!\n\n' +
                                                           'File: ' + file.name + '\n' +
                                                           'Ukuran: ' + fileSizeMB + ' MB\n' +
                                                           'Maksimal: 20 MB');
@@ -788,15 +788,15 @@
                                             const fileName = file.name;
                                             const fileSize = (file.size / (1024 * 1024)).toFixed(2);
                                             
-                                            const confirmMessage = '📄 KONFIRMASI UPLOAD DOKUMEN PERMOHONAN PATEN\n\n' +
-                                                       '━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
+                                            const confirmMessage = '?? KONFIRMASI UPLOAD DOKUMEN PERMOHONAN PATEN\n\n' +
+                                                       '????????????????????????????\n\n' +
                                                        'Biodata ID: {{ $biodataPaten->id }}\n' +
                                                        'Judul Paten: {{ Str::limit($biodataPaten->submissionPaten->judul_paten, 40) }}\n\n' +
                                                        'File yang akan diupload:\n' +
-                                                       '📎 ' + fileName + '\n' +
-                                                       '📊 Ukuran: ' + fileSize + ' MB\n\n' +
-                                                       '━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
-                                                       '⚠️ Pastikan file sudah benar!\n\n' +
+                                                       '?? ' + fileName + '\n' +
+                                                       '?? Ukuran: ' + fileSize + ' MB\n\n' +
+                                                       '????????????????????????????\n\n' +
+                                                       '?? Pastikan file sudah benar!\n\n' +
                                                        'Lanjutkan upload dokumen permohonan?';
                                             
                                             return confirm(confirmMessage);
@@ -896,7 +896,7 @@
                         e.preventDefault(); // Stop form submission
                         
                         // Show alert
-                        alert('⚠️ PERINGATAN!\n\nAnda memilih untuk MENOLAK biodata ini.\nHarap isi Catatan/Alasan Penolakan terlebih dahulu sebelum submit review.\n\nCatatan penolakan wajib diisi agar user mengetahui alasan penolakan dan dapat memperbaiki data yang bermasalah.');
+                        alert('?? PERINGATAN!\n\nAnda memilih untuk MENOLAK biodata ini.\nHarap isi Catatan/Alasan Penolakan terlebih dahulu sebelum submit review.\n\nCatatan penolakan wajib diisi agar user mengetahui alasan penolakan dan dapat memperbaiki data yang bermasalah.');
                         
                         // Focus on textarea and highlight it
                         rejectionTextarea.focus();
@@ -915,12 +915,12 @@
                     // Show confirmation for rejection
                     e.preventDefault();
                     const confirmReject = confirm(
-                        '🚫 KONFIRMASI PENOLAKAN BIODATA\n\n' +
-                        '⚠️ Apakah Anda yakin ingin MENOLAK biodata ini?\n\n' +
+                        '?? KONFIRMASI PENOLAKAN BIODATA\n\n' +
+                        '?? Apakah Anda yakin ingin MENOLAK biodata ini?\n\n' +
                         'Pastikan:\n' +
-                        '✓ Anda sudah menandai SEMUA field data Inventor yang bermasalah\n' +
-                        '✓ Alasan penolakan sudah jelas dan spesifik\n' +
-                        '✓ User dapat memahami kesalahan dan memperbaikinya\n\n' +
+                        '? Anda sudah menandai SEMUA field data Inventor yang bermasalah\n' +
+                        '? Alasan penolakan sudah jelas dan spesifik\n' +
+                        '? User dapat memahami kesalahan dan memperbaikinya\n\n' +
                         'Klik OK untuk melanjutkan penolakan, atau Cancel untuk kembali.'
                     );
                     
@@ -934,13 +934,13 @@
                 if (approveRadio && approveRadio.checked) {
                     e.preventDefault();
                     const confirmApprove = confirm(
-                        '✅ KONFIRMASI PERSETUJUAN BIODATA\n\n' +
-                        '⚠️ Apakah Anda yakin ingin MENYETUJUI biodata ini?\n\n' +
+                        '? KONFIRMASI PERSETUJUAN BIODATA\n\n' +
+                        '?? Apakah Anda yakin ingin MENYETUJUI biodata ini?\n\n' +
                         'Pastikan:\n' +
-                        '✓ Semua data Inventor sudah diperiksa dengan teliti\n' +
-                        '✓ Tidak ada kesalahan data pada semua field\n' +
-                        '✓ Data sudah sesuai dengan dokumen yang diajukan\n' +
-                        '✓ Biodata siap diproses ke tahap selanjutnya\n\n' +
+                        '? Semua data Inventor sudah diperiksa dengan teliti\n' +
+                        '? Tidak ada kesalahan data pada semua field\n' +
+                        '? Data sudah sesuai dengan dokumen yang diajukan\n' +
+                        '? Biodata siap diproses ke tahap selanjutnya\n\n' +
                         'Setelah disetujui, user dapat melanjutkan ke proses penyetoran berkas.\n\n' +
                         'Klik OK untuk menyetujui, atau Cancel untuk kembali memeriksa.'
                     );

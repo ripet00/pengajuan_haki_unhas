@@ -120,7 +120,7 @@ use Illuminate\Support\Facades\Storage;
                                     <div class="text-xs text-gray-600 space-y-1">
                                         <div class="flex items-center space-x-4">
                                             <span><i class="fas fa-user text-gray-400 mr-1"></i><strong>Pengusul:</strong> {{ $similar->user->name }}</span>
-                                            <span><i class="fas fa-calendar text-gray-400 mr-1"></i><strong>Tanggal:</strong> {{ $similar->created_at->format('d M Y, H:i') }} WITA</span>
+                                            <span><i class="fas fa-calendar text-gray-400 mr-1"></i><strong>Tanggal:</strong> {{ $similar->created_at->translatedFormat('d M Y, H:i') }} WITA</span>
                                         </div>
                                         <div class="flex items-center space-x-4">
                                             <span><i class="fas fa-hashtag text-gray-400 mr-1"></i><strong>ID Pengajuan:</strong> #{{ $similar->id }}</span>
@@ -216,13 +216,13 @@ use Illuminate\Support\Facades\Storage;
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="font-medium text-gray-700">Tanggal Pengajuan:</div>
-                                <div class="sm:col-span-2 text-gray-900">{{ $submission->created_at->format('d F Y, H:i') }} WITA</div>
+                                <div class="sm:col-span-2 text-gray-900">{{ $submission->created_at->translatedFormat('d F Y, H:i') }} WITA</div>
                             </div>
 
                             @if($submission->reviewed_at)
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="font-medium text-gray-700">Tanggal Review:</div>
-                                <div class="sm:col-span-2 text-gray-900">{{ $submission->reviewed_at->format('d F Y, H:i') }} WITA</div>
+                                <div class="sm:col-span-2 text-gray-900">{{ $submission->reviewed_at->translatedFormat('d F Y, H:i') }} WITA</div>
                             </div>
                             @endif
 
@@ -422,7 +422,7 @@ use Illuminate\Support\Facades\Storage;
                                     @endif
                                     
                                     <div class="text-sm text-gray-600 mt-2">
-                                        Direview: {{ $submission->reviewed_at->format('d F Y, H:i') }} WITA
+                                        Direview: {{ $submission->reviewed_at->translatedFormat('d F Y, H:i') }} WITA
                                         <br>
                                         oleh: {{ $submission->reviewedByAdmin->name ?? 'Admin' }}
                                     </div>

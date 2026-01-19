@@ -77,7 +77,7 @@
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Bergabung:</span>
-                                    <span class="font-medium text-gray-900">{{ $pendamping->created_at->format('d F Y') }}</span>
+                                    <span class="font-medium text-gray-900">{{ $pendamping->created_at->translatedFormat('d F Y') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -191,10 +191,10 @@
                                                     @endif
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {{ $submission->assigned_at ? $submission->assigned_at->format('d/m/Y') : '-' }}
+                                                    {{ $submission->assigned_at ? $submission->assigned_at->translatedFormat('d/m/Y') : '-' }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {{ $submission->substance_reviewed_at ? $submission->substance_reviewed_at->format('d/m/Y') : '-' }}
+                                                    {{ $submission->substance_reviewed_at ? $submission->substance_reviewed_at->translatedFormat('d/m/Y') : '-' }}
                                                 </td>
                                             </tr>
                                         @endforeach

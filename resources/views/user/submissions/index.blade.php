@@ -272,11 +272,11 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-500">
-                                    <div>{{ $submission->created_at->format('d/m/Y') }}</div>
-                                    <div class="text-xs">{{ $submission->created_at->format('H:i') }} WITA</div>
+                                    <div>{{ $submission->created_at->translatedFormat('d/m/Y') }}</div>
+                                    <div class="text-xs">{{ $submission->created_at->translatedFormat('H:i') }} WITA</div>
                                     @if($submission->reviewed_at)
                                         <div class="text-xs text-gray-400 mt-1">
-                                            Review: {{ $submission->reviewed_at->format('d/m/Y') }}
+                                            Review: {{ $submission->reviewed_at->translatedFormat('d/m/Y') }}
                                         </div>
                                     @endif
                                 </td>

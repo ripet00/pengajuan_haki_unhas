@@ -160,7 +160,7 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                 <div class="flex items-center">
                                                     <i class="fas fa-calendar-alt text-gray-400 mr-2"></i>
-                                                    {{ $request->requested_at->format('d/m/Y H:i') }}
+                                                    {{ $request->requested_at->translatedFormat('d/m/Y H:i') }}
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">

@@ -49,7 +49,7 @@
                         </span>
                     </div>
                     <p class="text-xs text-gray-500 mb-2">
-                        <i class="far fa-clock mr-1"></i>{{ $history->created_at->format('d F Y, H:i') }} WITA
+                        <i class="far fa-clock mr-1"></i>{{ $history->created_at->translatedFormat('d F Y, H:i') }} WITA
                     </p>
                     @if($history->notes)
                         <div class="mt-3 bg-gray-50 rounded-lg p-4 border-l-4 {{ $history->action === 'approved' ? 'border-green-500' : 'border-red-500' }}">

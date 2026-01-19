@@ -204,7 +204,7 @@
                                     <div>
                                         <label class="block text-sm font-bold text-gray-600">Tanggal Ciptaan</label>
                                         <p class="mt-1 text-sm text-gray-900">
-                                            {{ $biodata->tanggal_ciptaan ? $biodata->tanggal_ciptaan->format('d M Y') : '-' }}
+                                            {{ $biodata->tanggal_ciptaan ? $biodata->tanggal_ciptaan->translatedFormat('d M Y') : '-' }}
                                         </p>
                                     </div>
                                     <div class="md:col-span-2">
@@ -581,7 +581,7 @@
                                         
                                         <div class="text-sm text-gray-600 mt-2">
                                             @if($biodata->reviewed_at)
-                                                Direview: {{ $biodata->reviewed_at->format('d F Y, H:i') }} WITA
+                                                Direview: {{ $biodata->reviewed_at->translatedFormat('d F Y, H:i') }} WITA
                                                 <br>
                                             @endif
                                             @if($biodata->reviewedBy)
@@ -672,7 +672,7 @@
                                     <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
                                         <p class="text-sm text-green-800">
                                             <i class="fas fa-calendar-check mr-1"></i>
-                                            Disetor pada: <strong>{{ $biodata->document_submitted_at->format('d F Y, H:i') }} WITA</strong>
+                                            Disetor pada: <strong>{{ $biodata->document_submitted_at->translatedFormat('d F Y, H:i') }} WITA</strong>
                                         </p>
                                         <p class="text-xs text-green-700 mt-1">
                                             {{ $biodata->document_submitted_at->diffForHumans() }}
@@ -689,7 +689,7 @@
                                         <div class="bg-red-50 border border-red-300 rounded-lg p-3 mb-3">
                                             <p class="text-sm font-semibold text-red-900">
                                                 <i class="fas fa-exclamation-triangle mr-1"></i>
-                                                TERLAMBAT! Deadline: {{ $deadline->format('d F Y') }}
+                                                TERLAMBAT! Deadline: {{ $deadline->translatedFormat('d F Y') }}
                                             </p>
                                             <p class="text-xs text-red-700 mt-1">
                                                 Terlambat {{ abs($daysRemaining) }} hari
@@ -699,7 +699,7 @@
                                         <div class="bg-orange-50 border border-orange-300 rounded-lg p-3 mb-3">
                                             <p class="text-sm font-semibold text-orange-900">
                                                 <i class="fas fa-hourglass-half mr-1"></i>
-                                                Deadline mendekat: {{ $deadline->format('d F Y') }}
+                                                Deadline mendekat: {{ $deadline->translatedFormat('d F Y') }}
                                             </p>
                                             <p class="text-xs text-orange-700 mt-1">
                                                 Sisa {{ $daysRemaining }} hari lagi
@@ -709,7 +709,7 @@
                                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
                                             <p class="text-sm text-blue-800">
                                                 <i class="fas fa-calendar-alt mr-1"></i>
-                                                Deadline: {{ $deadline->format('d F Y') }}
+                                                Deadline: {{ $deadline->translatedFormat('d F Y') }}
                                             </p>
                                             <p class="text-xs text-blue-700 mt-1">
                                                 Sisa {{ $daysRemaining }} hari lagi
@@ -756,7 +756,7 @@
                                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
                                         <p class="text-sm text-blue-800">
                                             <i class="fas fa-calendar-check mr-1"></i>
-                                            Terbit pada: <strong>{{ $biodata->certificate_issued_at->format('d F Y, H:i') }} WITA</strong>
+                                            Terbit pada: <strong>{{ $biodata->certificate_issued_at->translatedFormat('d F Y, H:i') }} WITA</strong>
                                         </p>
                                         <p class="text-xs text-blue-700 mt-1">
                                             {{ $biodata->certificate_issued_at->diffForHumans() }}
@@ -773,7 +773,7 @@
                                         <div class="bg-red-50 border border-red-300 rounded-lg p-3 mb-3">
                                             <p class="text-sm font-semibold text-red-900">
                                                 <i class="fas fa-exclamation-triangle mr-1"></i>
-                                                TERLAMBAT! Estimasi selesai: {{ $certDeadline->format('d F Y') }}
+                                                TERLAMBAT! Estimasi selesai: {{ $certDeadline->translatedFormat('d F Y') }}
                                             </p>
                                             <p class="text-xs text-red-700 mt-1">
                                                 Terlambat {{ abs($certDaysRemaining) }} hari. Segera proses penerbitan sertifikat!
@@ -783,7 +783,7 @@
                                         <div class="bg-orange-50 border border-orange-300 rounded-lg p-3 mb-3">
                                             <p class="text-sm font-semibold text-orange-900">
                                                 <i class="fas fa-hourglass-half mr-1"></i>
-                                                Estimasi selesai: {{ $certDeadline->format('d F Y') }}
+                                                Estimasi selesai: {{ $certDeadline->translatedFormat('d F Y') }}
                                             </p>
                                             <p class="text-xs text-orange-700 mt-1">
                                                 Sisa {{ $certDaysRemaining }} hari lagi (2 minggu sejak berkas disetor)
@@ -793,7 +793,7 @@
                                         <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
                                             <p class="text-sm text-green-800">
                                                 <i class="fas fa-calendar-alt mr-1"></i>
-                                                Estimasi selesai: {{ $certDeadline->format('d F Y') }}
+                                                Estimasi selesai: {{ $certDeadline->translatedFormat('d F Y') }}
                                             </p>
                                             <p class="text-xs text-green-700 mt-1">
                                                 Sisa {{ $certDaysRemaining }} hari lagi (2 minggu sejak berkas disetor)

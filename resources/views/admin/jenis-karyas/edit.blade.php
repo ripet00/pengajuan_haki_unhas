@@ -146,7 +146,7 @@
                                                         <div>
                                                             <p class="text-sm font-medium text-gray-900">{{ $submission->title }}</p>
                                                             <p class="text-xs text-gray-500">
-                                                                oleh {{ $submission->user->name }} - {{ $submission->created_at->format('d/m/Y') }}
+                                                                oleh {{ $submission->user->name }} - {{ $submission->created_at->translatedFormat('d/m/Y') }}
                                                             </p>
                                                         </div>
                                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 

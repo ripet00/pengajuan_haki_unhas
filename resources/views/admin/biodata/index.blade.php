@@ -325,7 +325,7 @@
                                                     @endif
                                                 </td>
                                                 <td class="px-6 py-4 text-sm text-gray-500">
-                                                    {{ $biodata->created_at->format('d M Y H:i') }}
+                                                    {{ $biodata->created_at->translatedFormat('d M Y H:i') }}
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     <a href="{{ route('admin.biodata.show', $biodata) }}" 
