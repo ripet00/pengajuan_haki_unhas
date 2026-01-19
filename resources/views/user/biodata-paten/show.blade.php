@@ -193,17 +193,17 @@
                                 </div>
                             </div>
                         @elseif($biodataPaten->document_submitted)
-                            <!-- Berkas sudah disetor, menunggu sertifikat -->
+                            <!-- Berkas sudah disetor, menunggu dokumen permohonan -->
                             <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                                 <h4 class="text-sm font-semibold text-blue-800 mb-2">
                                     <i class="fas fa-check-circle mr-1"></i>Berkas Telah Disetor
                                 </h4>
                                 <p class="text-sm text-blue-700">
-                                    Formulir pendaftaran paten telah diterima pada <strong>{{ $biodataPaten->document_submitted_at->format('d F Y') }}</strong>.
+                                    Berkas pendaftaran paten telah diterima pada <strong>{{ $biodataPaten->document_submitted_at->format('d F Y') }}</strong>.
                                 </p>
                                 <p class="text-sm text-blue-700 mt-2">
                                     <i class="fas fa-hourglass-half mr-1"></i>
-                                    Dokumen paten sedang dalam proses persiapan tanda tangan pimpinan. Estimasi selesai: <strong>{{ $biodataPaten->getSigningDeadline()->format('d F Y') }}</strong>
+                                    Dokumen permohonan paten sedang dalam proses penerbitan. Estimasi selesai: <strong>{{ $biodataPaten->getSigningDeadline()->format('d F Y') }}</strong>
                                 </p>
                             </div>
                         @else
