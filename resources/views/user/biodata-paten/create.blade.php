@@ -266,7 +266,7 @@
 
     <script>
         let inventorCount = 0;
-        const maxInventors = 6;
+        const maxInventors = 4;
         
         // Existing inventors data from server
         const existingInventors = @json($inventors ? $inventors->toArray() : []);
