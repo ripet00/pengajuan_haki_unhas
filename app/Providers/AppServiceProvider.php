@@ -44,8 +44,8 @@ class AppServiceProvider extends ServiceProvider
             // Count pending biodatas (biodata dengan status pending)
             $pendingBiodatas = Biodata::where('status', 'pending')->count();
             
-            // Count pending Paten submissions (pengajuan paten dengan status pending)
-            $pendingPatenSubmissions = \App\Models\SubmissionPaten::where('status', 'pending')->count();
+            // Count pending Paten submissions (pengajuan paten menunggu review format)
+            $pendingPatenSubmissions = \App\Models\SubmissionPaten::where('status', \App\Models\SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW)->count();
             
             // Count pending Biodata Paten (biodata paten dengan status pending)
             $pendingBiodataPatens = \App\Models\BiodataPaten::where('status', 'pending')->count();
