@@ -29,10 +29,10 @@ class AppServiceProvider extends ServiceProvider
                 ->where('certificate_issued', false)
                 ->count();
             
-            // Count pending signing for paten (berkas disetor, belum siap ditandatangani)
+            // Count pending signing for paten (berkas disetor, belum terbit dokumen permohonan)
             $pendingSigning = \App\Models\BiodataPaten::where('status', 'approved')
                 ->where('document_submitted', true)
-                ->where('ready_for_signing', false)
+                ->whereNull('application_document')
                 ->count();
             
             // Count pending users (user dengan status pending)
