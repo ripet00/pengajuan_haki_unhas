@@ -719,7 +719,7 @@
                                                    accept=".pdf"
                                                    required
                                                    onchange="validateFile{{ $biodataPaten->id }}(this)"
-                                                   class="flex-1 text-sm border border-gray-300 rounded px-3 py-2">
+                                                   class="flex-1 text-sm border-4 border-orange-500 bg-yellow-50 rounded-lg px-3 py-2 font-medium shadow-lg hover:border-orange-600 hover:bg-yellow-100 focus:ring-4 focus:ring-orange-300 focus:border-orange-600 cursor-pointer transition-all duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-gradient-to-r file:from-orange-500 file:to-orange-600 file:text-white hover:file:from-orange-600 hover:file:to-orange-700 file:cursor-pointer file:transition-all file:duration-200 file:shadow-md hover:file:shadow-lg">
                                             <button type="submit" 
                                                     id="submit-btn-{{ $biodataPaten->id }}"
                                                     disabled
@@ -751,7 +751,7 @@
                                                 const isValidExtension = file.name.toLowerCase().endsWith('.pdf');
                                                 
                                                 if (!isValidMime && !isValidExtension) {
-                                                    alert('? File harus berformat PDF!\n\nFile yang dipilih: ' + file.name + '\nTipe: ' + file.type);
+                                                    alert('ERROR: File harus berformat PDF!\n\nFile yang dipilih: ' + file.name + '\nTipe: ' + file.type);
                                                     input.value = '';
                                                     submitBtn.disabled = true;
                                                     return false;
@@ -761,7 +761,7 @@
                                                 const maxSize = 20 * 1024 * 1024;
                                                 if (file.size > maxSize) {
                                                     const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-                                                    alert('? Ukuran file melebihi batas maksimal!\n\n' +
+                                                    alert('ERROR: Ukuran file melebihi batas maksimal!\n\n' +
                                                           'File: ' + file.name + '\n' +
                                                           'Ukuran: ' + fileSizeMB + ' MB\n' +
                                                           'Maksimal: 20 MB');
@@ -788,15 +788,15 @@
                                             const fileName = file.name;
                                             const fileSize = (file.size / (1024 * 1024)).toFixed(2);
                                             
-                                            const confirmMessage = '?? KONFIRMASI UPLOAD DOKUMEN PERMOHONAN PATEN\n\n' +
-                                                       '????????????????????????????\n\n' +
+                                            const confirmMessage = '=== KONFIRMASI UPLOAD DOKUMEN PERMOHONAN PATEN ===\n\n' +
+                                                       '================================================\n\n' +
                                                        'Biodata ID: {{ $biodataPaten->id }}\n' +
                                                        'Judul Paten: {{ Str::limit($biodataPaten->submissionPaten->judul_paten, 40) }}\n\n' +
                                                        'File yang akan diupload:\n' +
-                                                       '?? ' + fileName + '\n' +
-                                                       '?? Ukuran: ' + fileSize + ' MB\n\n' +
-                                                       '????????????????????????????\n\n' +
-                                                       '?? Pastikan file sudah benar!\n\n' +
+                                                       '> Nama File: ' + fileName + '\n' +
+                                                       '> Ukuran: ' + fileSize + ' MB\n\n' +
+                                                       '================================================\n\n' +
+                                                       '*** PASTIKAN FILE SUDAH BENAR! ***\n\n' +
                                                        'Lanjutkan upload dokumen permohonan?';
                                             
                                             return confirm(confirmMessage);
@@ -896,7 +896,7 @@
                         e.preventDefault(); // Stop form submission
                         
                         // Show alert
-                        alert('?? PERINGATAN!\n\nAnda memilih untuk MENOLAK biodata ini.\nHarap isi Catatan/Alasan Penolakan terlebih dahulu sebelum submit review.\n\nCatatan penolakan wajib diisi agar user mengetahui alasan penolakan dan dapat memperbaiki data yang bermasalah.');
+                        alert('*** PERINGATAN! ***\n\nAnda memilih untuk MENOLAK biodata ini.\nHarap isi Catatan/Alasan Penolakan terlebih dahulu sebelum submit review.\n\nCatatan penolakan wajib diisi agar user mengetahui alasan penolakan dan dapat memperbaiki data yang bermasalah.');
                         
                         // Focus on textarea and highlight it
                         rejectionTextarea.focus();
@@ -915,12 +915,12 @@
                     // Show confirmation for rejection
                     e.preventDefault();
                     const confirmReject = confirm(
-                        '?? KONFIRMASI PENOLAKAN BIODATA\n\n' +
-                        '?? Apakah Anda yakin ingin MENOLAK biodata ini?\n\n' +
+                        '=== KONFIRMASI PENOLAKAN BIODATA ===\n\n' +
+                        'Apakah Anda yakin ingin MENOLAK biodata ini?\n\n' +
                         'Pastikan:\n' +
-                        '? Anda sudah menandai SEMUA field data Inventor yang bermasalah\n' +
-                        '? Alasan penolakan sudah jelas dan spesifik\n' +
-                        '? User dapat memahami kesalahan dan memperbaikinya\n\n' +
+                        '- Anda sudah menandai SEMUA field data Inventor yang bermasalah\n' +
+                        '- Alasan penolakan sudah jelas dan spesifik\n' +
+                        '- User dapat memahami kesalahan dan memperbaikinya\n\n' +
                         'Klik OK untuk melanjutkan penolakan, atau Cancel untuk kembali.'
                     );
                     
@@ -934,13 +934,13 @@
                 if (approveRadio && approveRadio.checked) {
                     e.preventDefault();
                     const confirmApprove = confirm(
-                        '? KONFIRMASI PERSETUJUAN BIODATA\n\n' +
-                        '?? Apakah Anda yakin ingin MENYETUJUI biodata ini?\n\n' +
+                        '=== KONFIRMASI PERSETUJUAN BIODATA ===\n\n' +
+                        'Apakah Anda yakin ingin MENYETUJUI biodata ini?\n\n' +
                         'Pastikan:\n' +
-                        '? Semua data Inventor sudah diperiksa dengan teliti\n' +
-                        '? Tidak ada kesalahan data pada semua field\n' +
-                        '? Data sudah sesuai dengan dokumen yang diajukan\n' +
-                        '? Biodata siap diproses ke tahap selanjutnya\n\n' +
+                        '- Semua data Inventor sudah diperiksa dengan teliti\n' +
+                        '- Tidak ada kesalahan data pada semua field\n' +
+                        '- Data sudah sesuai dengan dokumen yang diajukan\n' +
+                        '- Biodata siap diproses ke tahap selanjutnya\n\n' +
                         'Setelah disetujui, user dapat melanjutkan ke proses penyetoran berkas.\n\n' +
                         'Klik OK untuk menyetujui, atau Cancel untuk kembali memeriksa.'
                     );

@@ -442,7 +442,7 @@
                                                                            accept=".pdf"
                                                                            required
                                                                            onchange="validateFile{{ $biodataPaten->id }}(this)"
-                                                                           class="flex-1 text-xs border border-gray-300 rounded px-2 py-1">
+                                                                           class="flex-1 text-xs border-4 border-orange-500 bg-yellow-50 rounded-lg px-2 py-1 font-medium shadow-lg hover:border-orange-600 hover:bg-yellow-100 focus:ring-4 focus:ring-orange-300 focus:border-orange-600 cursor-pointer transition-all duration-200 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-gradient-to-r file:from-orange-500 file:to-orange-600 file:text-white hover:file:from-orange-600 hover:file:to-orange-700 file:cursor-pointer file:transition-all file:duration-200 file:shadow-md hover:file:shadow-lg">
                                                                     <button type="submit" 
                                                                             id="submit-btn-{{ $biodataPaten->id }}"
                                                                             disabled
@@ -511,15 +511,15 @@
                                                                     const fileName = file.name;
                                                                     const fileSize = (file.size / (1024 * 1024)).toFixed(2);
                                                                     
-                                                                    const confirmMessage = '📄 KONFIRMASI UPLOAD DOKUMEN PERMOHONAN PATEN\n\n' +
-                                                                               '━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
+                                                                    const confirmMessage = '=== KONFIRMASI UPLOAD DOKUMEN PERMOHONAN PATEN ===\n\n' +
+                                                                               '================================================\n\n' +
                                                                                'Biodata ID: {{ $biodataPaten->id }}\n' +
                                                                                'Judul Paten: {{ Str::limit($biodataPaten->submissionPaten->judul_paten, 40) }}\n\n' +
                                                                                'File yang akan diupload:\n' +
-                                                                               '📎 ' + fileName + '\n' +
-                                                                               '📊 Ukuran: ' + fileSize + ' MB\n\n' +
-                                                                               '━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
-                                                                               '⚠️ Pastikan file sudah benar!\n\n' +
+                                                                               '> Nama File: ' + fileName + '\n' +
+                                                                               '> Ukuran: ' + fileSize + ' MB\n\n' +
+                                                                               '================================================\n\n' +
+                                                                               '*** PASTIKAN FILE SUDAH BENAR! ***\n\n' +
                                                                                'Lanjutkan upload dokumen permohonan?';
                                                                     
                                                                     return confirm(confirmMessage);
