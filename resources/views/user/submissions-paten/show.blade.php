@@ -133,14 +133,14 @@ use Illuminate\Support\Facades\Storage;
                     
                     $biodata = $submissionPaten->biodataPaten;
                     $docSubmitted = $biodata && $biodata->document_submitted;
-                    $readyForSigning = $biodata && $biodata->ready_for_signing;
+                    $documentIssued = $biodata && $biodata->application_document;
                     $bStatus = $submissionPaten->biodata_status;
                     $isBRejected = $bStatus === 'rejected' || $bStatus === 'denied';
                     
                     // Calculate progress percentage for 6 steps (0%, 20%, 40%, 60%, 80%, 100%)
                     $progressWidth = '20%'; // Default: Upload done
-                    if ($readyForSigning) {
-                        $progressWidth = '100%'; // Step 6: Dokumen siap ditandatangani
+                    if ($documentIssued) {
+                        $progressWidth = '100%'; // Step 6: Dokumen permohonan terbit
                     } elseif ($docSubmitted) {
                         $progressWidth = '80%'; // Step 5: Berkas disetor
                     } elseif ($bStatus == 'approved') {
@@ -262,26 +262,26 @@ use Illuminate\Support\Facades\Storage;
                     </span>
                 </div>
 
-                <!-- Step 6: Selesai -->
+                <!-- Step 6: Dokumen Permohonan Terbit -->
                 <div class="relative z-10 flex flex-col items-center">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $readyForSigning ? 'bg-green-500 border-green-500' : 'bg-gray-200 border-gray-300' }}">
-                        <i class="fas fa-file-signature {{ $readyForSigning ? 'text-white' : 'text-gray-400' }}"></i>
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $documentIssued ? 'bg-green-500 border-green-500' : 'bg-gray-200 border-gray-300' }}">
+                        <i class="fas fa-file-pdf {{ $documentIssued ? 'text-white' : 'text-gray-400' }}"></i>
                     </div>
-                    <span class="mt-2 text-xs text-center font-medium {{ $readyForSigning ? 'text-green-600' : 'text-gray-400' }}">
-                        Selesai
+                    <span class="mt-2 text-xs text-center font-medium {{ $documentIssued ? 'text-green-600' : 'text-gray-400' }}">
+                        Dokumen<br>Terbit
                     </span>
                 </div>
             </div>
 
             <!-- Progress Description -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-                @if($readyForSigning)
+                @if($documentIssued)
                     <p class="text-sm text-green-700 font-medium">
-                        <i class="fas fa-check-circle mr-2"></i>Pengajuan Paten Anda telah selesai! Dokumen siap untuk ditandatangani.
+                        <i class="fas fa-check-circle mr-2"></i>Pengajuan Paten Anda telah selesai! Dokumen permohonan sudah terbit dan bisa diunduh.
                     </p>
                 @elseif($docSubmitted)
                     <p class="text-sm text-blue-700 font-medium">
-                        <i class="fas fa-clock mr-2"></i>Berkas sudah disetor. Menunggu proses penyelesaian dokumen.
+                        <i class="fas fa-clock mr-2"></i>Berkas sudah disetor. Menunggu dokumen permohonan paten terbit.
                     </p>
                 @elseif($bStatus == 'approved')
                     <p class="text-sm text-blue-700 font-medium">
@@ -741,25 +741,30 @@ use Illuminate\Support\Facades\Storage;
                                 {{-- Show different messages based on biodata status --}}
                                 @if($biodataPaten->status == 'approved')
                                     {{-- Biodata approved - check document submission status --}}
-                                    @if($biodataPaten->ready_for_signing)
-                                        {{-- Document ready for signing --}}
+                                    @if($biodataPaten->application_document)
+                                        {{-- Document issued --}}
                                         <div class="bg-green-50 border-2 border-green-300 rounded-lg p-4">
                                             <div class="flex items-start">
                                                 <div class="flex-shrink-0">
-                                                    <i class="fas fa-file-signature text-3xl text-green-600"></i>
+                                                    <i class="fas fa-file-pdf text-3xl text-green-600"></i>
                                                 </div>
-                                                <div class="ml-4">
+                                                <div class="ml-4 flex-1">
                                                     <h5 class="font-semibold text-green-800 mb-2">
-                                                        <i class="fas fa-check-double mr-1"></i>Dokumen Paten Siap Ditandatangani Pimpinan
+                                                        <i class="fas fa-check-double mr-1"></i>Dokumen Permohonan Paten Sudah Terbit
                                                     </h5>
-                                                    <p class="text-sm text-green-700">
-                                                        Selamat! Dokumen paten untuk invensi Anda siap ditandatangani pimpinan. Silakan klik "Lihat Detail" untuk informasi lebih lanjut mengenai pengambilan dokumen.
+                                                    <p class="text-sm text-green-700 mb-3">
+                                                        Selamat! Dokumen permohonan paten Anda sudah terbit pada <strong>{{ $biodataPaten->document_issued_at->format('d F Y, H:i') }} WITA</strong>.
                                                     </p>
+                                                    <a href="{{ Storage::url($biodataPaten->application_document) }}" 
+                                                       target="_blank"
+                                                       class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 shadow-sm hover:shadow-md">
+                                                        <i class="fas fa-download mr-2"></i>Download Dokumen Permohonan (PDF)
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
                                     @elseif($biodataPaten->document_submitted)
-                                        {{-- Document submitted, waiting for signing --}}
+                                        {{-- Document submitted, waiting for document issued --}}
                                         <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
                                             <div class="flex items-start">
                                                 <div class="flex-shrink-0">
@@ -778,7 +783,7 @@ use Illuminate\Support\Facades\Storage;
                                                             <i class="fas fa-info-circle mr-1"></i>Informasi Penting:
                                                         </p>
                                                         <ul class="text-sm text-blue-700 space-y-2 ml-5 list-disc">
-                                                            <li>Silakan tunggu informasi <strong>nomor rekening pimpinan</strong> dari admin</li>
+                                                            <li>Menunggu <strong>dokumen permohonan paten terbit</strong> dari admin</li>
                                                             <li>Admin akan menghubungi <strong>inventor pertama</strong> lewat <strong>WhatsApp</strong></li>
                                                         </ul>
                                                     </div>
