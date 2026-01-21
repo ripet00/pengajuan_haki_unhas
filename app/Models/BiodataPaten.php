@@ -152,12 +152,12 @@ class BiodataPaten extends Model
     }
 
     /**
-     * Get document submission deadline (1 month after biodata approval)
+     * Get document submission deadline (30 days after biodata approval)
      */
     public function getDocumentDeadline()
     {
         if ($this->isApproved() && $this->reviewed_at) {
-            return $this->reviewed_at->addMonth();
+            return $this->reviewed_at->addDays(30);
         }
         return null;
     }
