@@ -336,7 +336,7 @@
                                                 </div>
 
                                                 <!-- Tracking Actions Grid -->
-                                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                                     <!-- Document Tracking -->
                                                     <div class="bg-gray-50 rounded-lg p-3">
                                                         <h4 class="font-semibold text-gray-900 text-sm mb-2 flex items-center">
@@ -435,18 +435,18 @@
                                                                   id="upload-form-{{ $biodataPaten->id }}"
                                                                   onsubmit="return confirmUpload{{ $biodataPaten->id }}()">
                                                                 @csrf
-                                                                <div class="flex gap-2">
+                                                                <div class="space-y-2">
                                                                     <input type="file" 
                                                                            name="application_document" 
                                                                            id="file-{{ $biodataPaten->id }}"
                                                                            accept=".pdf"
                                                                            required
                                                                            onchange="validateFile{{ $biodataPaten->id }}(this)"
-                                                                           class="flex-1 text-xs border-4 border-orange-500 bg-yellow-50 rounded-lg px-2 py-1 font-medium shadow-lg hover:border-orange-600 hover:bg-yellow-100 focus:ring-4 focus:ring-orange-300 focus:border-orange-600 cursor-pointer transition-all duration-200 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-gradient-to-r file:from-orange-500 file:to-orange-600 file:text-white hover:file:from-orange-600 hover:file:to-orange-700 file:cursor-pointer file:transition-all file:duration-200 file:shadow-md hover:file:shadow-lg">
+                                                                           class="w-full text-xs border-4 border-orange-500 bg-yellow-50 rounded-lg px-2 py-1 font-medium shadow-lg hover:border-orange-600 hover:bg-yellow-100 focus:ring-4 focus:ring-orange-300 focus:border-orange-600 cursor-pointer transition-all duration-200 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-gradient-to-r file:from-orange-500 file:to-orange-600 file:text-white hover:file:from-orange-600 hover:file:to-orange-700 file:cursor-pointer file:transition-all file:duration-200 file:shadow-md hover:file:shadow-lg">
                                                                     <button type="submit" 
                                                                             id="submit-btn-{{ $biodataPaten->id }}"
                                                                             disabled
-                                                                            class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-xs font-semibold py-2 px-3 rounded transition duration-200">
+                                                                            class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-xs font-semibold py-2 px-3 rounded transition duration-200">
                                                                         <i class="fas fa-upload mr-1"></i>Upload
                                                                     </button>
                                                                 </div>
