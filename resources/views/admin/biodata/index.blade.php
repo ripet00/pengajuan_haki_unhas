@@ -307,16 +307,16 @@
                                                             
                                                             <!-- Certificate Status -->
                                                             @if($biodata->certificate_issued)
-                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                                                    <i class="fas fa-certificate mr-1"></i>Sertifikat ✓
+                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                                                    <i class="fas fa-award mr-1"></i>Sertifikat Terbit
                                                                 </span>
                                                             @elseif($biodata->document_submitted && $biodata->isCertificateOverdue())
                                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-800">
-                                                                    <i class="fas fa-hourglass-end mr-1"></i>Proses Telat
+                                                                    <i class="fas fa-hourglass-end mr-1"></i>Sertifikat Telat
                                                                 </span>
                                                             @elseif($biodata->document_submitted)
                                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700">
-                                                                    <i class="fas fa-hourglass-half mr-1"></i>Proses...
+                                                                    <i class="fas fa-hourglass-half mr-1"></i>Sertifikat Proses
                                                                 </span>
                                                             @endif
                                                         </div>
