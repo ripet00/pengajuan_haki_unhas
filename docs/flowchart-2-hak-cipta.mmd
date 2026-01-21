@@ -1,0 +1,122 @@
+---
+title: 2. Alur Pengajuan Hak Cipta End-to-End
+---
+flowchart TD
+    Start([User Login ke Dashboard]) --> MenuHC[Pilih Menu Hak Cipta]
+    MenuHC --> CreateSub[Klik: Buat Pengajuan Baru]
+    
+    %% FASE 1: CREATE SUBMISSION
+    CreateSub --> FormSub[Form Submission:<br/>- Judul Karya<br/>- Kategori Ciptaan<br/>- Jenis Karya<br/>- Tipe File<br/>- Upload File/Link<br/>- Data Pencipta Pertama]
+    FormSub --> ConfirmSub{Konfirmasi<br/>Submit?}
+    ConfirmSub -->|Tidak| FormSub
+    
+    ConfirmSub -->|Ya| ValidateSub{Validasi}
+    ValidateSub -->|Judul Duplikat| ErrDup[Error: Judul Sudah Ada]
+    ErrDup --> FormSub
+    
+    ValidateSub -->|File Invalid| ErrFile[Error: File Tidak Valid<br/>Type/Size]
+    ErrFile --> FormSub
+    
+    ValidateSub -->|Valid| SaveSub[Simpan Submission<br/>Status: pending_format_review]
+    SaveSub --> CreateHist1[Buat History Record]
+    CreateHist1 --> RedirectDetail1[Redirect ke Detail Submission]
+    RedirectDetail1 --> WaitReview1[User Menunggu Review Admin]
+    
+    %% FASE 2: ADMIN REVIEW FORMAT
+    WaitReview1 -.-> AdminLogin[Admin Hak Cipta Login]
+    AdminLogin --> AdminList[Admin: List Submissions]
+    AdminList --> AdminDetail[Admin: View Detail Submission]
+    AdminDetail --> DownloadFile[Admin: Download & Periksa File]
+    
+    DownloadFile --> ReviewDecision{Admin Review<br/>Format Dokumen}
+    
+    ReviewDecision -->|REJECT| InputReject[Admin Input:<br/>- Alasan Rejection]
+    InputReject --> SaveReject[Update Status:<br/>rejected_format_review<br/>Buat History]
+    SaveReject --> NotifReject[User Dapat Notifikasi:<br/>Submission Ditolak]
+    
+    NotifReject --> UserResubmit{User Action}
+    UserResubmit -->|Upload File Baru| FormResubmit[Resubmit Form:<br/>Upload File Revisi]
+    FormResubmit --> SaveResubmit[Update Submission<br/>Status: pending_format_review<br/>Flag: revisi = true]
+    SaveResubmit --> WaitReview1
+    
+    ReviewDecision -->|APPROVE| SaveApprove[Update Status:<br/>approved<br/>Buat History]
+    SaveApprove --> NotifApprove[User Dapat Notifikasi:<br/>Submission Disetujui]
+    
+    %% FASE 3: CREATE BIODATA
+    NotifApprove --> UserAction1{User Action}
+    UserAction1 -->|Buat Biodata| CreateBio[Klik: Upload Biodata]
+    
+    CreateBio --> FormBio[Form Biodata:<br/>- Tempat Ciptaan<br/>- Tanggal Ciptaan<br/>- Uraian Singkat<br/>- Data Pencipta Leader<br/>- Data Anggota 0-9 orang]
+    FormBio --> WilayahAPI[Load Wilayah:<br/>Provinsi → Kota<br/>→ Kecamatan → Kelurahan]
+    WilayahAPI --> ConfirmBio{Konfirmasi<br/>Submit Biodata?}
+    
+    ConfirmBio -->|Tidak| FormBio
+    ConfirmBio -->|Ya| SaveBio[Simpan Biodata<br/>Status: pending<br/>Simpan Members]
+    SaveBio --> UpdateSubBio[Update Submission:<br/>biodata_status = submitted]
+    UpdateSubBio --> RedirectBioDetail[Redirect ke Detail Biodata]
+    RedirectBioDetail --> WaitReview2[User Menunggu Review Biodata]
+    
+    %% FASE 4: ADMIN REVIEW BIODATA
+    WaitReview2 -.-> AdminBioList[Admin: List Biodata]
+    AdminBioList --> AdminBioDetail[Admin: View Detail Biodata]
+    AdminBioDetail --> CheckErrors[Admin: Cek Kelengkapan Data]
+    
+    CheckErrors --> MarkErrors[Admin Tandai Error Field:<br/>☑ Error Tempat Ciptaan<br/>☑ Error Tanggal Ciptaan<br/>☑ Error Uraian Singkat]
+    
+    MarkErrors --> BiodataReview{Admin Review<br/>Biodata}
+    
+    BiodataReview -->|DENY| InputDeny[Admin Input:<br/>- Alasan Penolakan]
+    InputDeny --> SaveDeny[Update Biodata:<br/>status = denied<br/>Save error flags]
+    SaveDeny --> NotifDeny[User Dapat Notifikasi:<br/>Biodata Ditolak]
+    NotifDeny --> UserRevisi[User Revisi Biodata]
+    UserRevisi --> FormBio
+    
+    BiodataReview -->|APPROVE| CheckDocSubmit{Berkas Sudah<br/>Disetor?}
+    CheckDocSubmit -->|Ya| ErrNoEdit[Error: Tidak Bisa Ubah Review<br/>Berkas Sudah Disetor]
+    ErrNoEdit --> AdminBioDetail
+    
+    CheckDocSubmit -->|Tidak| SaveApproveBio[Update Biodata:<br/>status = approved<br/>reviewed_at = now]
+    SaveApproveBio --> NotifApproveBio[User Dapat Notifikasi:<br/>Biodata Disetujui]
+    
+    %% FASE 5: DOWNLOAD FORMULIR & SETOR BERKAS
+    NotifApproveBio --> UserDownload[User: Download Formulir Pendaftaran<br/>PDF Auto-Generated]
+    UserDownload --> UserPrint[User: Print & Lengkapi Dokumen]
+    UserPrint --> UserSetor[User: Setor Berkas Fisik<br/>ke Kantor HKI<br/>Deadline: 30 hari]
+    
+    UserSetor --> DeadlineCheck1{Sudah Disetor?}
+    DeadlineCheck1 -->|Lewat 30 Hari| Overdue1[Status: TERLAMBAT<br/>Badge Merah di Admin]
+    DeadlineCheck1 -->|Dalam 30 Hari| OnTime1[Status: Menunggu<br/>Badge Kuning di Admin]
+    
+    Overdue1 --> AdminMarkSetor
+    OnTime1 --> AdminMarkSetor[Admin: Tandai Berkas Disetor]
+    
+    AdminMarkSetor --> ConfirmSetor{Admin Konfirmasi}
+    ConfirmSetor -->|Ya| UpdateSetor[Update Biodata:<br/>document_submitted = true<br/>document_submitted_at = now]
+    UpdateSetor --> StatusSetor[Status: Berkas Disetor<br/>Badge Hijau]
+    
+    %% FASE 6: PENERBITAN SERTIFIKAT
+    StatusSetor --> AdminProcess[Admin: Proses Penerbitan Sertifikat<br/>- TTD Pimpinan<br/>- Daftar ke DJKI<br/>Estimasi: 2 minggu 14 hari]
+    
+    AdminProcess --> DeadlineCheck2{Sudah Terbit?}
+    DeadlineCheck2 -->|Lewat 2 Minggu| Overdue2[Status: Proses Telat<br/>Badge Orange]
+    DeadlineCheck2 -->|Dalam 2 Minggu| OnTime2[Status: Sertifikat Proses<br/>Badge Biru]
+    
+    Overdue2 --> AdminMarkCert
+    OnTime2 --> AdminMarkCert[Admin: Tandai Sertifikat Terbit]
+    
+    AdminMarkCert --> ConfirmCert{Admin Konfirmasi}
+    ConfirmCert -->|Ya| UpdateCert[Update Biodata:<br/>certificate_issued = true<br/>certificate_issued_at = now]
+    UpdateCert --> StatusCert[Status: Sertifikat Terbit<br/>Badge Ungu]
+    
+    StatusCert --> Complete([PROSES SELESAI ✅<br/>Hak Cipta Terdaftar])
+    
+    style Start fill:#28a745,stroke:#1e7e34,stroke-width:3px,color:#fff
+    style Complete fill:#28a745,stroke:#1e7e34,stroke-width:3px,color:#fff
+    style ErrDup fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style ErrFile fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style ErrNoEdit fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style SaveApprove fill:#28a745,stroke:#1e7e34,stroke-width:2px,color:#fff
+    style SaveApproveBio fill:#28a745,stroke:#1e7e34,stroke-width:2px,color:#fff
+    style Overdue1 fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style Overdue2 fill:#ffc107,stroke:#e0a800,stroke-width:3px,color:#000
+    style StatusCert fill:#6f42c1,stroke:#5a32a3,stroke-width:3px,color:#fff

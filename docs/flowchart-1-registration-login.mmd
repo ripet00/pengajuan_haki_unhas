@@ -1,0 +1,57 @@
+---
+title: 1. User Registration & Login dengan Verifikasi Admin
+---
+flowchart TD
+    Start([User Buka Website]) --> CheckAuth{Sudah Login?}
+    CheckAuth -->|Ya| Dashboard[Redirect ke Dashboard]
+    CheckAuth -->|Tidak| ShowLogin[Tampil Halaman Login]
+    
+    ShowLogin --> ChoiceLogin{Pilihan User}
+    ChoiceLogin -->|Klik Register| RegForm[Tampil Form Register]
+    ChoiceLogin -->|Klik Login| LoginForm[Tampil Form Login]
+    
+    %% Registration Flow
+    RegForm --> InputReg[User Input:<br/>- Name<br/>- NIM/NIDN/NIDK<br/>- Email<br/>- Phone Number + Country Code<br/>- Password]
+    InputReg --> SubmitReg[Submit Registration]
+    SubmitReg --> ValidateReg{Validasi}
+    
+    ValidateReg -->|Phone/NIM Duplikat| ErrorReg[Error: Data Sudah Terdaftar]
+    ErrorReg --> RegForm
+    
+    ValidateReg -->|Valid| CreateUser[System Create User<br/>Status: Active]
+    CreateUser --> AutoLogin[Auto Login User]
+    AutoLogin --> Dashboard
+    
+    %% Login Flow
+    LoginForm --> InputLogin[User Input:<br/>Phone Number + Password]
+    InputLogin --> SubmitLogin[Submit Login]
+    SubmitLogin --> ValidateLogin{Validasi}
+    
+    ValidateLogin -->|Phone/Password Salah| ErrorLogin[Error: Kredensial Salah]
+    ErrorLogin --> LoginForm
+    
+    ValidateLogin -->|Valid| CheckStatus{User Status Active?}
+    CheckStatus -->|Tidak| ErrorInactive[Error: Akun Dinonaktifkan<br/>Hubungi Admin]
+    ErrorInactive --> LoginForm
+    
+    CheckStatus -->|Ya| Dashboard
+    
+    %% Admin Verification (Optional - Update Status)
+    Dashboard -.->|Admin Review User| AdminPanel[Admin Panel<br/>User Management]
+    AdminPanel --> ListUsers[List Semua User]
+    ListUsers --> AdminAction{Admin Action}
+    
+    AdminAction -->|Deactivate User| SetInactive[Update Status: Inactive<br/>User tidak bisa login]
+    AdminAction -->|Activate User| SetActive[Update Status: Active<br/>User bisa login]
+    
+    SetInactive --> AdminPanel
+    SetActive --> AdminPanel
+    
+    Dashboard --> End([User di Dashboard])
+    
+    style Start fill:#28a745,stroke:#1e7e34,stroke-width:3px,color:#fff
+    style End fill:#28a745,stroke:#1e7e34,stroke-width:3px,color:#fff
+    style ErrorReg fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style ErrorLogin fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style ErrorInactive fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style Dashboard fill:#007bff,stroke:#0056b3,stroke-width:3px,color:#fff

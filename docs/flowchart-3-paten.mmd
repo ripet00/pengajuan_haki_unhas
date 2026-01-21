@@ -1,0 +1,166 @@
+---
+title: 3. Alur Pengajuan Paten End-to-End
+---
+flowchart TD
+    Start([User Login ke Dashboard]) --> MenuPaten[Pilih Menu Paten]
+    MenuPaten --> CreateSubP[Klik: Buat Pengajuan Paten]
+    
+    %% FASE 1: CREATE SUBMISSION PATEN
+    CreateSubP --> FormSubP[Form Submission Paten:<br/>- Judul Paten<br/>- Kategori Paten<br/>- Nama Inventor Pertama<br/>- WhatsApp Inventor<br/>- Upload File Dokumen PDF]
+    FormSubP --> ConfirmSubP{Konfirmasi<br/>Submit?}
+    ConfirmSubP -->|Tidak| FormSubP
+    
+    ConfirmSubP -->|Ya| ValidateSubP{Validasi}
+    ValidateSubP -->|Judul Duplikat| ErrDupP[Error: Judul Sudah Ada]
+    ErrDupP --> FormSubP
+    
+    ValidateSubP -->|Bukan PDF| ErrPDF[Error: File Harus PDF]
+    ErrPDF --> FormSubP
+    
+    ValidateSubP -->|Size > 50MB| ErrSize[Error: File Max 50MB]
+    ErrSize --> FormSubP
+    
+    ValidateSubP -->|Valid| SaveSubP[Simpan Submission Paten<br/>Status: pending_format_review]
+    SaveSubP --> CreateHistP1[Buat History Record]
+    CreateHistP1 --> RedirectDetailP1[Redirect ke Detail Submission Paten]
+    RedirectDetailP1 --> WaitReviewP1[User Menunggu Review Format]
+    
+    %% FASE 2: ADMIN PATEN REVIEW FORMAT
+    WaitReviewP1 -.-> AdminPatenLogin[Admin Paten Login]
+    AdminPatenLogin --> AdminListP[Admin: List Submissions Paten]
+    AdminListP --> AdminDetailP[Admin: View Detail Submission]
+    AdminDetailP --> DownloadFileP[Admin: Download & Periksa File]
+    
+    DownloadFileP --> ReviewFormatP{Admin Review<br/>Format Dokumen}
+    
+    ReviewFormatP -->|REJECT FORMAT| InputRejectP[Admin Input:<br/>- Alasan Rejection]
+    InputRejectP --> SaveRejectP[Update Status:<br/>rejected_format_review<br/>Buat History]
+    SaveRejectP --> NotifRejectP[User Dapat Notifikasi:<br/>Ditolak Format]
+    
+    NotifRejectP --> UserResubmitP{User Action}
+    UserResubmitP -->|Resubmit Format| FormResubmitP[Resubmit Form:<br/>Upload File Baru]
+    FormResubmitP --> SaveResubmitP[Update Submission<br/>Status: pending_format_review<br/>Flag: revisi = true]
+    SaveResubmitP --> WaitReviewP1
+    
+    ReviewFormatP -->|APPROVE FORMAT| SelectPendamping[Admin WAJIB Pilih<br/>Pendamping Paten<br/>dari Dropdown]
+    SelectPendamping --> SaveApproveFormat[Update Status:<br/>approved_format<br/>pendamping_paten_id = ID<br/>assigned_at = now]
+    SaveApproveFormat --> AutoAssign[System AUTO Update:<br/>Status: pending_substance_review]
+    AutoAssign --> CreateHistP2[Buat History:<br/>Assigned to Pendamping]
+    CreateHistP2 --> NotifPendamping[Notifikasi ke Pendamping Paten]
+    
+    %% FASE 3: PENDAMPING PATEN REVIEW SUBSTANSI
+    NotifPendamping --> PendampingLogin[Pendamping Paten Login]
+    PendampingLogin --> PendampingDashboard[Dashboard Pendamping:<br/>List Submission Assigned]
+    PendampingDashboard --> PendampingDetail[Pendamping: View Detail]
+    PendampingDetail --> PendampingDownload[Pendamping: Download File]
+    
+    PendampingDownload --> AnalisisSubstansi[Pendamping Analisis:<br/>- Kebaruan Invensi<br/>- Inovasi<br/>- Prior Art Search<br/>- Kelayakan Paten]
+    
+    AnalisisSubstansi --> ReviewSubstance{Pendamping Review<br/>Substansi}
+    
+    ReviewSubstance -->|REJECT SUBSTANCE| InputRejectSub[Input:<br/>- Catatan Review<br/>- Upload File Review PDF]
+    InputRejectSub --> SaveRejectSub[Update Status:<br/>rejected_substance_review<br/>Save notes & file<br/>substance_reviewed_at = now]
+    SaveRejectSub --> NotifRejectSub[User Dapat Notifikasi:<br/>Ditolak Substansi]
+    
+    NotifRejectSub --> UserResubmitSub{User Action}
+    UserResubmitSub -->|Resubmit Substance| FormResubmitSub[Resubmit Substance:<br/>Upload File Revisi]
+    FormResubmitSub --> SaveResubmitSub[Update Submission<br/>Status: pending_substance_review]
+    SaveResubmitSub --> AnalisisSubstansi
+    
+    ReviewSubstance -->|APPROVE SUBSTANCE| InputApproveSub[Input:<br/>- Catatan Review Positif<br/>- Upload File Review]
+    InputApproveSub --> SaveApproveSub[Update Status:<br/>approved_substance<br/>Save notes & file]
+    SaveApproveSub --> CreateHistP3[Buat History:<br/>Substance Approved]
+    CreateHistP3 --> NotifApproveSub[User Dapat Notifikasi:<br/>Lolos Semua Review]
+    
+    %% FASE 4: CREATE BIODATA PATEN
+    NotifApproveSub --> UserActionP{User Action}
+    UserActionP -->|Buat Biodata| CreateBioP[Klik: Upload Biodata Paten]
+    
+    CreateBioP --> FormBioP[Form Biodata Paten:<br/>- Data Inventor Leader<br/>- Data Inventor Tambahan<br/>Max 4 inventor total]
+    FormBioP --> WilayahAPIP[Load Wilayah 4-Level<br/>untuk tiap Inventor]
+    WilayahAPIP --> ConfirmBioP{Konfirmasi<br/>Submit Biodata?}
+    
+    ConfirmBioP -->|Tidak| FormBioP
+    ConfirmBioP -->|Ya| ValidateBioP{Validasi}
+    ValidateBioP -->|Inventor > 4| ErrInventor[Error: Max 4 Inventor]
+    ErrInventor --> FormBioP
+    
+    ValidateBioP -->|Valid| SaveBioP[Simpan Biodata Paten<br/>Status: pending<br/>Simpan Inventors]
+    SaveBioP --> UpdateSubBioP[Update Submission:<br/>biodata_status = submitted]
+    UpdateSubBioP --> RedirectBioDetailP[Redirect ke Detail Biodata Paten]
+    RedirectBioDetailP --> WaitReviewP2[User Menunggu Review Biodata]
+    
+    %% FASE 5: ADMIN REVIEW BIODATA PATEN
+    WaitReviewP2 -.-> AdminBioListP[Admin Paten: List Biodata]
+    AdminBioListP --> AdminBioDetailP[Admin: View Detail Biodata Paten]
+    AdminBioDetailP --> CheckErrorsP[Admin: Cek Kelengkapan Data]
+    
+    CheckErrorsP --> BiodataReviewP{Admin Review<br/>Biodata Paten}
+    
+    BiodataReviewP -->|DENY| InputDenyP[Admin Input:<br/>- Alasan Penolakan]
+    InputDenyP --> SaveDenyP[Update Biodata:<br/>status = denied]
+    SaveDenyP --> NotifDenyP[User Dapat Notifikasi:<br/>Biodata Ditolak]
+    NotifDenyP --> UserRevisiP[User Revisi Biodata]
+    UserRevisiP --> FormBioP
+    
+    BiodataReviewP -->|APPROVE| CheckDocSubmitP{Berkas Sudah<br/>Disetor?}
+    CheckDocSubmitP -->|Ya| ErrNoEditP[Error: Tidak Bisa Ubah Review<br/>Berkas Sudah Disetor]
+    ErrNoEditP --> AdminBioDetailP
+    
+    CheckDocSubmitP -->|Tidak| SaveApproveBioP[Update Biodata:<br/>status = approved<br/>reviewed_at = now]
+    SaveApproveBioP --> NotifApproveBioP[User Dapat Notifikasi:<br/>Biodata Disetujui]
+    
+    %% FASE 6: DOWNLOAD DOKUMEN & SETOR BERKAS
+    NotifApproveBioP --> UserDownloadP[User Download 3 Dokumen:<br/>1. Formulir Pendaftaran Paten<br/>2. Surat Pengalihan Hak<br/>3. Surat Pernyataan Kepemilikan]
+    UserDownloadP --> UserPrintP[User: Print & TTD Dokumen]
+    UserPrintP --> UserSetorP[User: Setor Berkas Fisik<br/>ke Kantor HKI<br/>Deadline: 30 hari]
+    
+    UserSetorP --> UserMarkSetor[User: Klik Tombol<br/>"Tandai Berkas Disetor"]
+    UserMarkSetor --> UpdateSetorP[Update Biodata:<br/>document_submitted = true<br/>document_submitted_at = now]
+    UpdateSetorP --> StatusSetorP[Status: Berkas Disetor<br/>Badge Hijau]
+    
+    %% FASE 7: ADMIN UPLOAD DOKUMEN PERMOHONAN
+    StatusSetorP --> AdminProcessP[Admin: Proses Pendaftaran:<br/>1. TTD Pimpinan<br/>2. Daftar ke DJKI<br/>3. Dapat Nomor Registrasi<br/>Estimasi: 14 hari]
+    
+    AdminProcessP --> DeadlineCheckP{Sudah Upload<br/>Dokumen?}
+    DeadlineCheckP -->|Lewat 2 Minggu| OverdueP[Status: Proses Telat<br/>Badge Orange]
+    DeadlineCheckP -->|Dalam 2 Minggu| OnTimeP[Status: Permohonan Proses<br/>Badge Biru]
+    
+    OverdueP --> AdminUploadDoc
+    OnTimeP --> AdminUploadDoc[Admin: Upload Dokumen Permohonan]
+    
+    AdminUploadDoc --> FormUpload[Form Upload:<br/>- Pilih File PDF<br/>- Max 20MB]
+    FormUpload --> ValidateUpload{Validasi File}
+    ValidateUpload -->|Bukan PDF| ErrUploadPDF[Error: Harus PDF]
+    ErrUploadPDF --> FormUpload
+    
+    ValidateUpload -->|Size > 20MB| ErrUploadSize[Error: Max 20MB]
+    ErrUploadSize --> FormUpload
+    
+    ValidateUpload -->|Valid| ConfirmUpload{Konfirmasi Upload?<br/>Show: Nama File, Size}
+    ConfirmUpload -->|Tidak| FormUpload
+    
+    ConfirmUpload -->|Ya| SaveUpload[Update Biodata:<br/>application_document = path<br/>document_issued_at = now]
+    SaveUpload --> StatusPermohonan[Status: Permohonan Terbit<br/>Badge Ungu]
+    
+    %% FASE 8: USER DOWNLOAD & BAYAR
+    StatusPermohonan --> UserDownloadPermohonan[User: Download Dokumen Permohonan<br/>Lihat Nomor Registrasi]
+    UserDownloadPermohonan --> UserBayar[User: Koordinasi Pembayaran<br/>dengan Inventor Pertama]
+    UserBayar --> DJKIProcess[Selanjutnya: Proses di DJKI<br/>Substantive Examination]
+    
+    DJKIProcess --> CompleteP([PROSES SELESAI ✅<br/>Paten Didaftarkan ke DJKI])
+    
+    style Start fill:#28a745,stroke:#1e7e34,stroke-width:3px,color:#fff
+    style CompleteP fill:#28a745,stroke:#1e7e34,stroke-width:3px,color:#fff
+    style ErrDupP fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style ErrPDF fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style ErrSize fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style ErrInventor fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style ErrNoEditP fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style ErrUploadPDF fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style ErrUploadSize fill:#dc3545,stroke:#bd2130,stroke-width:3px,color:#fff
+    style SaveApproveFormat fill:#28a745,stroke:#1e7e34,stroke-width:2px,color:#fff
+    style SaveApproveSub fill:#28a745,stroke:#1e7e34,stroke-width:2px,color:#fff
+    style SaveApproveBioP fill:#28a745,stroke:#1e7e34,stroke-width:2px,color:#fff
+    style OverdueP fill:#ffc107,stroke:#e0a800,stroke-width:3px,color:#000
+    style StatusPermohonan fill:#6f42c1,stroke:#5a32a3,stroke-width:3px,color:#fff
