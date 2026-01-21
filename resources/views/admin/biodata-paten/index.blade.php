@@ -293,7 +293,7 @@
                                                             <!-- Document Status -->
                                                             @if($biodata->document_submitted)
                                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
-                                                                    <i class="fas fa-check-circle mr-1"></i>Berkas ?
+                                                                    <i class="fas fa-check-circle mr-1"></i>Berkas ✓
                                                                 </span>
                                                             @elseif($biodata->isDocumentOverdue())
                                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
@@ -305,10 +305,10 @@
                                                                 </span>
                                                             @endif
                                                             
-                                                            <!-- Certificate Status -->
-                                                            @if($biodata->certificate_issued)
-                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                                                    <i class="fas fa-certificate mr-1"></i>Sertifikat ?
+                                                            <!-- Application Document Status -->
+                                                            @if($biodata->application_document)
+                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                                                    <i class="fas fa-file-pdf mr-1"></i>Permohonan Terbit
                                                                 </span>
                                                             @elseif($biodata->document_submitted && $biodata->isSigningOverdue())
                                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-800">
@@ -316,7 +316,14 @@
                                                                 </span>
                                                             @elseif($biodata->document_submitted)
                                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700">
-                                                                    <i class="fas fa-hourglass-half mr-1"></i>Proses...
+                                                                    <i class="fas fa-hourglass-half mr-1"></i>Permohonan Proses
+                                                                </span>
+                                                            @endif
+                                                            
+                                                            <!-- Certificate Status -->
+                                                            @if($biodata->certificate_issued)
+                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                                                    <i class="fas fa-certificate mr-1"></i>Sertifikat ✓
                                                                 </span>
                                                             @endif
                                                         </div>
