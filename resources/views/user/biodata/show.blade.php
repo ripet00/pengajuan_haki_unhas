@@ -266,12 +266,12 @@
                                             Siapkan <strong>3 materai Rp10.000</strong> - Ada 3 bagian tanda tangan yang harus di atas materai
                                         </li>
                                         <li><strong>Siapkan hard copy</strong> dari karya cipta Anda</li>
-                                        <li>Silakan <strong>menyetor berkas</strong> ke kantor HKI Unhas</li>
+                                        <li>Silakan <strong>menyetor berkas</strong> ke kantor KI Unhas</li>
                                     </ol>
 
                                     <div class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                                         <h6 class="font-semibold text-gray-900 mb-2">
-                                            <i class="fas fa-map-marker-alt mr-2 text-red-600"></i>Alamat Kantor HKI Unhas:
+                                            <i class="fas fa-map-marker-alt mr-2 text-red-600"></i>Alamat Kantor KI Unhas:
                                         </h6>
                                         <p class="text-sm text-gray-700 leading-relaxed">
                                             Gedung Rektorat Lt. 6 <br>
@@ -285,7 +285,7 @@
                                     <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
                                         <p class="text-sm text-yellow-800">
                                             <i class="fas fa-exclamation-circle mr-1"></i>
-                                            <strong>Penting:</strong> Anda memiliki waktu <strong>1 bulan sejak biodata disetujui</strong> untuk menyetor formulir dan hard copy karya cipta ke kantor HKI Unhas.
+                                            <strong>Penting:</strong> Anda memiliki waktu <strong>1 bulan sejak biodata disetujui</strong> untuk menyetor formulir dan hard copy karya cipta ke kantor KI Unhas.
                                         </p>
                                     </div>
                                 </div>

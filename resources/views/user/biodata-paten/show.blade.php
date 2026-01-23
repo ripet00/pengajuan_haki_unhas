@@ -187,7 +187,7 @@
                                         </p>
                                         <p class="text-sm text-blue-700">
                                             <i class="fas fa-info-circle mr-1"></i>
-                                            Silakan datang ke kantor HKI Unhas untuk mengambil sertifikat Anda.
+                                            Silakan datang ke kantor KI Unhas untuk mengambil sertifikat Anda.
                                         </p>
                                     </div>
                                 </div>
@@ -292,12 +292,12 @@
                                             <i class="fas fa-stamp mr-1"></i>
                                             Siapkan <strong>2 materai Rp10.000</strong> - Ada 2 bagian tanda tangan yang harus di atas materai (1x di Surat Pengalihan + 1x di Surat Pernyataan)
                                         </li>
-                                        <li>Silakan <strong>menyetor berkas</strong> ke kantor HKI Unhas</li>
+                                        <li>Silakan <strong>menyetor berkas</strong> ke kantor KI Unhas</li>
                                     </ol>
 
                                     <div class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                                         <h6 class="font-semibold text-gray-900 mb-2">
-                                            <i class="fas fa-map-marker-alt mr-2 text-red-600"></i>Alamat Kantor HKI Unhas:
+                                            <i class="fas fa-map-marker-alt mr-2 text-red-600"></i>Alamat Kantor KI Unhas:
                                         </h6>
                                         <p class="text-sm text-gray-700 leading-relaxed">
                                             Gedung Rektorat Lt. 6 <br>
@@ -311,7 +311,7 @@
                                     <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
                                         <p class="text-sm text-yellow-800">
                                             <i class="fas fa-exclamation-circle mr-1"></i>
-                                            <strong>Penting:</strong> Anda memiliki waktu <strong>1 bulan sejak biodata disetujui</strong> untuk menyetor formulir ke kantor HKI Unhas.
+                                            <strong>Penting:</strong> Anda memiliki waktu <strong>1 bulan sejak biodata disetujui</strong> untuk menyetor formulir ke kantor KI Unhas.
                                         </p>
                                     </div>
                                 </div>
