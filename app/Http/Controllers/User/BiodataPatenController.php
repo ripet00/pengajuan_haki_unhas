@@ -96,7 +96,7 @@ class BiodataPatenController extends Controller
 
         // Validate the request
         $validatedData = $request->validate([
-            'inventors' => 'required|array|min:1|max:4',
+            'inventors' => 'required|array|min:1|max:10',
             'inventors.*.name' => 'required|string|max:255',
             'inventors.*.pekerjaan' => 'required|string|max:255',
             'inventors.*.universitas' => 'required|string|max:255',
