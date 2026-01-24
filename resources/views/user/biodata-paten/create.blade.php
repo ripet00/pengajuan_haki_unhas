@@ -208,7 +208,7 @@
                             <i class="fas fa-plus mr-1"></i>Tambah Inventor
                         </button>
                     </div>
-                    <p class="text-sm text-gray-600 mt-1">Maksimal 6 orang inventor (termasuk inventor utama)</p>
+                    <p class="text-sm text-gray-600 mt-1">Maksimal 10 orang inventor (termasuk inventor utama)</p>
                     <div class="bg-green-50 border border-green-200 rounded-lg p-3 mt-2 space-y-2">
                         <p class="text-sm text-green-800">
                             <i class="fas fa-info-circle mr-1"></i>
@@ -266,7 +266,7 @@
 
     <script>
         let inventorCount = 0;
-        const maxInventors = 4;
+        const maxInventors = 10;
         
         // Existing inventors data from server
         const existingInventors = @json($inventors ? $inventors->toArray() : []);
@@ -721,7 +721,7 @@
         
         function addInventor() {
             if (inventorCount >= maxInventors) {
-                alert('Maksimal 6 inventor diperbolehkan.');
+                alert('Maksimal 10 inventor diperbolehkan.');
                 return;
             }
             
