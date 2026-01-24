@@ -76,13 +76,13 @@ flowchart TD
     NotifApproveSub --> UserActionP{User Action}
     UserActionP -->|Buat Biodata| CreateBioP[Klik: Upload Biodata Paten]
     
-    CreateBioP --> FormBioP[Form Biodata Paten:<br/>- Data Inventor Leader<br/>- Data Inventor Tambahan<br/>Max 4 inventor total]
+    CreateBioP --> FormBioP[Form Biodata Paten:<br/>- Data Inventor Leader<br/>- Data Inventor Tambahan<br/>Max 10 inventor total]
     FormBioP --> WilayahAPIP[Load Wilayah 4-Level<br/>untuk tiap Inventor]
     WilayahAPIP --> ConfirmBioP{Konfirmasi<br/>Submit Biodata?}
     
     ConfirmBioP -->|Tidak| FormBioP
     ConfirmBioP -->|Ya| ValidateBioP{Validasi}
-    ValidateBioP -->|Inventor > 4| ErrInventor[Error: Max 4 Inventor]
+    ValidateBioP -->|Inventor > 10| ErrInventor[Error: Max 10 Inventor]
     ErrInventor --> FormBioP
     
     ValidateBioP -->|Valid| SaveBioP[Simpan Biodata Paten<br/>Status: pending<br/>Simpan Inventors]
