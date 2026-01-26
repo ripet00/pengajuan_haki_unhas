@@ -27,7 +27,8 @@ class JenisKaryaSeeder extends Seeder
             'Leaflet',
             'Alat peraga',
             'Program komputer',
-            'Karya rekaman video'
+            'Karya rekaman video',
+            'Lain-lain'
         ];
 
         foreach ($jenisKaryas as $nama) {
