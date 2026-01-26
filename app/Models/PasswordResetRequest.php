@@ -113,7 +113,7 @@ class PasswordResetRequest extends Model
     /**
      * Mark token as used
      */
-    public function markAsUsed(string $ip = null): void
+    public function markAsUsed(?string $ip = null): void
     {
         $this->update([
             'used' => true,
