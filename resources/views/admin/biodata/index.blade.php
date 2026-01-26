@@ -194,7 +194,7 @@
                                             <i class="fas fa-file-upload mr-2"></i>Penyetoran Berkas Terlambat
                                         </h3>
                                         <p class="text-sm text-red-800 mb-2">
-                                            <strong class="text-2xl">{{ $documentOverdue }}</strong> biodata sudah melewati deadline 1 bulan untuk penyetoran berkas!
+                                            <strong class="text-2xl">{{ $documentOverdue }}</strong> biodata sudah melewati deadline 1 minggu (7 hari) untuk penyetoran berkas!
                                         </p>
                                         <p class="text-xs text-red-700">
                                             <i class="fas fa-info-circle mr-1"></i>

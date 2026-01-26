@@ -113,7 +113,7 @@ flowchart TD
     %% FASE 6: DOWNLOAD DOKUMEN & SETOR BERKAS
     NotifApproveBioP --> UserDownloadP[User Download 3 Dokumen:<br/>1. Formulir Pendaftaran Paten<br/>2. Surat Pengalihan Hak<br/>3. Surat Pernyataan Kepemilikan]
     UserDownloadP --> UserPrintP[User: Print & TTD Dokumen]
-    UserPrintP --> UserSetorP[User: Setor Berkas Fisik<br/>ke Kantor HKI<br/>Deadline: 30 hari]
+    UserPrintP --> UserSetorP[User: Setor Berkas Fisik<br/>ke Kantor HKI<br/>Deadline: 7 hari]
     
     UserSetorP --> UserMarkSetor[User: Klik Tombol<br/>"Tandai Berkas Disetor"]
     UserMarkSetor --> UpdateSetorP[Update Biodata:<br/>document_submitted = true<br/>document_submitted_at = now]

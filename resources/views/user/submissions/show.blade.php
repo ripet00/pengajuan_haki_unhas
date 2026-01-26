@@ -582,7 +582,7 @@
                                                     </p>
                                                     <p class="text-sm text-orange-700">
                                                         <i class="fas fa-exclamation-circle mr-1"></i>
-                                                        <strong>Penting:</strong> Anda memiliki waktu 1 bulan untuk menyetor berkas.
+                                                        <strong>Penting:</strong> Anda memiliki waktu 1 minggu (7 hari) untuk menyetor berkas.
                                                     </p>
                                                 </div>
                                             </div>

@@ -311,7 +311,7 @@
                                     <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
                                         <p class="text-sm text-yellow-800">
                                             <i class="fas fa-exclamation-circle mr-1"></i>
-                                            <strong>Penting:</strong> Anda memiliki waktu <strong>1 bulan sejak biodata disetujui</strong> untuk menyetor formulir ke kantor KI Unhas.
+                                            <strong>Penting:</strong> Anda memiliki waktu <strong>1 minggu (7 hari) sejak biodata disetujui</strong> untuk menyetor formulir ke kantor KI Unhas.
                                         </p>
                                     </div>
                                 </div>

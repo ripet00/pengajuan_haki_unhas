@@ -81,11 +81,11 @@ flowchart TD
     %% FASE 5: DOWNLOAD FORMULIR & SETOR BERKAS
     NotifApproveBio --> UserDownload[User: Download Formulir Pendaftaran<br/>PDF Auto-Generated]
     UserDownload --> UserPrint[User: Print & Lengkapi Dokumen]
-    UserPrint --> UserSetor[User: Setor Berkas Fisik<br/>ke Kantor HKI<br/>Deadline: 30 hari]
+    UserPrint --> UserSetor[User: Setor Berkas Fisik<br/>ke Kantor HKI<br/>Deadline: 7 hari]
     
     UserSetor --> DeadlineCheck1{Sudah Disetor?}
-    DeadlineCheck1 -->|Lewat 30 Hari| Overdue1[Status: TERLAMBAT<br/>Badge Merah di Admin]
-    DeadlineCheck1 -->|Dalam 30 Hari| OnTime1[Status: Menunggu<br/>Badge Kuning di Admin]
+    DeadlineCheck1 -->|Lewat 7 Hari| Overdue1[Status: TERLAMBAT<br/>Badge Merah di Admin]
+    DeadlineCheck1 -->|Dalam 7 Hari| OnTime1[Status: Menunggu<br/>Badge Kuning di Admin]
     
     Overdue1 --> AdminMarkSetor
     OnTime1 --> AdminMarkSetor[Admin: Tandai Berkas Disetor]

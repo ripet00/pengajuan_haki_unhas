@@ -157,7 +157,7 @@
                                     <div>
                                         <p class="text-red-100 text-xs font-medium uppercase">Berkas Terlambat</p>
                                         <h3 class="text-3xl font-bold mt-1">{{ $documentOverdue }}</h3>
-                                        <p class="text-red-100 text-xs mt-1">Lewat 1 bulan</p>
+                                        <p class="text-red-100 text-xs mt-1">Lewat 1 minggu</p>
                                     </div>
                                     <div class="bg-red-400 bg-opacity-30 rounded-full p-3">
                                         <i class="fas fa-exclamation-triangle text-2xl"></i>
