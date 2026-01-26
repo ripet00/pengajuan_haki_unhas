@@ -99,6 +99,11 @@
             </li>
             @endif
             
+            <!-- Divider -->
+            <li class="my-2">
+                <hr class="border-gray-300">
+            </li>
+            
             <!-- Show Jenis Karya and Hak Cipta menus only for non-Pendamping Paten roles -->
             @if($admin && !$admin->isPendampingPaten())
             @if($admin->canAccessJenisKarya())
@@ -147,7 +152,7 @@
             
             <!-- Divider -->
             @if($admin && !$admin->isPendampingPaten() && ($admin->canAccessHakCipta() || $admin->canAccessPaten()))
-            <li class="my-4">
+            <li class="my-2">
                 <div class="border-t border-gray-200"></div>
             </li>
             @endif
