@@ -138,12 +138,12 @@ class Biodata extends Model
     }
 
     /**
-     * Get certificate processing deadline (2 weeks after document submitted)
+     * Get certificate processing deadline (1 week after document submitted)
      */
     public function getCertificateDeadline()
     {
         if ($this->document_submitted && $this->document_submitted_at) {
-            return $this->document_submitted_at->addWeeks(2);
+            return $this->document_submitted_at->addWeek();
         }
         return null;
     }

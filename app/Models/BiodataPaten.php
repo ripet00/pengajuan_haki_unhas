@@ -174,12 +174,12 @@ class BiodataPaten extends Model
     }
 
     /**
-     * Get signing processing deadline (2 weeks after document submitted)
+     * Get signing processing deadline (1 week after document submitted)
      */
     public function getSigningDeadline()
     {
         if ($this->document_submitted && $this->document_submitted_at) {
-            return $this->document_submitted_at->addWeeks(2);
+            return $this->document_submitted_at->addWeek();
         }
         return null;
     }

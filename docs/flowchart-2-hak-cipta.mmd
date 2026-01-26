@@ -95,11 +95,11 @@ flowchart TD
     UpdateSetor --> StatusSetor[Status: Berkas Disetor<br/>Badge Hijau]
     
     %% FASE 6: PENERBITAN SERTIFIKAT
-    StatusSetor --> AdminProcess[Admin: Proses Penerbitan Sertifikat<br/>- TTD Pimpinan<br/>- Daftar ke DJKI<br/>Estimasi: 2 minggu 14 hari]
+    StatusSetor --> AdminProcess[Admin: Proses Penerbitan Sertifikat<br/>- TTD Pimpinan<br/>- Daftar ke DJKI<br/>Estimasi: 7 hari]
     
     AdminProcess --> DeadlineCheck2{Sudah Terbit?}
-    DeadlineCheck2 -->|Lewat 2 Minggu| Overdue2[Status: Proses Telat<br/>Badge Orange]
-    DeadlineCheck2 -->|Dalam 2 Minggu| OnTime2[Status: Sertifikat Proses<br/>Badge Biru]
+    DeadlineCheck2 -->|Lewat 1 Minggu| Overdue2[Status: Proses Telat<br/>Badge Orange]
+    DeadlineCheck2 -->|Dalam 1 Minggu| OnTime2[Status: Sertifikat Proses<br/>Badge Biru]
     
     Overdue2 --> AdminMarkCert
     OnTime2 --> AdminMarkCert[Admin: Tandai Sertifikat Terbit]

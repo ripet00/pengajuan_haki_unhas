@@ -173,7 +173,7 @@
                                     <div>
                                         <p class="text-orange-100 text-xs font-medium uppercase">Sertifikat Terlambat</p>
                                         <h3 class="text-3xl font-bold mt-1">{{ $certificateOverdue }}</h3>
-                                        <p class="text-orange-100 text-xs mt-1">Lewat 2 minggu</p>
+                                        <p class="text-orange-100 text-xs mt-1">Lewat 1 minggu</p>
                                     </div>
                                     <div class="bg-orange-400 bg-opacity-30 rounded-full p-3">
                                         <i class="fas fa-hourglass-end text-2xl"></i>

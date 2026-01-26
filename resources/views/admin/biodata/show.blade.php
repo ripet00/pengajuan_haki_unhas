@@ -798,7 +798,7 @@
                                                 Estimasi selesai: {{ $certDeadline->translatedFormat('d F Y') }}
                                             </p>
                                             <p class="text-xs text-orange-700 mt-1">
-                                                Sisa {{ $certDaysRemaining }} hari lagi (2 minggu sejak berkas disetor)
+                                                Sisa {{ $certDaysRemaining }} hari lagi (1 minggu sejak berkas disetor)
                                             </p>
                                         </div>
                                     @else
@@ -808,7 +808,7 @@
                                                 Estimasi selesai: {{ $certDeadline->translatedFormat('d F Y') }}
                                             </p>
                                             <p class="text-xs text-green-700 mt-1">
-                                                Sisa {{ $certDaysRemaining }} hari lagi (2 minggu sejak berkas disetor)
+                                                Sisa {{ $certDaysRemaining }} hari lagi (1 minggu sejak berkas disetor)
                                             </p>
                                         </div>
                                     @endif

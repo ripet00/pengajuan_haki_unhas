@@ -120,11 +120,11 @@ flowchart TD
     UpdateSetorP --> StatusSetorP[Status: Berkas Disetor<br/>Badge Hijau]
     
     %% FASE 7: ADMIN UPLOAD DOKUMEN PERMOHONAN
-    StatusSetorP --> AdminProcessP[Admin: Proses Pendaftaran:<br/>1. TTD Pimpinan<br/>2. Daftar ke DJKI<br/>3. Dapat Nomor Registrasi<br/>Estimasi: 14 hari]
+    StatusSetorP --> AdminProcessP[Admin: Proses Pendaftaran:<br/>1. TTD Pimpinan<br/>2. Daftar ke DJKI<br/>3. Dapat Nomor Registrasi<br/>Estimasi: 7 hari]
     
     AdminProcessP --> DeadlineCheckP{Sudah Upload<br/>Dokumen?}
-    DeadlineCheckP -->|Lewat 2 Minggu| OverdueP[Status: Proses Telat<br/>Badge Orange]
-    DeadlineCheckP -->|Dalam 2 Minggu| OnTimeP[Status: Permohonan Proses<br/>Badge Biru]
+    DeadlineCheckP -->|Lewat 1 Minggu| OverdueP[Status: Proses Telat<br/>Badge Orange]
+    DeadlineCheckP -->|Dalam 1 Minggu| OnTimeP[Status: Permohonan Proses<br/>Badge Biru]
     
     OverdueP --> AdminUploadDoc
     OnTimeP --> AdminUploadDoc[Admin: Upload Dokumen Permohonan]

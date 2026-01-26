@@ -218,7 +218,7 @@
                                             <i class="fas fa-hourglass-end mr-2"></i>Penerbitan Sertifikat Terlambat
                                         </h3>
                                         <p class="text-sm text-orange-800 mb-2">
-                                            <strong class="text-2xl">{{ $certificateOverdue }}</strong> sertifikat sudah melewati estimasi 2 minggu sejak berkas disetor!
+                                            <strong class="text-2xl">{{ $certificateOverdue }}</strong> sertifikat sudah melewati estimasi 1 minggu (7 hari) sejak berkas disetor!
                                         </p>
                                         <p class="text-xs text-orange-700">
                                             <i class="fas fa-info-circle mr-1"></i>
