@@ -39,8 +39,13 @@ class SubmissionController extends Controller
 
     public function store(StoreSubmissionRequest $request) {
         try {
-            // Pre-upload validation for file size
-            if ($request->hasFile('document')) {
+            $user = Auth::user();
+            $path = null;
+            $fileName = null;
+            $fileSize = null;
+            
+            // For PDF: handle file upload
+            if ($request->input('file_type') === 'pdf' && $request->hasFile('document')) {
                 $file = $request->file('document');
                 $fileSize = $file->getSize();
                 $maxSize = 20 * 1024 * 1024; // 20MB in bytes
@@ -51,29 +56,27 @@ class SubmissionController extends Controller
                         'document' => "Ukuran file terlalu besar ({$fileSizeMB} MB). Maksimal ukuran file adalah 20MB. Silakan kompres file PDF Anda terlebih dahulu."
                     ])->withInput();
                 }
-            }
-            
-            // Check available disk space
-            $availableSpace = disk_free_space(storage_path('app/public'));
-            $fileSize = $request->file('document')->getSize();
-            
-            if ($availableSpace < ($fileSize * 2)) { // Need double space for safety
-                return back()->withErrors([
-                    'document' => 'Server tidak memiliki ruang penyimpanan yang cukup. Silakan coba lagi nanti atau hubungi administrator.'
-                ])->withInput();
-            }
+                
+                // Check available disk space
+                $availableSpace = disk_free_space(storage_path('app/public'));
+                
+                if ($availableSpace < ($fileSize * 2)) { // Need double space for safety
+                    return back()->withErrors([
+                        'document' => 'Server tidak memiliki ruang penyimpanan yang cukup. Silakan coba lagi nanti atau hubungi administrator.'
+                    ])->withInput();
+                }
 
-            $user = Auth::user();
-            /** @var \Illuminate\Http\UploadedFile $file */
-            $file = $request->file('document');
-
-            // Generate unique filename with original extension
-            $originalName = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $fileName = pathinfo($originalName, PATHINFO_FILENAME);
-            $uniqueFileName = $fileName . '_' . time() . '.' . $extension;
-            
-            $path = $file->storeAs('submissions', $uniqueFileName, 'public');
+                // Generate unique filename with original extension
+                $originalName = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $fileNamePart = pathinfo($originalName, PATHINFO_FILENAME);
+                $uniqueFileName = $fileNamePart . '_' . time() . '.' . $extension;
+                
+                $path = $file->storeAs('submissions', $uniqueFileName, 'public');
+                $fileName = $file->getClientOriginalName();
+                $fileSize = $file->getSize();
+            }
+            // For Video: no file upload, only store link
             
             $submission = Submission::create([
                 'user_id' => $user->id,
@@ -81,18 +84,22 @@ class SubmissionController extends Controller
                 'categories' => $request->input('categories'),
                 'jenis_karya_id' => $request->input('jenis_karya_id'),
                 'file_type' => $request->input('file_type'),
-                'youtube_link' => $request->input('youtube_link'),
+                'video_link' => $request->input('video_link'), // Store video link (null for PDF)
                 'creator_name' => $request->input('creator_name'),
                 'creator_whatsapp' => $request->input('creator_whatsapp'),
                 'creator_country_code' => $request->input('creator_country_code'),
-                'file_path' => $path,
-                'file_name' => $file->getClientOriginalName(),
-                'file_size' => $file->getSize(),
+                'file_path' => $path, // null for video
+                'file_name' => $fileName, // null for video
+                'file_size' => $fileSize, // null for video
                 'status' => 'pending',
                 'revisi' => false,
             ]);
             
-            return redirect()->route('user.submissions.show', $submission)->with('success', 'File berhasil diunggah. Menunggu review admin');
+            $successMessage = $request->input('file_type') === 'pdf' 
+                ? 'File berhasil diunggah. Menunggu review admin'
+                : 'Link video berhasil disimpan. Menunggu review admin';
+            
+            return redirect()->route('user.submissions.show', $submission)->with('success', $successMessage);
             
         } catch (\Exception $e) {
             // Log the error for debugging
@@ -137,58 +144,70 @@ class SubmissionController extends Controller
         }
 
         try {
-            // Pre-upload validation for file size
-            if ($request->hasFile('document')) {
+            $path = $submission->file_path;
+            $fileName = $submission->file_name;
+            $fileSize = $submission->file_size;
+            
+            // For PDF: handle file upload
+            if ($request->input('file_type') === 'pdf' && $request->hasFile('document')) {
                 $file = $request->file('document');
-                $fileSize = $file->getSize();
+                $uploadFileSize = $file->getSize();
                 $maxSize = 20 * 1024 * 1024; // 20MB in bytes
                 
-                if ($fileSize > $maxSize) {
-                    $fileSizeMB = round($fileSize / (1024 * 1024), 2);
+                if ($uploadFileSize > $maxSize) {
+                    $fileSizeMB = round($uploadFileSize / (1024 * 1024), 2);
                     return back()->withErrors([
                         'document' => "Ukuran file terlalu besar ({$fileSizeMB} MB). Maksimal ukuran file adalah 20MB. Silakan kompres file PDF Anda terlebih dahulu."
                     ])->withInput();
                 }
-            }
-            
-            // Check available disk space
-            $availableSpace = disk_free_space(storage_path('app/public'));
-            $fileSize = $request->file('document')->getSize();
-            
-            if ($availableSpace < ($fileSize * 2)) { // Need double space for safety
-                return back()->withErrors([
-                    'document' => 'Server tidak memiliki ruang penyimpanan yang cukup. Silakan coba lagi nanti atau hubungi administrator.'
-                ])->withInput();
-            }
+                
+                // Check available disk space
+                $availableSpace = disk_free_space(storage_path('app/public'));
+                
+                if ($availableSpace < ($uploadFileSize * 2)) { // Need double space for safety
+                    return back()->withErrors([
+                        'document' => 'Server tidak memiliki ruang penyimpanan yang cukup. Silakan coba lagi nanti atau hubungi administrator.'
+                    ])->withInput();
+                }
 
-            // Delete old file
-            if ($submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
-                Storage::disk('public')->delete($submission->file_path);
-            }
+                // Delete old file if exists
+                if ($submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
+                    Storage::disk('public')->delete($submission->file_path);
+                }
 
-            /** @var \Illuminate\Http\UploadedFile $file */
-            $file = $request->file('document');
-            
-            // Generate unique filename with original extension
-            $originalName = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $fileName = pathinfo($originalName, PATHINFO_FILENAME);
-            $uniqueFileName = $fileName . '_' . time() . '.' . $extension;
-            
-            $path = $file->storeAs('submissions', $uniqueFileName, 'public');
+                // Generate unique filename with original extension
+                $originalName = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $fileNamePart = pathinfo($originalName, PATHINFO_FILENAME);
+                $uniqueFileName = $fileNamePart . '_' . time() . '.' . $extension;
+                
+                $path = $file->storeAs('submissions', $uniqueFileName, 'public');
+                $fileName = $file->getClientOriginalName();
+                $fileSize = $file->getSize();
+            }
+            // For Video: if changing to video type, delete old file
+            elseif ($request->input('file_type') === 'video') {
+                // Delete old file if exists
+                if ($submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
+                    Storage::disk('public')->delete($submission->file_path);
+                }
+                $path = null;
+                $fileName = null;
+                $fileSize = null;
+            }
 
             $submission->update([
                 'title' => $request->input('title'),
                 'categories' => $request->input('categories'),
                 'jenis_karya_id' => $request->input('jenis_karya_id'),
                 'file_type' => $request->input('file_type'),
-                'youtube_link' => $request->input('youtube_link'),
+                'video_link' => $request->input('video_link'),
                 'creator_name' => $request->input('creator_name'),
                 'creator_whatsapp' => $request->input('creator_whatsapp'),
                 'creator_country_code' => $request->input('creator_country_code'),
                 'file_path' => $path,
-                'file_name' => $file->getClientOriginalName(),
-                'file_size' => $file->getSize(),
+                'file_name' => $fileName,
+                'file_size' => $fileSize,
                 'status' => 'pending',
                 'revisi' => true,
                 'reviewed_at' => null,

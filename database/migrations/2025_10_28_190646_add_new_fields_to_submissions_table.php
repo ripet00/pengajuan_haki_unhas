@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('submissions', function (Blueprint $table) {
             $table->enum('file_type', ['pdf', 'video'])->default('pdf')->after('categories');
-            $table->string('youtube_link')->nullable()->after('file_type');
-            $table->string('creator_name')->after('youtube_link');
+            $table->string('video_link')->nullable()->after('file_type');
+            $table->string('creator_name')->after('video_link');
             $table->string('creator_whatsapp')->after('creator_name');
         });
     }
@@ -25,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('submissions', function (Blueprint $table) {
-            $table->dropColumn(['file_type', 'youtube_link', 'creator_name', 'creator_whatsapp']);
+            $table->dropColumn(['file_type', 'video_link', 'creator_name', 'creator_whatsapp']);
         });
     }
 };

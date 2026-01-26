@@ -14,7 +14,7 @@ class Submission extends Model
         'categories',
         'jenis_karya_id',
         'file_type',
-        'youtube_link',
+        'video_link',
         'creator_name',
         'creator_whatsapp',
         'creator_country_code',

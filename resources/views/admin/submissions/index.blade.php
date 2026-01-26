@@ -225,11 +225,10 @@ use Illuminate\Support\Facades\Storage;
                                     <div class="text-sm font-medium text-gray-900">{{ Str::limit($submission->title, 40) }}</div>
                                     <div class="text-sm text-gray-500">
                                         @if($submission->file_type === 'video')
-                                            <i class="fas fa-video text-purple-500 mr-1"></i>
+                                            <i class="fas fa-video text-purple-500 mr-1"></i>Link Video
                                         @else
-                                            <i class="fas fa-file-pdf text-red-500 mr-1"></i>
+                                            <i class="fas fa-file-pdf text-red-500 mr-1"></i>{{ $submission->file_name }}
                                         @endif
-                                        {{ $submission->file_name }}
                                     </div>
                                 </div>
                             </td>
@@ -317,17 +316,21 @@ use Illuminate\Support\Facades\Storage;
                                         </a>
                                     @endif
                                     
-                                    <a href="{{ Storage::disk('public')->url($submission->file_path) }}" 
-                                       target="_blank" 
-                                       class="inline-flex items-center px-3 py-2 {{ $submission->file_type === 'video' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-red-600 hover:bg-red-700' }} text-white text-sm font-medium rounded-lg transition duration-200">
-                                        @if($submission->file_type === 'video')
-                                            <i class="fas fa-video mr-1"></i>
-                                            Video
-                                        @else
+                                    @if($submission->file_type === 'pdf')
+                                        <a href="{{ Storage::disk('public')->url($submission->file_path) }}" 
+                                           target="_blank" 
+                                           class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                             <i class="fas fa-file-pdf mr-1"></i>
                                             PDF
-                                        @endif
-                                    </a>
+                                        </a>
+                                    @elseif($submission->file_type === 'video' && $submission->video_link)
+                                        <a href="{{ $submission->video_link }}" 
+                                           target="_blank" 
+                                           class="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                            <i class="fas fa-video mr-1"></i>
+                                            Link Video
+                                        </a>
+                                    @endif
                                     
                                     @if($submission->status != 'pending')
                                         <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full {{ $submission->status == 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">

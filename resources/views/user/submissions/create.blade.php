@@ -131,11 +131,11 @@
                     >
                         <option value="">Pilih Jenis File</option>
                         <option value="pdf" {{ old('file_type') == 'pdf' ? 'selected' : '' }}>PDF Document</option>
-                        <option value="video" {{ old('file_type') == 'video' ? 'selected' : '' }}>Video MP4</option>
+                        <option value="video" {{ old('file_type') == 'video' ? 'selected' : '' }}>Link Video (Google Drive, dll)</option>
                     </select>
                     <p class="text-sm text-gray-500 mt-1">
                         <strong>PDF:</strong> Untuk karya cipta dalam bentuk dokumen PDF (max. 20MB)<br>
-                        <strong>Video:</strong> Untuk karya cipta dalam bentuk video MP4 (max. 20MB)
+                        <strong>Link Video:</strong> Untuk karya cipta video, upload file video Anda ke Google Drive/OneDrive/cloud storage lainnya (maks. 20MB), lalu masukkan link-nya di sini. Link dapat diakses publik atau dengan izin.
                     </p>
                 </div>
 
@@ -192,23 +192,28 @@
                     </div>
                 </div>
 
-                <!-- YouTube Link (conditional) -->
-                <div id="youtube_section" class="hidden">
-                    <label for="youtube_link" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fab fa-youtube mr-2 text-gray-400"></i>Link YouTube (Opsional)
+                <!-- Video Link (conditional - REQUIRED for video type) -->
+                <div id="video_link_section" class="hidden">
+                    <label for="video_link" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-link mr-2 text-gray-400"></i>Link Video <span class="text-red-500">*</span>
                     </label>
                     <input 
                         type="url" 
-                        id="youtube_link" 
-                        name="youtube_link" 
-                        value="{{ old('youtube_link') }}"
+                        id="video_link" 
+                        name="video_link" 
+                        value="{{ old('video_link') }}"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition duration-200"
-                        placeholder="https://youtube.com/watch?v=..."
+                        placeholder="https://drive.google.com/file/d/... atau https://youtube.com/watch?v=..."
                     >
-                    <p class="text-sm text-gray-500 mt-1">Sertakan link YouTube jika video karya cipta sudah dipublikasikan.</p>
+                    <p class="text-sm text-gray-500 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Upload file video Anda (maks. <strong>20MB</strong>) ke Google Drive, OneDrive, Dropbox, YouTube, atau cloud storage lainnya, lalu salin link-nya ke sini.<br>
+                        <span class="text-xs text-gray-600">Pastikan link dapat diakses (publik atau dengan izin)</span>
+                    </p>
                 </div>
 
-                <div>
+                <!-- File Upload Section (only for PDF) -->
+                <div id="file_upload_section">
                     <label for="document" class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-file mr-2 text-gray-400"></i><span id="file-label">File Dokumen</span>
                     </label>
@@ -269,35 +274,46 @@
         
         function toggleFileType() {
             const fileTypeSelect = document.getElementById('file_type');
-            const youtubeSection = document.getElementById('youtube_section');
+            const videoLinkSection = document.getElementById('video_link_section');
+            const fileUploadSection = document.getElementById('file_upload_section');
             const documentInput = document.getElementById('document');
             const fileLabel = document.getElementById('file-label');
             const uploadText = document.getElementById('upload-text');
             const fileSizeLimit = document.getElementById('file-size-limit');
             const fileIcon = document.getElementById('file-icon');
+            const videoLinkInput = document.getElementById('video_link');
             
             currentFileType = fileTypeSelect.value;
             
             if (currentFileType === 'pdf') {
-                youtubeSection.classList.add('hidden');
+                // PDF mode: show file upload, hide video link section
+                videoLinkSection.classList.add('hidden');
+                fileUploadSection.classList.remove('hidden');
                 documentInput.accept = '.pdf';
                 documentInput.disabled = false;
+                documentInput.required = true;
+                videoLinkInput.required = false;
                 fileLabel.innerHTML = '<i class="fas fa-file-pdf mr-2 text-gray-400"></i>Dokumen PDF';
                 uploadText.textContent = 'Upload dokumen PDF';
                 fileSizeLimit.textContent = 'PDF maksimal 20MB';
                 fileIcon.className = 'fas fa-file-pdf text-red-500 mr-1';
             } else if (currentFileType === 'video') {
-                youtubeSection.classList.remove('hidden');
-                documentInput.accept = '.mp4';
-                documentInput.disabled = false;
-                fileLabel.innerHTML = '<i class="fas fa-video mr-2 text-gray-400"></i>Video MP4';
-                uploadText.textContent = 'Upload video MP4';
-                fileSizeLimit.textContent = 'Video MP4 maksimal 20MB';
-                fileIcon.className = 'fas fa-video text-blue-500 mr-1';
-            } else {
-                youtubeSection.classList.add('hidden');
+                // Video mode: hide file upload, show link input section
+                videoLinkSection.classList.remove('hidden');
+                fileUploadSection.classList.add('hidden');
                 documentInput.accept = '';
                 documentInput.disabled = true;
+                documentInput.required = false;
+                videoLinkInput.required = true;
+                // No file upload needed for video
+            } else {
+                // No type selected
+                videoLinkSection.classList.add('hidden');
+                fileUploadSection.classList.remove('hidden');
+                documentInput.accept = '';
+                documentInput.disabled = true;
+                documentInput.required = false;
+                videoLinkInput.required = false;
                 fileLabel.innerHTML = '<i class="fas fa-file mr-2 text-gray-400"></i>File Dokumen';
                 uploadText.textContent = 'Pilih jenis file terlebih dahulu';
                 fileSizeLimit.textContent = 'Pilih jenis file terlebih dahulu';
@@ -333,10 +349,10 @@
                 fileSize.classList.remove('text-red-500', 'text-green-500');
                 
                 // Check file type first - IMPORTANT VALIDATION!
-                const allowedTypes = currentFileType === 'pdf' ? ['pdf'] : currentFileType === 'video' ? ['mp4'] : [];
+                const allowedTypes = currentFileType === 'pdf' ? ['pdf'] : [];
                 const fileExtension = file.name.split('.').pop().toLowerCase();
                 
-                if (!allowedTypes.includes(fileExtension)) {
+                if (currentFileType !== 'video' && !allowedTypes.includes(fileExtension)) {
                     showNotification('error', `Hanya file ${currentFileType.toUpperCase()} yang diperbolehkan. Anda memilih file ${fileExtension.toUpperCase()}.`);
                     input.value = '';
                     fileInfo.classList.add('hidden');
@@ -438,11 +454,23 @@
                 return false;
             }
             
-            if (!isFileSizeValid) {
-                e.preventDefault();
-                const maxSize = '20MB';
-                showNotification('error', `Pastikan file ${currentFileType.toUpperCase()} yang dipilih tidak melebihi ${maxSize}.`);
-                return false;
+            // Validate based on file type
+            if (currentFileType === 'video') {
+                // For video, check if video link is filled
+                const videoLinkInput = document.getElementById('video_link');
+                if (!videoLinkInput || !videoLinkInput.value.trim()) {
+                    e.preventDefault();
+                    showNotification('error', 'Link video wajib diisi.');
+                    return false;
+                }
+            } else {
+                // For PDF, check if file is selected and valid
+                if (!isFileSizeValid) {
+                    e.preventDefault();
+                    const maxSize = '20MB';
+                    showNotification('error', `Pastikan file ${currentFileType.toUpperCase()} yang dipilih tidak melebihi ${maxSize}.`);
+                    return false;
+                }
             }
             
             // Show loading state

@@ -388,6 +388,7 @@
 
                     <!-- File Info -->
                     <div class="space-y-4">
+                        @if($submission->file_type === 'pdf')
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Nama File</label>
                             <p class="text-gray-900">{{ $submission->file_name }}</p>
@@ -397,12 +398,13 @@
                             <label class="block text-sm font-medium text-gray-500 mb-1">Ukuran File</label>
                             <p class="text-gray-900">{{ number_format($submission->file_size / 1024 / 1024, 2) }} MB</p>
                         </div>
+                        @endif
 
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Jenis File</label>
                             @if($submission->file_type === 'video')
                                 <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
-                                    <i class="fas fa-video mr-1"></i>Video MP4
+                                    <i class="fas fa-video mr-1"></i>Link Video
                                 </span>
                             @else
                                 <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
@@ -411,28 +413,29 @@
                             @endif
                         </div>
 
-                        @if($submission->file_type === 'video' && $submission->youtube_link)
+                        @if($submission->file_type === 'video' && $submission->video_link)
                         <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Link YouTube</label>
-                            <a href="{{ $submission->youtube_link }}" 
+                            <label class="block text-sm font-medium text-gray-500 mb-1">Link Video</label>
+                            <a href="{{ $submission->video_link }}" 
                                target="_blank" 
                                class="text-blue-600 hover:text-blue-800 underline text-sm break-all">
-                                {{ $submission->youtube_link }}
+                                {{ $submission->video_link }}
                             </a>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Video maksimal 20MB
+                            </p>
                         </div>
                         @endif
 
+                        @if($submission->file_type === 'pdf')
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-3">Aksi File</label>
                                 <div class="space-y-2">
                                 <a href="{{ asset('storage/' . $submission->file_path) }}" 
                                    target="_blank"
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                    @if($submission->file_type === 'video')
-                                        <i class="fas fa-play mr-2"></i>Lihat Video
-                                    @else
-                                        <i class="fas fa-eye mr-2"></i>Lihat File PDF
-                                    @endif
+                                    <i class="fas fa-eye mr-2"></i>Lihat File PDF
                                 </a>
                                 <a href="{{ asset('storage/' . $submission->file_path) }}" 
                                    download="{{ $submission->file_name }}"
@@ -441,6 +444,7 @@
                                 </a>
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
 
@@ -796,7 +800,7 @@
                                 onchange="toggleFileFields()"
                             >
                                 <option value="pdf" {{ old('file_type', $submission->file_type) == 'pdf' ? 'selected' : '' }}>PDF</option>
-                                <option value="video" {{ old('file_type', $submission->file_type) == 'video' ? 'selected' : '' }}>Video (MP4)</option>
+                                <option value="video" {{ old('file_type', $submission->file_type) == 'video' ? 'selected' : '' }}>Link Video (Google Drive, dll)</option>
                             </select>
                         </div>
 
@@ -846,32 +850,36 @@
                             <p class="text-xs text-gray-500 mt-1">Masukkan nomor dengan format 0xxxxxxxx</p>
                         </div>
 
-                        <div id="youtube-field" style="display: {{ old('file_type', $submission->file_type) == 'video' ? 'block' : 'none' }};">
-                            <label for="youtube_link" class="block text-sm font-medium text-gray-700 mb-1">Link YouTube (opsional)</label>
+                        <div id="video-link-field" style="display: {{ old('file_type', $submission->file_type) == 'video' ? 'block' : 'none' }};">
+                            <label for="video_link" class="block text-sm font-medium text-gray-700 mb-1">
+                                Link Video <span class="text-red-500">*</span>
+                            </label>
                             <input 
                                 type="url" 
-                                id="youtube_link" 
-                                name="youtube_link" 
-                                value="{{ old('youtube_link', $submission->youtube_link) }}"
-                                placeholder="https://www.youtube.com/watch?v=..."
+                                id="video_link" 
+                                name="video_link" 
+                                value="{{ old('video_link', $submission->video_link) }}"
+                                placeholder="https://drive.google.com/file/d/... atau https://youtube.com/watch?v=..."
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                             >
+                            <p class="text-sm text-gray-500 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Upload file video Anda (maks. <strong>20MB</strong>) ke Google Drive, OneDrive, YouTube, atau cloud storage lainnya, lalu salin link-nya ke sini.
+                            </p>
                         </div>
 
-                        <div>
+                        <div id="file-field" style="display: {{ old('file_type', $submission->file_type) == 'pdf' ? 'block' : 'none' }};">
                             <label for="document" class="block text-sm font-medium text-gray-700 mb-1">
-                                <span id="file-label">
-                                    {{ old('file_type', $submission->file_type) == 'video' ? 'File Video MP4 Baru' : 'Dokumen PDF Baru' }}
-                                </span>
+                                <span id="file-label">Dokumen PDF Baru</span> <span class="text-red-500">*</span>
                             </label>
                             <input 
                                 type="file" 
                                 id="document" 
                                 name="document" 
-                                accept="{{ old('file_type', $submission->file_type) == 'video' ? '.mp4' : '.pdf' }}"
+                                accept=".pdf"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                required
                             >
+                            <p class="text-sm text-gray-500 mt-1">Upload file PDF baru (maks. 20MB)</p>
                         </div>
 
                         <button 
@@ -886,18 +894,23 @@
                 <script>
                 function toggleFileFields() {
                     const fileType = document.getElementById('file_type').value;
-                    const youtubeField = document.getElementById('youtube-field');
+                    const videoLinkField = document.getElementById('video-link-field');
+                    const fileField = document.getElementById('file-field');
                     const documentInput = document.getElementById('document');
-                    const fileLabel = document.getElementById('file-label');
+                    const videoLinkInput = document.getElementById('video_link');
                     
                     if (fileType === 'video') {
-                        youtubeField.style.display = 'block';
-                        documentInput.accept = '.mp4';
-                        fileLabel.textContent = 'File Video MP4 Baru';
+                        // Show video link field, hide file upload
+                        videoLinkField.style.display = 'block';
+                        fileField.style.display = 'none';
+                        documentInput.required = false;
+                        videoLinkInput.required = true;
                     } else {
-                        youtubeField.style.display = 'none';
-                        documentInput.accept = '.pdf';
-                        fileLabel.textContent = 'Dokumen PDF Baru';
+                        // Show file upload, hide video link field
+                        videoLinkField.style.display = 'none';
+                        fileField.style.display = 'block';
+                        documentInput.required = true;
+                        videoLinkInput.required = false;
                     }
                 }
                 </script>

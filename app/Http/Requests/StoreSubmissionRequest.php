@@ -29,12 +29,11 @@ class StoreSubmissionRequest extends FormRequest
         /** @var string|null $fileType */
         $fileType = request('file_type');
         if ($fileType === 'pdf') {
-            // More flexible validation - let middleware handle strict type checking
+            // PDF requires file upload
             $rules['document'] = ['required', 'file', 'max:20480']; // 20MB
         } elseif ($fileType === 'video') {
-            // More flexible validation - let middleware handle strict type checking  
-            $rules['document'] = ['required', 'file', 'max:20480']; // 20MB for video
-            $rules['youtube_link'] = ['nullable', 'url', 'regex:/^(https?\:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/'];
+            // Video only requires link, no file upload
+            $rules['video_link'] = ['required', 'url'];
         }
 
         return $rules;
@@ -44,7 +43,6 @@ class StoreSubmissionRequest extends FormRequest
     {
         /** @var string|null $fileType */
         $fileType = request('file_type');
-        $expectedFormat = $fileType === 'video' ? 'MP4' : 'PDF';
         
         return [
             'title.required' => 'Judul karya wajib diisi.',
@@ -61,12 +59,12 @@ class StoreSubmissionRequest extends FormRequest
             'creator_whatsapp.regex' => 'Format nomor WhatsApp tidak valid. Gunakan format: 0xxxxxxxx.',
             'creator_country_code.required' => 'Kode negara wajib dipilih.',
             'creator_country_code.max' => 'Kode negara tidak valid.',
-            'document.required' => 'File wajib diunggah.',
+            'document.required' => 'File PDF wajib diunggah.',
             'document.file' => 'Pastikan Anda mengunggah file yang valid.',
-            'document.mimes' => "Hanya file {$expectedFormat} yang diperbolehkan untuk jenis file yang dipilih.",
-            'document.max' => 'Ukuran file terlalu besar. Maksimal 20MB untuk PDF atau video MP4.',
-            'youtube_link.url' => 'Link YouTube harus berupa URL yang valid.',
-            'youtube_link.regex' => 'Link harus berupa URL YouTube yang valid.',
+            'document.mimes' => 'Hanya file PDF yang diperbolehkan.',
+            'document.max' => 'Ukuran file PDF terlalu besar. Maksimal 20MB.',
+            'video_link.required' => 'Link video wajib diisi untuk jenis file video.',
+            'video_link.url' => 'Link video harus berupa URL yang valid (misal: https://drive.google.com/... atau https://youtube.com/...).',
         ];
     }
 }

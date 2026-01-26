@@ -16,9 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('title');
             $table->enum('categories', ['Umum', 'Universitas'])->default('Universitas');
-            $table->string('file_path');
-            $table->string('file_name');
-            $table->unsignedBigInteger('file_size'); // in bytes
+            $table->string('file_path')->nullable();
+            $table->string('file_name')->nullable();
+            $table->unsignedBigInteger('file_size')->nullable(); // in bytes
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamp('reviewed_at')->nullable();
             $table->longText('rejection_reason')->nullable();

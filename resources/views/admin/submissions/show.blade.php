@@ -282,7 +282,7 @@ use Illuminate\Support\Facades\Storage;
                                 <div class="sm:col-span-2 text-gray-900">
                                     @if($submission->file_type === 'video')
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                            <i class="fas fa-video mr-1"></i>Video MP4
+                                            <i class="fas fa-video mr-1"></i>Link Video
                                         </span>
                                     @else
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
@@ -292,48 +292,51 @@ use Illuminate\Support\Facades\Storage;
                                 </div>
                             </div>
 
-                            @if($submission->file_type === 'video' && $submission->youtube_link)
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div class="font-medium text-gray-700">Link YouTube:</div>
-                                <div class="sm:col-span-2">
-                                    <a href="{{ $submission->youtube_link }}" target="_blank" 
-                                       class="text-blue-600 hover:text-blue-800 underline">
-                                        <i class="fab fa-youtube mr-1"></i>{{ $submission->youtube_link }}
-                                    </a>
-                                </div>
-                            </div>
-                            @endif
-
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div class="font-medium text-gray-700">Nama File:</div>
-                                <div class="sm:col-span-2 text-gray-900">{{ $submission->file_name }}</div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div class="font-medium text-gray-700">Ukuran File:</div>
-                                <div class="sm:col-span-2 text-gray-900">{{ number_format($submission->file_size / 1024 / 1024, 2) }} MB</div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div class="font-medium text-gray-700">Aksi File:</div>
-                                <div class="sm:col-span-2">
-                                    <div class="flex flex-wrap gap-2">
-                                        <a href="{{ Storage::disk('public')->url($submission->file_path) }}" 
-                                           target="_blank"
-                                           class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                            @if($submission->file_type === 'video')
-                                                <i class="fas fa-play mr-2"></i>Lihat Video
-                                            @else
-                                                <i class="fas fa-eye mr-2"></i>Lihat PDF
-                                            @endif
+                            @if($submission->file_type === 'video')
+                                @if($submission->video_link)
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div class="font-medium text-gray-700">Link Video:</div>
+                                    <div class="sm:col-span-2">
+                                        <a href="{{ $submission->video_link }}" target="_blank" 
+                                           class="text-blue-600 hover:text-blue-800 underline break-all">
+                                            <i class="fas fa-link mr-1"></i>{{ $submission->video_link }}
                                         </a>
-                                        <a href="{{ route('admin.submissions.download', $submission) }}" 
-                                           class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition duration-200">
-                                            <i class="fas fa-download mr-2"></i>Download
-                                        </a>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Video maksimal 20MB
+                                        </p>
                                     </div>
                                 </div>
-                            </div>
+                                @endif
+                            @else
+                                {{-- PDF File Information --}}
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div class="font-medium text-gray-700">Nama File:</div>
+                                    <div class="sm:col-span-2 text-gray-900">{{ $submission->file_name }}</div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div class="font-medium text-gray-700">Ukuran File:</div>
+                                    <div class="sm:col-span-2 text-gray-900">{{ number_format($submission->file_size / 1024 / 1024, 2) }} MB</div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div class="font-medium text-gray-700">Aksi File:</div>
+                                    <div class="sm:col-span-2">
+                                        <div class="flex flex-wrap gap-2">
+                                            <a href="{{ Storage::disk('public')->url($submission->file_path) }}" 
+                                               target="_blank"
+                                               class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                                <i class="fas fa-eye mr-2"></i>Lihat PDF
+                                            </a>
+                                            <a href="{{ route('admin.submissions.download', $submission) }}" 
+                                               class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition duration-200">
+                                                <i class="fas fa-download mr-2"></i>Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
