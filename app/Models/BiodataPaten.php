@@ -22,12 +22,18 @@ class BiodataPaten extends Model
         'document_submitted_at',
         'application_document',
         'document_issued_at',
+        'deskripsi_pdf',
+        'klaim_pdf',
+        'abstrak_pdf',
+        'gambar_pdf',
+        'patent_documents_uploaded_at',
     ];
 
     protected $casts = [
         'reviewed_at' => 'datetime',
         'document_submitted_at' => 'datetime',
         'document_issued_at' => 'datetime',
+        'patent_documents_uploaded_at' => 'datetime',
         'document_submitted' => 'boolean',
     ];
 
@@ -215,5 +221,40 @@ class BiodataPaten extends Model
             return (int) now()->diffInDays($this->getSigningDeadline(), false);
         }
         return null;
+    }
+    
+    /**
+     * Check if all required patent documents (PDF) are uploaded
+     */
+    public function hasAllRequiredDocuments()
+    {
+        return !empty($this->deskripsi_pdf) && 
+               !empty($this->klaim_pdf) && 
+               !empty($this->abstrak_pdf);
+    }
+    
+    /**
+     * Check if at least one patent document is uploaded
+     */
+    public function hasAnyPatentDocument()
+    {
+        return !empty($this->deskripsi_pdf) || 
+               !empty($this->klaim_pdf) || 
+               !empty($this->abstrak_pdf) || 
+               !empty($this->gambar_pdf);
+    }
+    
+    /**
+     * Get patent documents upload progress (0-100%)
+     */
+    public function getPatentDocumentsProgress()
+    {
+        $uploaded = 0;
+        if (!empty($this->deskripsi_pdf)) $uploaded++;
+        if (!empty($this->klaim_pdf)) $uploaded++;
+        if (!empty($this->abstrak_pdf)) $uploaded++;
+        // gambar_pdf is optional, so not counted
+        
+        return round(($uploaded / 3) * 100);
     }
 }
