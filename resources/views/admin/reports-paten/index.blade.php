@@ -535,6 +535,75 @@
 
                                                     <!-- Contact & Reminders Combined -->
                                                     <div class="space-y-3">
+                                                        <!-- Upload Dokumen Paten PDF Section - NEW -->
+                                                        @if($biodataPaten->application_document)
+                                                            @php
+                                                                $hasAnyPdf = $biodataPaten->deskripsi_pdf || $biodataPaten->klaim_pdf || $biodataPaten->abstrak_pdf || $biodataPaten->gambar_pdf;
+                                                                $allRequiredPdfsUploaded = $biodataPaten->deskripsi_pdf && $biodataPaten->klaim_pdf && $biodataPaten->abstrak_pdf;
+                                                            @endphp
+                                                            
+                                                            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 {{ $allRequiredPdfsUploaded ? 'border-green-400' : 'border-purple-300' }} rounded-lg p-3">
+                                                                <div class="flex items-center justify-between mb-2">
+                                                                    <h5 class="text-xs font-bold text-purple-900 flex items-center">
+                                                                        <i class="fas fa-file-pdf mr-1.5"></i>
+                                                                        Dokumen Paten PDF
+                                                                    </h5>
+                                                                    @if($allRequiredPdfsUploaded)
+                                                                        <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 rounded-full">
+                                                                            <i class="fas fa-check-circle"></i> Lengkap
+                                                                        </span>
+                                                                    @elseif($hasAnyPdf)
+                                                                        <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-0.5 rounded-full">
+                                                                            <i class="fas fa-clock"></i> Sebagian
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-0.5 rounded-full">
+                                                                            <i class="fas fa-hourglass-half"></i> Belum
+                                                                        </span>
+                                                                    @endif
+                                                                </div>
+                                                                
+                                                                @if($hasAnyPdf)
+                                                                    <div class="grid grid-cols-2 gap-1 mb-2 text-xs">
+                                                                        <div class="flex items-center {{ $biodataPaten->deskripsi_pdf ? 'text-green-700' : 'text-gray-400' }}">
+                                                                            <i class="fas {{ $biodataPaten->deskripsi_pdf ? 'fa-check-circle' : 'fa-circle' }} mr-1"></i>
+                                                                            Deskripsi
+                                                                        </div>
+                                                                        <div class="flex items-center {{ $biodataPaten->klaim_pdf ? 'text-green-700' : 'text-gray-400' }}">
+                                                                            <i class="fas {{ $biodataPaten->klaim_pdf ? 'fa-check-circle' : 'fa-circle' }} mr-1"></i>
+                                                                            Klaim
+                                                                        </div>
+                                                                        <div class="flex items-center {{ $biodataPaten->abstrak_pdf ? 'text-green-700' : 'text-gray-400' }}">
+                                                                            <i class="fas {{ $biodataPaten->abstrak_pdf ? 'fa-check-circle' : 'fa-circle' }} mr-1"></i>
+                                                                            Abstrak
+                                                                        </div>
+                                                                        <div class="flex items-center {{ $biodataPaten->gambar_pdf ? 'text-green-700' : 'text-gray-400' }}">
+                                                                            <i class="fas {{ $biodataPaten->gambar_pdf ? 'fa-check-circle' : 'fa-circle' }} mr-1"></i>
+                                                                            Gambar
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <a href="{{ route('admin.reports-paten.show-patent-documents', $biodataPaten) }}" 
+                                                                       class="block text-center px-3 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                                                                        <i class="fas fa-eye mr-1"></i>
+                                                                        Lihat & Download Dokumen PDF
+                                                                    </a>
+                                                                    
+                                                                    @if($biodataPaten->patent_documents_uploaded_at)
+                                                                        <p class="text-xs text-purple-600 mt-1.5 text-center">
+                                                                            <i class="fas fa-clock mr-1"></i>
+                                                                            Update: {{ $biodataPaten->patent_documents_uploaded_at->diffForHumans() }}
+                                                                        </p>
+                                                                    @endif
+                                                                @else
+                                                                    <p class="text-xs text-gray-500 text-center py-2">
+                                                                        <i class="fas fa-hourglass-half mr-1"></i>
+                                                                        User belum upload dokumen PDF
+                                                                    </p>
+                                                                @endif
+                                                            </div>
+                                                        @endif
+                                                        
                                                         <!-- Download Kelengkapan Button - Commented out until template is ready -->
                                                         {{-- <a href="{{ route('admin.reports-paten.download-kelengkapan', $biodataPaten) }}" 
                                                            class="block text-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded transition duration-200">
