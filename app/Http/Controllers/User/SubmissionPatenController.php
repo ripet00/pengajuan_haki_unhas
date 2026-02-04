@@ -313,4 +313,152 @@ class SubmissionPatenController extends Controller
             ])->withInput();
         }
     }
+
+    /**
+     * Upload 4 Patent Documents (Deskripsi, Klaim, Abstrak, Gambar)
+     */
+    public function uploadPatentDocuments(Request $request, SubmissionPaten $submissionPaten)
+    {
+        // Check authorization
+        if ($submissionPaten->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized access');
+        }
+        
+        // Check if biodata exists and is approved
+        $biodataPaten = $submissionPaten->biodataPaten;
+        if (!$biodataPaten || $biodataPaten->status !== 'approved') {
+            return back()->with('error', 'Biodata harus di-ACC oleh admin terlebih dahulu');
+        }
+        
+        // Validate upload - Maks 10MB per file PDF
+        $validated = $request->validate([
+            'deskripsi_pdf' => 'nullable|file|mimes:pdf|max:10240',
+            'klaim_pdf' => 'nullable|file|mimes:pdf|max:10240',
+            'abstrak_pdf' => 'nullable|file|mimes:pdf|max:10240',
+            'gambar_pdf' => 'nullable|file|mimes:pdf|max:10240',
+        ], [
+            'deskripsi_pdf.mimes' => 'File Deskripsi harus berformat PDF',
+            'deskripsi_pdf.max' => 'File Deskripsi maksimal 10MB',
+            'klaim_pdf.mimes' => 'File Klaim harus berformat PDF',
+            'klaim_pdf.max' => 'File Klaim maksimal 10MB',
+            'abstrak_pdf.mimes' => 'File Abstrak harus berformat PDF',
+            'abstrak_pdf.max' => 'File Abstrak maksimal 10MB',
+            'gambar_pdf.mimes' => 'File Gambar harus berformat PDF',
+            'gambar_pdf.max' => 'File Gambar maksimal 10MB',
+        ]);
+        
+        try {
+            $uploadedFiles = [];
+            
+            // Upload Deskripsi PDF
+            if ($request->hasFile('deskripsi_pdf')) {
+                // Delete old file if exists
+                if ($biodataPaten->deskripsi_pdf && \Storage::disk('public')->exists($biodataPaten->deskripsi_pdf)) {
+                    \Storage::disk('public')->delete($biodataPaten->deskripsi_pdf);
+                }
+                
+                $file = $request->file('deskripsi_pdf');
+                $fileName = 'deskripsi_' . $biodataPaten->id . '_' . time() . '.pdf';
+                $path = $file->storeAs('patent_documents/deskripsi', $fileName, 'public');
+                $biodataPaten->deskripsi_pdf = $path;
+                $uploadedFiles[] = 'Deskripsi';
+            }
+            
+            // Upload Klaim PDF
+            if ($request->hasFile('klaim_pdf')) {
+                // Delete old file if exists
+                if ($biodataPaten->klaim_pdf && \Storage::disk('public')->exists($biodataPaten->klaim_pdf)) {
+                    \Storage::disk('public')->delete($biodataPaten->klaim_pdf);
+                }
+                
+                $file = $request->file('klaim_pdf');
+                $fileName = 'klaim_' . $biodataPaten->id . '_' . time() . '.pdf';
+                $path = $file->storeAs('patent_documents/klaim', $fileName, 'public');
+                $biodataPaten->klaim_pdf = $path;
+                $uploadedFiles[] = 'Klaim';
+            }
+            
+            // Upload Abstrak PDF
+            if ($request->hasFile('abstrak_pdf')) {
+                // Delete old file if exists
+                if ($biodataPaten->abstrak_pdf && \Storage::disk('public')->exists($biodataPaten->abstrak_pdf)) {
+                    \Storage::disk('public')->delete($biodataPaten->abstrak_pdf);
+                }
+                
+                $file = $request->file('abstrak_pdf');
+                $fileName = 'abstrak_' . $biodataPaten->id . '_' . time() . '.pdf';
+                $path = $file->storeAs('patent_documents/abstrak', $fileName, 'public');
+                $biodataPaten->abstrak_pdf = $path;
+                $uploadedFiles[] = 'Abstrak';
+            }
+            
+            // Upload Gambar PDF (Optional)
+            if ($request->hasFile('gambar_pdf')) {
+                // Delete old file if exists
+                if ($biodataPaten->gambar_pdf && \Storage::disk('public')->exists($biodataPaten->gambar_pdf)) {
+                    \Storage::disk('public')->delete($biodataPaten->gambar_pdf);
+                }
+                
+                $file = $request->file('gambar_pdf');
+                $fileName = 'gambar_' . $biodataPaten->id . '_' . time() . '.pdf';
+                $path = $file->storeAs('patent_documents/gambar', $fileName, 'public');
+                $biodataPaten->gambar_pdf = $path;
+                $uploadedFiles[] = 'Gambar';
+            }
+            
+            // Update timestamp if at least one file uploaded
+            if (count($uploadedFiles) > 0) {
+                $biodataPaten->patent_documents_uploaded_at = now();
+                $biodataPaten->save();
+                
+                $message = 'Berhasil mengupload: ' . implode(', ', $uploadedFiles);
+                return back()->with('success', $message);
+            }
+            
+            return back()->with('info', 'Tidak ada file yang diupload');
+            
+        } catch (\Exception $e) {
+            Log::error('Error uploading patent documents: ' . $e->getMessage(), [
+                'submission_paten_id' => $submissionPaten->id,
+                'biodata_paten_id' => $biodataPaten->id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Terjadi kesalahan saat upload dokumen: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Download specific patent document
+     */
+    public function downloadPatentDocument(SubmissionPaten $submissionPaten, $type)
+    {
+        // Check authorization
+        if ($submissionPaten->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized access');
+        }
+        
+        // Check if biodata exists
+        $biodataPaten = $submissionPaten->biodataPaten;
+        if (!$biodataPaten) {
+            abort(404, 'Biodata not found');
+        }
+        
+        // Validate type
+        $allowedTypes = ['deskripsi', 'klaim', 'abstrak', 'gambar'];
+        if (!in_array($type, $allowedTypes)) {
+            abort(404, 'Invalid document type');
+        }
+        
+        $fieldName = $type . '_pdf';
+        $filePath = $biodataPaten->$fieldName;
+        
+        if (!$filePath || !\Storage::disk('public')->exists($filePath)) {
+            return back()->with('error', 'File tidak ditemukan');
+        }
+        
+        $fullPath = storage_path('app/public/' . $filePath);
+        $fileName = ucfirst($type) . '_Paten_' . $biodataPaten->id . '.pdf';
+        
+        return response()->download($fullPath, $fileName);
+    }
 }
