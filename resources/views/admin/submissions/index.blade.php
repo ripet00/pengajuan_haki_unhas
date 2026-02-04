@@ -227,7 +227,7 @@ use Illuminate\Support\Facades\Storage;
                                         @if($submission->file_type === 'video')
                                             <i class="fas fa-video text-purple-500 mr-1"></i>Link Video
                                         @else
-                                            <i class="fas fa-file-pdf text-red-500 mr-1"></i>{{ $submission->file_name }}
+                                            <i class="fas fa-file-pdf text-red-500 mr-1"></i>{{ $submission->original_filename ?? $submission->file_name }}
                                         @endif
                                     </div>
                                 </div>

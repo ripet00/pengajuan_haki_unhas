@@ -312,7 +312,7 @@ use Illuminate\Support\Facades\Storage;
                                 {{-- PDF File Information --}}
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div class="font-medium text-gray-700">Nama File:</div>
-                                    <div class="sm:col-span-2 text-gray-900">{{ $submission->file_name }}</div>
+                                    <div class="sm:col-span-2 text-gray-900">{{ $submission->original_filename ?? $submission->file_name }}</div>
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -324,12 +324,13 @@ use Illuminate\Support\Facades\Storage;
                                     <div class="font-medium text-gray-700">Aksi File:</div>
                                     <div class="sm:col-span-2">
                                         <div class="flex flex-wrap gap-2">
-                                            <a href="{{ Storage::disk('public')->url($submission->file_path) }}" 
+                                            <a href="{{ route('admin.submissions.download', $submission) }}" 
                                                target="_blank"
                                                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                                 <i class="fas fa-eye mr-2"></i>Lihat PDF
                                             </a>
                                             <a href="{{ route('admin.submissions.download', $submission) }}" 
+                                               download="{{ $submission->original_filename ?? $submission->file_name }}"
                                                class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                                 <i class="fas fa-download mr-2"></i>Download
                                             </a>

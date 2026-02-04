@@ -391,7 +391,7 @@
                         @if($submission->file_type === 'pdf')
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Nama File</label>
-                            <p class="text-gray-900">{{ $submission->file_name }}</p>
+                            <p class="text-gray-900">{{ $submission->original_filename ?? $submission->file_name }}</p>
                         </div>
 
                         <div>
@@ -432,13 +432,13 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-3">Aksi File</label>
                                 <div class="space-y-2">
-                                <a href="{{ asset('storage/' . $submission->file_path) }}" 
+                                <a href="{{ route('files.submissions.download', $submission) }}" 
                                    target="_blank"
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                     <i class="fas fa-eye mr-2"></i>Lihat File PDF
                                 </a>
-                                <a href="{{ asset('storage/' . $submission->file_path) }}" 
-                                   download="{{ $submission->file_name }}"
+                                <a href="{{ route('files.submissions.download', $submission) }}" 
+                                   download="{{ $submission->original_filename ?? $submission->file_name }}"
                                    class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition duration-200 ml-2">
                                     <i class="fas fa-download mr-2"></i>Download
                                 </a>

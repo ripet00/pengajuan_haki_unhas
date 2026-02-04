@@ -167,7 +167,7 @@ use Illuminate\Support\Facades\Storage;
                         <div class="space-y-4">
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="font-medium text-gray-700">Nama File:</div>
-                                <div class="sm:col-span-2 text-gray-900">{{ $submissionPaten->file_name }}</div>
+                                <div class="sm:col-span-2 text-gray-900">{{ $submissionPaten->original_filename ?? $submissionPaten->file_name }}</div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -179,12 +179,13 @@ use Illuminate\Support\Facades\Storage;
                                 <div class="font-medium text-gray-700">Aksi File:</div>
                                 <div class="sm:col-span-2">
                                     <div class="flex flex-wrap gap-2">
-                                        <a href="{{ Storage::disk('public')->url($submissionPaten->file_path) }}" 
+                                        <a href="{{ route('admin.pendamping-paten.download', $submissionPaten) }}" 
                                            target="_blank"
                                            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                             <i class="fas fa-eye mr-2"></i>Lihat DOCX
                                         </a>
                                         <a href="{{ route('admin.pendamping-paten.download', $submissionPaten) }}" 
+                                           download="{{ $submissionPaten->original_filename ?? $submissionPaten->file_name }}"
                                            class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                             <i class="fas fa-download mr-2"></i>Download
                                         </a>
@@ -330,7 +331,7 @@ use Illuminate\Support\Facades\Storage;
                         </h3>
                         
                         <div class="space-y-3">
-                            <a href="{{ Storage::disk('public')->url($submissionPaten->file_path) }}" 
+                            <a href="{{ route('admin.pendamping-paten.download', $submissionPaten) }}" 
                                target="_blank"
                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                 <i class="fas fa-external-link-alt mr-2"></i>Buka DOCX di Tab Baru

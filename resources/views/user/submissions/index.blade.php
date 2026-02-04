@@ -192,7 +192,7 @@
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-900">{{ Str::limit($submission->title, 40) }}</div>
                                             <div class="text-sm text-gray-500">
-                                                <i class="fas fa-file-pdf text-red-500 mr-1"></i>{{ $submission->file_name }}
+                                                <i class="fas fa-file-pdf text-red-500 mr-1"></i>{{ $submission->original_filename ?? $submission->file_name }}
                                             </div>
                                         </div>
                                     </div>

@@ -32,10 +32,10 @@ Route::get('/', function () {
 Route::prefix('/')->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('/login', [UserAuthController::class, 'showLoginForm'])->name('login'); // Laravel default name
-        Route::post('/login', [UserAuthController::class, 'login']);
+        Route::post('/login', [UserAuthController::class, 'login'])->middleware('throttle:5,1'); // Max 5 attempts per minute
         
         Route::get('/register', [UserAuthController::class, 'showRegisterForm'])->name('user.register');
-        Route::post('/register', [UserAuthController::class, 'register']);
+        Route::post('/register', [UserAuthController::class, 'register'])->middleware('throttle:3,10'); // Max 3 attempts per 10 minutes
         
         // Password Reset Routes (accessible without authentication)
         Route::get('/password/forgot', [PasswordResetController::class, 'showForgotForm'])->name('password.forgot');
@@ -58,6 +58,13 @@ Route::prefix('users')->middleware(['auth', 'check.user.status'])->group(functio
     Route::get('submissions/create', [UserSubmissionController::class, 'create'])->name('user.submissions.create');
     Route::post('submissions', [UserSubmissionController::class, 'store'])->middleware('file.upload')->name('user.submissions.store');
     Route::get('submissions/{submission}', [UserSubmissionController::class, 'show'])->name('user.submissions.show');
+    
+    // Secure file download routes with authentication
+    Route::get('files/submissions/{submission}/download', [App\Http\Controllers\FileDownloadController::class, 'downloadSubmission'])->name('files.submissions.download');
+    Route::get('files/submissions-paten/{submissionPaten}/download', [App\Http\Controllers\FileDownloadController::class, 'downloadSubmissionPaten'])->name('files.submissions-paten.download');
+    Route::get('files/review/{type}/{id}/download', [App\Http\Controllers\FileDownloadController::class, 'downloadReviewFile'])->name('files.review.download');
+    Route::get('files/patent-documents/{submissionPaten}/{documentType}', [App\Http\Controllers\FileDownloadController::class, 'downloadPatentDocument'])->name('files.patent-documents.download');
+    
     Route::get('submissions/{submission}/download', [UserSubmissionController::class, 'download'])->name('user.submissions.download');
     Route::post('submissions/{submission}/resubmit', [UserSubmissionController::class, 'resubmit'])->middleware('file.upload')->name('user.submissions.resubmit');
     
@@ -108,7 +115,7 @@ Route::prefix('users')->middleware(['auth', 'check.user.status'])->group(functio
 Route::prefix('admin')->group(function () {
     Route::middleware('admin.guest')->group(function () {
         Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
-        Route::post('/login', [AdminAuthController::class, 'login']);
+        Route::post('/login', [AdminAuthController::class, 'login'])->middleware('throttle:5,1'); // Max 5 attempts per minute
     });
     
     // Admin protected routes

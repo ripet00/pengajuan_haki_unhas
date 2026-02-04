@@ -211,7 +211,7 @@
                                                         <div class="text-sm font-medium text-gray-900 truncate">{{ $submission->judul_paten }}</div>
                                                         <div class="text-sm text-gray-500">
                                                             <i class="fas fa-file-word text-blue-500 mr-1"></i>
-                                                            {{ Str::limit($submission->file_name, 30) }}
+                                                            {{ Str::limit($submission->original_filename ?? $submission->file_name, 30) }}
                                                         </div>
                                                     </div>
                                                 </td>

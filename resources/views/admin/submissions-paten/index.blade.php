@@ -227,7 +227,7 @@ use Illuminate\Support\Facades\Storage;
                                     <div class="text-sm font-medium text-gray-900">{{ Str::limit($submission->judul_paten, 40) }}</div>
                                     <div class="text-sm text-gray-500">
                                         <i class="fas fa-file-word text-blue-500 mr-1"></i>
-                                        {{ $submission->file_name }}
+                                        {{ $submission->original_filename ?? $submission->file_name }}
                                     </div>
                                 </div>
                             </td>

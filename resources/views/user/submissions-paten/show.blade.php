@@ -462,7 +462,7 @@ use Illuminate\Support\Facades\Storage;
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Nama File</label>
-                            <p class="text-gray-900">{{ $submissionPaten->file_name }}</p>
+                            <p class="text-gray-900">{{ $submissionPaten->original_filename ?? $submissionPaten->file_name }}</p>
                         </div>
 
                         <div>
@@ -480,13 +480,13 @@ use Illuminate\Support\Facades\Storage;
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-3">Aksi File</label>
                             <div class="space-y-2">
-                                <a href="{{ asset('storage/' . $submissionPaten->file_path) }}" 
+                                <a href="{{ route('files.submissions-paten.download', $submissionPaten) }}" 
                                    target="_blank"
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200">
                                     <i class="fas fa-eye mr-2"></i>Lihat File DOCX
                                 </a>
-                                <a href="{{ asset('storage/' . $submissionPaten->file_path) }}" 
-                                   download="{{ $submissionPaten->file_name }}"
+                                <a href="{{ route('files.submissions-paten.download', $submissionPaten) }}" 
+                                   download="{{ $submissionPaten->original_filename ?? $submissionPaten->file_name }}"
                                    class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition duration-200 ml-2">
                                     <i class="fas fa-download mr-2"></i>Download
                                 </a>
