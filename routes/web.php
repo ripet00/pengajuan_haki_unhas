@@ -76,6 +76,10 @@ Route::prefix('users')->middleware(['auth', 'check.user.status'])->group(functio
     Route::post('submissions-paten/{submissionPaten}/resubmit', [UserSubmissionPatenController::class, 'resubmit'])->middleware('file.upload')->name('user.submissions-paten.resubmit');
     Route::post('submissions-paten/{submissionPaten}/resubmit-substance', [UserSubmissionPatenController::class, 'resubmitSubstance'])->middleware('file.upload')->name('user.submissions-paten.resubmit-substance');
     
+    // Patent Documents Upload routes (moved from biodata-paten)
+    Route::post('submissions-paten/{submissionPaten}/upload-patent-documents', [UserSubmissionPatenController::class, 'uploadPatentDocuments'])->name('user.submissions-paten.upload-patent-documents');
+    Route::get('submissions-paten/{submissionPaten}/download-patent-document/{type}', [UserSubmissionPatenController::class, 'downloadPatentDocument'])->name('user.submissions-paten.download-patent-document');
+    
     // Biodata Paten routes
     Route::get('submissions-paten/{submissionPaten}/biodata-paten/create', [App\Http\Controllers\User\BiodataPatenController::class, 'create'])->name('user.biodata-paten.create');
     Route::post('submissions-paten/{submissionPaten}/biodata-paten', [App\Http\Controllers\User\BiodataPatenController::class, 'store'])->name('user.biodata-paten.store');
@@ -191,6 +195,11 @@ Route::prefix('admin')->group(function () {
             Route::get('reports-paten', [\App\Http\Controllers\Admin\ReportPatenController::class, 'index'])->name('admin.reports-paten.index');
             Route::post('reports-paten/{biodataPaten}/mark-document-submitted', [\App\Http\Controllers\Admin\ReportPatenController::class, 'markDocumentSubmitted'])->name('admin.reports-paten.mark-document-submitted');
             Route::post('reports-paten/{biodataPaten}/upload-application-document', [\App\Http\Controllers\Admin\ReportPatenController::class, 'uploadApplicationDocument'])->name('admin.reports-paten.upload-application-document');
+            
+            // Patent Documents PDF routes (NEW)
+            Route::get('reports-paten/{biodataPaten}/patent-documents', [\App\Http\Controllers\Admin\ReportPatenController::class, 'showPatentDocuments'])->name('admin.reports-paten.show-patent-documents');
+            Route::get('reports-paten/{biodataPaten}/patent-documents/{type}/view', [\App\Http\Controllers\Admin\ReportPatenController::class, 'viewPatentDocument'])->name('admin.reports-paten.view-patent-document');
+            Route::get('reports-paten/{biodataPaten}/patent-documents/{type}/download', [\App\Http\Controllers\Admin\ReportPatenController::class, 'downloadPatentDocument'])->name('admin.reports-paten.download-patent-document');
         });
         
         // Pendamping Paten routes - super_admin, pendamping_paten
