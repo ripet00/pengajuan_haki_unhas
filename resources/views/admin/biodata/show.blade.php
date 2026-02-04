@@ -774,6 +774,52 @@
                                             {{ $biodata->certificate_issued_at->diffForHumans() }}
                                         </p>
                                     </div>
+                                    
+                                    <!-- Email Pencipta untuk Kirim Sertifikat -->
+                                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-3">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h5 class="text-sm font-semibold text-purple-900">
+                                                <i class="fas fa-envelope mr-2"></i>Email Pencipta untuk Kirim Sertifikat
+                                            </h5>
+                                            <span class="text-xs text-purple-700 bg-purple-100 px-2 py-1 rounded-full">
+                                                {{ $biodata->members->count() }} pencipta
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="bg-white border border-purple-200 rounded p-3 mb-2">
+                                            @php
+                                                $allEmails = $biodata->members->pluck('email')->filter()->unique()->values();
+                                                $emailList = $allEmails->implode('; ');
+                                            @endphp
+                                            <div class="flex items-start gap-2">
+                                                <div class="flex-1">
+                                                    <p class="text-xs text-gray-600 mb-1 font-medium">
+                                                        <i class="fas fa-users mr-1"></i>Semua Email Pencipta:
+                                                    </p>
+                                                    <div id="emailList" class="text-sm text-gray-800 font-mono break-all bg-gray-50 p-2 rounded border border-gray-200">
+                                                        {{ $emailList }}
+                                                    </div>
+                                                </div>
+                                                <button type="button" 
+                                                        onclick="copyEmails()"
+                                                        class="flex-shrink-0 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200 flex items-center gap-2">
+                                                    <i class="fas fa-copy"></i>
+                                                    <span id="copyButtonText">Copy</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="space-y-1">
+                                            <p class="text-xs text-purple-800">
+                                                <i class="fas fa-info-circle mr-1"></i>
+                                                <strong>{{ $allEmails->count() }}</strong> alamat email unik dari <strong>{{ $biodata->members->count() }}</strong> pencipta
+                                            </p>
+                                            <p class="text-xs text-purple-700">
+                                                <i class="fas fa-lightbulb mr-1"></i>
+                                                Klik tombol "Copy" untuk menyalin semua email, lalu paste ke email client Anda (Gmail, Outlook, dll) untuk mengirim sertifikat
+                                            </p>
+                                        </div>
+                                    </div>
                                 @elseif($biodata->document_submitted)
                                     @php
                                         $certDeadline = $biodata->getCertificateDeadline();
@@ -1055,6 +1101,30 @@
         // Initialize error checkboxes
         handleErrorCheckboxes();
     });
+    
+    // Function to copy all emails to clipboard
+    function copyEmails() {
+        const emailText = document.getElementById('emailList').textContent.trim();
+        const copyBtn = document.getElementById('copyButtonText');
+        
+        // Copy to clipboard
+        navigator.clipboard.writeText(emailText).then(function() {
+            // Success feedback
+            copyBtn.innerHTML = '<i class="fas fa-check mr-1"></i>Copied!';
+            copyBtn.parentElement.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+            copyBtn.parentElement.classList.add('bg-green-600', 'hover:bg-green-700');
+            
+            // Reset after 2 seconds
+            setTimeout(function() {
+                copyBtn.textContent = 'Copy';
+                copyBtn.parentElement.classList.remove('bg-green-600', 'hover:bg-green-700');
+                copyBtn.parentElement.classList.add('bg-purple-600', 'hover:bg-purple-700');
+            }, 2000);
+        }).catch(function(err) {
+            // Error feedback
+            alert('Gagal copy email: ' + err);
+        });
+    }
     </script>
 
     @include('admin.partials.sidebar-script')
