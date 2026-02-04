@@ -134,27 +134,30 @@ use Illuminate\Support\Facades\Storage;
                     $biodata = $submissionPaten->biodataPaten;
                     $docSubmitted = $biodata && $biodata->document_submitted;
                     $documentIssued = $biodata && $biodata->application_document;
+                    $patentDocsUploaded = $biodata && $biodata->deskripsi_pdf && $biodata->klaim_pdf && $biodata->abstrak_pdf;
                     $bStatus = $submissionPaten->biodata_status;
                     $isBRejected = $bStatus === 'rejected' || $bStatus === 'denied';
                     
-                    // Calculate progress percentage for 6 steps (0%, 20%, 40%, 60%, 80%, 100%)
-                    $progressWidth = '20%'; // Default: Upload done
-                    if ($documentIssued) {
-                        $progressWidth = '100%'; // Step 6: Dokumen permohonan terbit
+                    // Calculate progress percentage for 7 steps (0%, 16.67%, 33.33%, 50%, 66.67%, 83.33%, 100%)
+                    $progressWidth = '16.67%'; // Default: Upload done
+                    if ($patentDocsUploaded) {
+                        $progressWidth = '100%'; // Step 7: Dokumen paten PDF uploaded
+                    } elseif ($documentIssued) {
+                        $progressWidth = '83.33%'; // Step 6: Dokumen permohonan terbit
                     } elseif ($docSubmitted) {
-                        $progressWidth = '80%'; // Step 5: Berkas disetor
+                        $progressWidth = '66.67%'; // Step 5: Berkas disetor
                     } elseif ($bStatus == 'approved') {
-                        $progressWidth = '60%'; // Step 4: Biodata approved
+                        $progressWidth = '50%'; // Step 4: Biodata approved
                     } elseif ($submissionPaten->status == SubmissionPaten::STATUS_APPROVED_SUBSTANCE) {
-                        $progressWidth = '60%'; // Substansi approved, lanjut biodata
+                        $progressWidth = '50%'; // Substansi approved, lanjut biodata
                     } elseif ($submissionPaten->status == SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW) {
-                        $progressWidth = '40%'; // Substansi ditolak
+                        $progressWidth = '33.33%'; // Substansi ditolak
                     } elseif ($submissionPaten->status == SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW) {
-                        $progressWidth = '40%'; // Step 3: Pending review substansi
+                        $progressWidth = '33.33%'; // Step 3: Pending review substansi
                     } elseif ($submissionPaten->status == SubmissionPaten::STATUS_APPROVED_FORMAT) {
-                        $progressWidth = '40%'; // Format approved, siap review substansi
+                        $progressWidth = '33.33%'; // Format approved, siap review substansi
                     } elseif ($submissionPaten->status == SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW) {
-                        $progressWidth = '20%'; // Format ditolak
+                        $progressWidth = '16.67%'; // Format ditolak
                     }
                 @endphp
                 <div class="absolute top-5 left-0 right-0 h-1 bg-gray-200 rounded-full z-0">
@@ -271,13 +274,33 @@ use Illuminate\Support\Facades\Storage;
                         Dokumen<br>Terbit
                     </span>
                 </div>
+
+                <!-- Step 7: Upload Dokumen Paten (PDF) -->
+                <div class="relative z-10 flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $patentDocsUploaded ? 'bg-green-500 border-green-500' : ($documentIssued ? 'bg-purple-500 border-purple-500' : 'bg-gray-200 border-gray-300') }}">
+                        @if($patentDocsUploaded)
+                            <i class="fas fa-check text-white"></i>
+                        @elseif($documentIssued)
+                            <i class="fas fa-cloud-upload-alt text-white"></i>
+                        @else
+                            <i class="fas fa-cloud-upload-alt text-gray-400"></i>
+                        @endif
+                    </div>
+                    <span class="mt-2 text-xs text-center font-medium {{ $patentDocsUploaded ? 'text-green-600' : ($documentIssued ? 'text-purple-600' : 'text-gray-400') }}">
+                        Upload<br>Dok. Paten
+                    </span>
+                </div>
             </div>
 
             <!-- Progress Description -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-                @if($documentIssued)
+                @if($patentDocsUploaded)
                     <p class="text-sm text-green-700 font-medium">
-                        <i class="fas fa-check-circle mr-2"></i>Pengajuan Paten Anda telah selesai! Dokumen permohonan sudah terbit dan bisa diunduh.
+                        <i class="fas fa-check-double mr-2"></i>Semua tahapan selesai! Dokumen paten PDF (Deskripsi, Klaim, Abstrak) telah diupload.
+                    </p>
+                @elseif($documentIssued)
+                    <p class="text-sm text-purple-700 font-medium">
+                        <i class="fas fa-arrow-right mr-2"></i>Dokumen permohonan sudah terbit. Silakan upload dokumen paten (PDF) untuk menyelesaikan proses.
                     </p>
                 @elseif($docSubmitted)
                     <p class="text-sm text-blue-700 font-medium">
@@ -742,8 +765,8 @@ use Illuminate\Support\Facades\Storage;
                                 @if($biodataPaten->status == 'approved')
                                     {{-- Biodata approved - check document submission status --}}
                                     @if($biodataPaten->application_document)
-                                        {{-- Document issued --}}
-                                        <div class="bg-green-50 border-2 border-green-300 rounded-lg p-4">
+                                        {{-- Document issued - show upload patent documents section --}}
+                                        <div class="bg-green-50 border-2 border-green-300 rounded-lg p-4 mb-6">
                                             <div class="flex items-start">
                                                 <div class="flex-shrink-0">
                                                     <i class="fas fa-file-pdf text-3xl text-green-600"></i>
@@ -762,6 +785,203 @@ use Illuminate\Support\Facades\Storage;
                                                     </a>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        {{-- TAHAP TERAKHIR: Upload Dokumen Paten (Deskripsi, Klaim, Abstrak, Gambar) --}}
+                                        <div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-6">
+                                            <div class="flex items-center mb-4">
+                                                <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mr-4">
+                                                    <i class="fas fa-file-pdf text-white text-xl"></i>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-lg font-bold text-purple-900">
+                                                        Tahap Terakhir: Upload Dokumen Paten
+                                                    </h4>
+                                                    <p class="text-sm text-purple-700">
+                                                        Upload 4 file PDF: Deskripsi, Klaim, Abstrak, dan Gambar (opsional)
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {{-- Progress Bar --}}
+                                            @php
+                                                $progress = $biodataPaten->getPatentDocumentsProgress();
+                                            @endphp
+                                            <div class="mb-4">
+                                                <div class="flex justify-between items-center mb-2">
+                                                    <span class="text-sm font-semibold text-purple-900">Progress Upload</span>
+                                                    <span class="text-sm font-bold text-purple-900">{{ $progress }}%</span>
+                                                </div>
+                                                <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                                    <div class="h-full bg-gradient-to-r from-purple-500 to-purple-700 transition-all duration-500" 
+                                                         style="width: {{ $progress }}%"></div>
+                                                </div>
+                                                <p class="text-xs text-purple-600 mt-1">
+                                                    <i class="fas fa-info-circle mr-1"></i>
+                                                    3 file wajib (Deskripsi, Klaim, Abstrak) + 1 file opsional (Gambar)
+                                                </p>
+                                            </div>
+
+                                            {{-- Upload Form --}}
+                                            <form action="{{ route('user.submissions-paten.upload-patent-documents', $submissionPaten) }}" 
+                                                  method="POST" 
+                                                  enctype="multipart/form-data"
+                                                  class="space-y-4">
+                                                @csrf
+                                                
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {{-- Deskripsi PDF --}}
+                                                    <div class="bg-white border-2 border-purple-200 rounded-lg p-4">
+                                                        <label class="block text-sm font-semibold text-purple-900 mb-2">
+                                                            <i class="fas fa-file-alt mr-1"></i>
+                                                            1. Deskripsi <span class="text-red-600">*</span>
+                                                        </label>
+                                                        @if($biodataPaten->deskripsi_pdf)
+                                                            <div class="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                                                <div class="flex items-center justify-between">
+                                                                    <div class="flex items-center">
+                                                                        <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                                                                        <span class="text-sm text-green-800 font-medium">File sudah diupload</span>
+                                                                    </div>
+                                                                    <a href="{{ route('user.submissions-paten.download-patent-document', [$submissionPaten, 'deskripsi']) }}" 
+                                                                       class="text-sm text-green-700 hover:text-green-900 underline">
+                                                                        <i class="fas fa-download mr-1"></i>Download
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                        <input type="file" 
+                                                               name="deskripsi_pdf" 
+                                                               accept=".pdf"
+                                                               class="block w-full text-sm text-gray-900 border border-purple-300 rounded-lg cursor-pointer bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                                        <p class="text-xs text-gray-600 mt-1">
+                                                            <i class="fas fa-info-circle mr-1"></i>PDF, Max 10MB
+                                                        </p>
+                                                        @error('deskripsi_pdf')
+                                                            <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                                        @enderror
+                                                    </div>
+
+                                                    {{-- Klaim PDF --}}
+                                                    <div class="bg-white border-2 border-purple-200 rounded-lg p-4">
+                                                        <label class="block text-sm font-semibold text-purple-900 mb-2">
+                                                            <i class="fas fa-gavel mr-1"></i>
+                                                            2. Klaim <span class="text-red-600">*</span>
+                                                        </label>
+                                                        @if($biodataPaten->klaim_pdf)
+                                                            <div class="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                                                <div class="flex items-center justify-between">
+                                                                    <div class="flex items-center">
+                                                                        <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                                                                        <span class="text-sm text-green-800 font-medium">File sudah diupload</span>
+                                                                    </div>
+                                                                    <a href="{{ route('user.submissions-paten.download-patent-document', [$submissionPaten, 'klaim']) }}" 
+                                                                       class="text-sm text-green-700 hover:text-green-900 underline">
+                                                                        <i class="fas fa-download mr-1"></i>Download
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                        <input type="file" 
+                                                               name="klaim_pdf" 
+                                                               accept=".pdf"
+                                                               class="block w-full text-sm text-gray-900 border border-purple-300 rounded-lg cursor-pointer bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                                        <p class="text-xs text-gray-600 mt-1">
+                                                            <i class="fas fa-info-circle mr-1"></i>PDF, Max 10MB
+                                                        </p>
+                                                        @error('klaim_pdf')
+                                                            <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                                        @enderror
+                                                    </div>
+
+                                                    {{-- Abstrak PDF --}}
+                                                    <div class="bg-white border-2 border-purple-200 rounded-lg p-4">
+                                                        <label class="block text-sm font-semibold text-purple-900 mb-2">
+                                                            <i class="fas fa-align-left mr-1"></i>
+                                                            3. Abstrak <span class="text-red-600">*</span>
+                                                        </label>
+                                                        @if($biodataPaten->abstrak_pdf)
+                                                            <div class="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                                                <div class="flex items-center justify-between">
+                                                                    <div class="flex items-center">
+                                                                        <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                                                                        <span class="text-sm text-green-800 font-medium">File sudah diupload</span>
+                                                                    </div>
+                                                                    <a href="{{ route('user.submissions-paten.download-patent-document', [$submissionPaten, 'abstrak']) }}" 
+                                                                       class="text-sm text-green-700 hover:text-green-900 underline">
+                                                                        <i class="fas fa-download mr-1"></i>Download
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                        <input type="file" 
+                                                               name="abstrak_pdf" 
+                                                               accept=".pdf"
+                                                               class="block w-full text-sm text-gray-900 border border-purple-300 rounded-lg cursor-pointer bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                                        <p class="text-xs text-gray-600 mt-1">
+                                                            <i class="fas fa-info-circle mr-1"></i>PDF, Max 10MB
+                                                        </p>
+                                                        @error('abstrak_pdf')
+                                                            <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                                        @enderror
+                                                    </div>
+
+                                                    {{-- Gambar PDF (Optional) --}}
+                                                    <div class="bg-white border-2 border-purple-200 rounded-lg p-4">
+                                                        <label class="block text-sm font-semibold text-purple-900 mb-2">
+                                                            <i class="fas fa-image mr-1"></i>
+                                                            4. Gambar <span class="text-gray-500">(Opsional)</span>
+                                                        </label>
+                                                        @if($biodataPaten->gambar_pdf)
+                                                            <div class="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                                                <div class="flex items-center justify-between">
+                                                                    <div class="flex items-center">
+                                                                        <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                                                                        <span class="text-sm text-green-800 font-medium">File sudah diupload</span>
+                                                                    </div>
+                                                                    <a href="{{ route('user.submissions-paten.download-patent-document', [$submissionPaten, 'gambar']) }}" 
+                                                                       class="text-sm text-green-700 hover:text-green-900 underline">
+                                                                        <i class="fas fa-download mr-1"></i>Download
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                        <input type="file" 
+                                                               name="gambar_pdf" 
+                                                               accept=".pdf"
+                                                               class="block w-full text-sm text-gray-900 border border-purple-300 rounded-lg cursor-pointer bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                                        <p class="text-xs text-gray-600 mt-1">
+                                                            <i class="fas fa-info-circle mr-1"></i>PDF, Max 10MB (Tidak wajib)
+                                                        </p>
+                                                        @error('gambar_pdf')
+                                                            <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <div class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                                                    <p class="text-sm text-yellow-800">
+                                                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                                                        <strong>Catatan:</strong> Anda dapat mengupload file satu per satu atau sekaligus. File yang sudah diupload dapat diganti dengan file baru.
+                                                    </p>
+                                                </div>
+
+                                                <button type="submit" 
+                                                        class="w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                                                    <i class="fas fa-cloud-upload-alt mr-2"></i>
+                                                    Upload Dokumen Paten
+                                                </button>
+                                            </form>
+
+                                            {{-- Info about uploaded documents --}}
+                                            @if($biodataPaten->patent_documents_uploaded_at)
+                                            <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                                <p class="text-sm text-blue-800">
+                                                    <i class="fas fa-clock mr-1"></i>
+                                                    Terakhir diupdate: <strong>{{ $biodataPaten->patent_documents_uploaded_at->translatedFormat('d F Y H:i') }}</strong>
+                                                </p>
+                                            </div>
+                                            @endif
                                         </div>
                                     @elseif($biodataPaten->document_submitted)
                                         {{-- Document submitted, waiting for document issued --}}
