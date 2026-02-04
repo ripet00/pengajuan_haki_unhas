@@ -1,2 +1,24 @@
+# Block all search engine crawlers and bots
+# This is an internal application and should NOT be indexed
+
 User-agent: *
-Disallow:
+Disallow: /
+
+# Specifically block common bots
+User-agent: Googlebot
+Disallow: /
+
+User-agent: Bingbot
+Disallow: /
+
+User-agent: Slurp
+Disallow: /
+
+User-agent: DuckDuckBot
+Disallow: /
+
+User-agent: Baiduspider
+Disallow: /
+
+User-agent: YandexBot
+Disallow: /
