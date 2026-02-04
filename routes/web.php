@@ -67,6 +67,10 @@ Route::prefix('users')->middleware(['auth', 'check.user.status'])->group(functio
     Route::get('submissions/{submission}/biodata/{biodata}', [App\Http\Controllers\User\BiodataController::class, 'show'])->name('user.biodata.show');
     Route::get('biodata/{biodata}/download-formulir', [App\Http\Controllers\User\BiodataController::class, 'downloadFormulir'])->name('user.biodata.download-formulir');
     
+    // Draft Biodata API routes
+    Route::post('submissions/{submission}/biodata/draft/save', [App\Http\Controllers\User\BiodataController::class, 'saveDraft'])->name('user.biodata.draft.save');
+    Route::get('submissions/{submission}/biodata/draft/load', [App\Http\Controllers\User\BiodataController::class, 'loadDraft'])->name('user.biodata.draft.load');
+    
     // Paten submission routes
     Route::get('submissions-paten', [UserSubmissionPatenController::class, 'index'])->name('user.submissions-paten.index');
     Route::get('submissions-paten/create', [UserSubmissionPatenController::class, 'create'])->name('user.submissions-paten.create');
@@ -88,6 +92,10 @@ Route::prefix('users')->middleware(['auth', 'check.user.status'])->group(functio
     Route::get('biodata-paten/{biodataPaten}/download-surat-pengalihan', [App\Http\Controllers\User\BiodataPatenController::class, 'downloadSuratPengalihan'])->name('user.biodata-paten.download-surat-pengalihan');
     Route::get('biodata-paten/{biodataPaten}/download-surat-pernyataan', [App\Http\Controllers\User\BiodataPatenController::class, 'downloadSuratPernyataan'])->name('user.biodata-paten.download-surat-pernyataan');
     Route::post('biodata-paten/{biodataPaten}/mark-document-submitted', [App\Http\Controllers\User\BiodataPatenController::class, 'markDocumentSubmitted'])->name('user.biodata-paten.mark-document-submitted');
+    
+    // Draft Biodata Paten API routes
+    Route::post('submissions-paten/{submissionPaten}/biodata-paten/draft/save', [App\Http\Controllers\User\BiodataPatenController::class, 'saveDraft'])->name('user.biodata-paten.draft.save');
+    Route::get('submissions-paten/{submissionPaten}/biodata-paten/draft/load', [App\Http\Controllers\User\BiodataPatenController::class, 'loadDraft'])->name('user.biodata-paten.draft.load');
     
     // Wilayah API routes
     Route::get('api/wilayah/provinces', [App\Http\Controllers\Api\WilayahController::class, 'getProvinces'])->name('api.wilayah.provinces');

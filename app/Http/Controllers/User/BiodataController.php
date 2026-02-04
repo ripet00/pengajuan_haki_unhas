@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Biodata;
 use App\Models\BiodataMember;
+use App\Models\DraftBiodata;
 use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -219,6 +220,11 @@ class BiodataController extends Controller
                 'biodata_status' => 'pending',
                 'biodata_submitted_at' => now(),
             ]);
+
+            // Delete draft after successful submission
+            DraftBiodata::where('submission_id', $submission->id)
+                ->where('user_id', Auth::id())
+                ->delete();
 
             DB::commit();
 
@@ -719,6 +725,89 @@ class BiodataController extends Controller
         } catch (\Exception $e) {
             Log::error('Error generating Word document: ' . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan saat generate dokumen: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Save draft biodata
+     */
+    public function saveDraft(Request $request, Submission $submission)
+    {
+        try {
+            // Check if user owns the submission
+            if ($submission->user_id !== Auth::id()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
+
+            // Get or create draft
+            $draft = DraftBiodata::getOrCreateDraft($submission->id, Auth::id());
+
+            // Update draft data
+            $draft->tempat_ciptaan = $request->input('tempat_ciptaan');
+            $draft->tanggal_ciptaan = $request->input('tanggal_ciptaan');
+            $draft->uraian_singkat = $request->input('uraian_singkat');
+            $draft->member_count = $request->input('member_count', 0);
+            $draft->leader_data = $request->input('leader');
+            $draft->members_data = $request->input('members', []);
+            $draft->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Draft berhasil disimpan',
+                'timestamp' => $draft->updated_at->format('d M Y H:i:s')
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error saving draft biodata: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan draft: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Load draft biodata
+     */
+    public function loadDraft(Submission $submission)
+    {
+        try {
+            // Check if user owns the submission
+            if ($submission->user_id !== Auth::id()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
+
+            // Get draft
+            $draft = DraftBiodata::where('submission_id', $submission->id)
+                ->where('user_id', Auth::id())
+                ->first();
+
+            if (!$draft) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Draft tidak ditemukan'
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'tempat_ciptaan' => $draft->tempat_ciptaan,
+                    'tanggal_ciptaan' => $draft->tanggal_ciptaan ? $draft->tanggal_ciptaan->format('Y-m-d') : null,
+                    'uraian_singkat' => $draft->uraian_singkat,
+                    'member_count' => $draft->member_count ?? 0,
+                    'leader' => $draft->leader_data,
+                    'members' => $draft->members_data ?? [],
+                ],
+                'timestamp' => $draft->updated_at->format('d M Y H:i:s')
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error loading draft biodata: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat draft: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

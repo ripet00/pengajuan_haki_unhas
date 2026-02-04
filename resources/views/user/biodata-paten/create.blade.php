@@ -47,6 +47,28 @@
             color: #ffffff !important;
             filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
         }
+        
+        /* Draft Button Styles */
+        .draft-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .draft-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+        }
+        
+        .draft-status {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            z-index: 999;
+            max-width: 300px;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -170,7 +192,7 @@
         @endif
 
         <!-- Form Section -->
-        <form method="POST" action="{{ route('user.biodata-paten.store', $submissionPaten) }}" class="space-y-6" onsubmit="return confirm('=== KONFIRMASI ===\n\nApakah Anda yakin ingin mengirim biodata Paten ini?\n\nSetelah dikirim, biodata akan diproses oleh admin untuk review.');">
+        <form id="biodataPatenForm" method="POST" action="{{ route('user.biodata-paten.store', $submissionPaten) }}" class="space-y-6" onsubmit="return confirm('=== KONFIRMASI ===\n\nApakah Anda yakin ingin mengirim biodata Paten ini?\n\nSetelah dikirim, biodata akan diproses oleh admin untuk review.');">
             @csrf
             
             <!-- Biodata Information -->
@@ -254,7 +276,7 @@
                                 @if($biodataPaten && $biodataPaten->status === 'denied')
                                     <i class="fas fa-redo mr-2"></i>Submit Revisi Biodata
                                 @else
-                                    <i class="fas fa-save mr-2"></i>{{ $isEdit ? 'Update' : 'Simpan' }} Biodata
+                                    <i class="fas fa-save mr-2"></i>{{ $isEdit ? 'Update' : 'Upload' }} Biodata
                                 @endif
                             </button>
                         </div>
@@ -1299,5 +1321,403 @@
             }
         }
     </script>
+
+    <!-- Draft Auto-save and Load Script -->
+    <script>
+        let saveDraftTimeout = null;
+        let lastSaveTimestamp = null;
+
+        // Load draft on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDraft();
+        });
+
+        // Auto-save draft when form fields change (debounced)
+        function setupAutoSave() {
+            const form = document.getElementById('biodataPatenForm');
+            if (!form) return;
+
+            const inputs = form.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    clearTimeout(saveDraftTimeout);
+                    saveDraftTimeout = setTimeout(() => {
+                        saveDraft(false); // Auto-save silently
+                    }, 2000); // Save after 2 seconds of no input
+                });
+            });
+        }
+
+        // Manual save draft
+        function saveDraftManually() {
+            saveDraft(true); // Show notification
+        }
+
+        // Save draft function
+        function saveDraft(showNotification = true) {
+            const form = document.getElementById('biodataPatenForm');
+            if (!form) return;
+
+            const formData = new FormData(form);
+            const data = {
+                inventor_count: 0, // Track actual inventor count
+                leader: {},
+                inventors: []
+            };
+
+            // Collect leader data
+            const inventorFields = ['name', 'pekerjaan', 'universitas', 'fakultas', 'alamat', 'kelurahan', 'kecamatan', 'kota_kabupaten', 'provinsi', 'kode_pos', 'email', 'nomor_hp', 'kewarganegaraan'];
+            inventorFields.forEach(field => {
+                const value = formData.get(`leader[${field}]`);
+                if (value) data.leader[field] = value;
+            });
+
+            // Collect inventors data with wilayah codes
+            const inventorInputs = document.querySelectorAll('[name^="inventors["]');
+            const inventorIndices = new Set();
+            inventorInputs.forEach(input => {
+                const match = input.name.match(/inventors\[(\d+)\]/);
+                if (match) inventorIndices.add(parseInt(match[1]));
+            });
+
+            inventorIndices.forEach(index => {
+                const inventor = {};
+                inventorFields.forEach(field => {
+                    const value = formData.get(`inventors[${index}][${field}]`);
+                    if (value) inventor[field] = value;
+                });
+                
+                // Also save fakultas_type for proper restoration
+                const fakultasType = formData.get(`inventors[${index}][fakultas_type]`);
+                if (fakultasType) inventor.fakultas_type = fakultasType;
+                
+                // Also save data-kode attributes for wilayah dropdowns
+                const provinsiSelect = document.getElementById(`provinsi_${index}`);
+                const kotaSelect = document.getElementById(`kota_kabupaten_${index}`);
+                const kecamatanSelect = document.getElementById(`kecamatan_${index}`);
+                const kelurahanSelect = document.getElementById(`kelurahan_${index}`);
+                
+                if (provinsiSelect && provinsiSelect.selectedOptions[0]) {
+                    inventor.provinsi_kode = provinsiSelect.selectedOptions[0].getAttribute('data-kode');
+                }
+                if (kotaSelect && kotaSelect.selectedOptions[0]) {
+                    inventor.kota_kabupaten_kode = kotaSelect.selectedOptions[0].getAttribute('data-kode');
+                }
+                if (kecamatanSelect && kecamatanSelect.selectedOptions[0]) {
+                    inventor.kecamatan_kode = kecamatanSelect.selectedOptions[0].getAttribute('data-kode');
+                }
+                if (kelurahanSelect && kelurahanSelect.selectedOptions[0]) {
+                    inventor.kelurahan_kode = kelurahanSelect.selectedOptions[0].getAttribute('data-kode');
+                }
+                
+                if (Object.keys(inventor).length > 0) {
+                    data.inventors.push(inventor);
+                }
+            });
+            
+            // Save actual inventor count
+            data.inventor_count = inventorIndices.size;
+
+            // Send AJAX request
+            const draftBtn = document.getElementById('saveDraftBtn');
+            const draftIcon = document.getElementById('draftIcon');
+            const draftButtonText = document.getElementById('draftButtonText');
+            
+            // Show loading state
+            if (showNotification && draftBtn) {
+                draftBtn.disabled = true;
+                draftIcon.className = 'fas fa-spinner fa-spin mr-2';
+                draftButtonText.textContent = 'Menyimpan...';
+            }
+            
+            fetch('{{ route("user.biodata-paten.draft.save", $submissionPaten) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    lastSaveTimestamp = result.timestamp;
+                    updateDraftStatus('Draft tersimpan: ' + result.timestamp, 'success');
+                    
+                    if (showNotification) {
+                        // Show success state on button
+                        if (draftBtn) {
+                            draftBtn.classList.add('pulse-success', 'bg-emerald-600');
+                            draftBtn.classList.remove('bg-green-600');
+                            draftIcon.className = 'fas fa-check-circle mr-2 check-icon';
+                            draftButtonText.textContent = 'Tersimpan!';
+                            
+                            // Reset button after 2 seconds
+                            setTimeout(() => {
+                                draftBtn.classList.remove('pulse-success', 'bg-emerald-600');
+                                draftBtn.classList.add('bg-green-600');
+                                draftBtn.disabled = false;
+                                draftIcon.className = 'fas fa-save mr-2';
+                                draftButtonText.textContent = 'Simpan Draft';
+                            }, 2000);
+                        }
+                        showNotificationMessage('✅ Draft berhasil disimpan!', 'success');
+                    } else {
+                        // Silent save - just reset button
+                        if (draftBtn) {
+                            draftBtn.disabled = false;
+                            draftIcon.className = 'fas fa-save mr-2';
+                            draftButtonText.textContent = 'Simpan Draft';
+                        }
+                    }
+                } else {
+                    if (draftBtn) {
+                        draftBtn.disabled = false;
+                        draftIcon.className = 'fas fa-save mr-2';
+                        draftButtonText.textContent = 'Simpan Draft';
+                    }
+                    if (showNotification) {
+                        showNotificationMessage('❌ Gagal menyimpan draft: ' + result.message, 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error saving draft:', error);
+                if (draftBtn) {
+                    draftBtn.disabled = false;
+                    draftIcon.className = 'fas fa-save mr-2';
+                    draftButtonText.textContent = 'Simpan Draft';
+                }
+                if (showNotification) {
+                    showNotificationMessage('❌ Terjadi kesalahan saat menyimpan draft', 'error');
+                }
+            });
+        }
+
+        // Load draft function
+        async function loadDraft() {
+            try {
+                const response = await fetch('{{ route("user.biodata-paten.draft.load", $submissionPaten) }}');
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const data = result.data;
+
+                    // Fill leader data
+                    if (data.leader) {
+                        Object.keys(data.leader).forEach(field => {
+                            const input = document.querySelector(`[name="leader[${field}]"]`);
+                            if (input && data.leader[field]) {
+                                input.value = data.leader[field];
+                            }
+                        });
+                    }
+
+                    // Fill inventors data - use inventor_count to create exact number of inventors
+                    const targetInventorCount = data.inventor_count || (data.inventors ? data.inventors.length : 0);
+                    
+                    // Create inventor forms up to targetInventorCount
+                    for (let i = 0; i < targetInventorCount; i++) {
+                        if (i >= inventorCount) {
+                            addInventor();
+                        }
+                    }
+                    
+                    // Fill inventor data
+                    if (data.inventors && data.inventors.length > 0) {
+                        for (let index = 0; index < data.inventors.length; index++) {
+                            const inventor = data.inventors[index];
+                            
+                            // Fill basic inventor fields (non-dropdown)
+                            Object.keys(inventor).forEach(field => {
+                                // Skip wilayah kode fields (they're metadata)
+                                if (field.endsWith('_kode')) return;
+                                
+                                const input = document.querySelector(`[name="inventors[${index}][${field}]"]`);
+                                if (input && inventor[field]) {
+                                    input.value = inventor[field];
+                                    
+                                    // Trigger change event for special fields
+                                    if (field === 'kewarganegaraan_type' || field === 'fakultas_type') {
+                                        input.dispatchEvent(new Event('change'));
+                                    }
+                                }
+                            });
+                            
+                            // Restore fakultas_type separately to ensure dropdown is set correctly
+                            if (inventor.fakultas_type) {
+                                const fakultasTypeSelect = document.getElementById(`fakultas_type_${index}`);
+                                if (fakultasTypeSelect) {
+                                    fakultasTypeSelect.value = inventor.fakultas_type;
+                                    fakultasTypeSelect.dispatchEvent(new Event('change'));
+                                }
+                            }
+                            
+                            // Restore wilayah dropdowns if WNI
+                            if (!inventor.kewarganegaraan || inventor.kewarganegaraan === 'Indonesia') {
+                                await restoreWilayahDropdowns(index, inventor);
+                            }
+                        }
+                    }
+
+                    lastSaveTimestamp = result.timestamp;
+                    updateDraftStatus('Draft dimuat: ' + result.timestamp, 'info');
+                    showNotificationMessage('✓ Draft berhasil dimuat!', 'info');
+                    
+                    // Setup auto-save after loading draft
+                    setTimeout(setupAutoSave, 500);
+                } else {
+                    // No draft found, just setup auto-save
+                    setupAutoSave();
+                }
+            } catch (error) {
+                console.error('Error loading draft:', error);
+                // Even if loading fails, setup auto-save
+                setupAutoSave();
+            }
+        }
+        
+        // Helper function to restore wilayah dropdowns with proper cascade
+        async function restoreWilayahDropdowns(index, inventor) {
+            if (!inventor.provinsi) return;
+            
+            const provinsiSelect = document.getElementById(`provinsi_${index}`);
+            const kotaSelect = document.getElementById(`kota_kabupaten_${index}`);
+            const kecamatanSelect = document.getElementById(`kecamatan_${index}`);
+            const kelurahanSelect = document.getElementById(`kelurahan_${index}`);
+            
+            if (!provinsiSelect) return;
+            
+            try {
+                // Wait for provinces to load
+                await new Promise(resolve => {
+                    const checkProvinces = setInterval(() => {
+                        if (window.provincesData && provinsiSelect.options.length > 1) {
+                            clearInterval(checkProvinces);
+                            resolve();
+                        }
+                    }, 100);
+                    // Timeout after 5 seconds
+                    setTimeout(() => resolve(), 5000);
+                });
+                
+                // Set provinsi
+                provinsiSelect.value = inventor.provinsi;
+                const provinceCode = inventor.provinsi_kode || provinsiSelect.selectedOptions[0]?.getAttribute('data-kode');
+                
+                // Always load kota dropdown if provinsi is selected
+                if (provinceCode && kotaSelect) {
+                    const citiesResponse = await fetch(`{{ url('users/api/wilayah/cities') }}/${provinceCode}`);
+                    const citiesData = await citiesResponse.json();
+                    populateSelect(kotaSelect, citiesData, 'Pilih Kota/Kabupaten');
+                    kotaSelect.disabled = false;
+                    
+                    // Set kota value if available
+                    if (inventor.kota_kabupaten) {
+                        kotaSelect.value = inventor.kota_kabupaten;
+                        const cityCode = inventor.kota_kabupaten_kode || kotaSelect.selectedOptions[0]?.getAttribute('data-kode');
+                        
+                        // Always load kecamatan dropdown if kota is selected
+                        if (cityCode && kecamatanSelect) {
+                            const districtsResponse = await fetch(`{{ url('users/api/wilayah/districts') }}/${cityCode}`);
+                            const districtsData = await districtsResponse.json();
+                            populateSelect(kecamatanSelect, districtsData, 'Pilih Kecamatan');
+                            kecamatanSelect.disabled = false;
+                            
+                            // Set kecamatan value if available
+                            if (inventor.kecamatan) {
+                                kecamatanSelect.value = inventor.kecamatan;
+                                const districtCode = inventor.kecamatan_kode || kecamatanSelect.selectedOptions[0]?.getAttribute('data-kode');
+                                
+                                // Always load kelurahan dropdown if kecamatan is selected
+                                if (districtCode && kelurahanSelect) {
+                                    const villagesResponse = await fetch(`{{ url('users/api/wilayah/villages') }}/${districtCode}`);
+                                    const villagesData = await villagesResponse.json();
+                                    populateSelect(kelurahanSelect, villagesData, 'Pilih Kelurahan');
+                                    kelurahanSelect.disabled = false;
+                                    
+                                    // Set kelurahan value if available
+                                    if (inventor.kelurahan) {
+                                        kelurahanSelect.value = inventor.kelurahan;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error restoring wilayah dropdowns:', error);
+            }
+        }
+
+        // Update draft status display
+        function updateDraftStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('draftStatus');
+            if (!statusDiv) return;
+
+            const colors = {
+                success: 'bg-green-100 text-green-800 border-green-300',
+                error: 'bg-red-100 text-red-800 border-red-300',
+                info: 'bg-blue-100 text-blue-800 border-blue-300'
+            };
+
+            statusDiv.className = `draft-status px-4 py-2 rounded-lg border-2 ${colors[type]} text-sm`;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Show notification message
+        function showNotificationMessage(message, type = 'info') {
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500'
+            };
+
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+
+    <style>
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.3s ease-out;
+        }
+        @keyframes pulse-success {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .pulse-success {
+            animation: pulse-success 0.6s ease-out;
+        }
+    </style>
+
+    <!-- Floating Draft Button -->
+    <button type="button" id="saveDraftBtn" onclick="saveDraftManually()" class="draft-button bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold transition-all duration-200 flex items-center shadow-xl">
+        <i id="draftIcon" class="fas fa-save mr-2"></i>
+        <span id="draftButtonText">Simpan Draft</span>
+    </button>
+
+    <!-- Draft Status Display -->
+    <div id="draftStatus" class="draft-status" style="display: none;"></div>
 </body>
 </html>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\BiodataPaten;
 use App\Models\BiodataPatenInventor;
+use App\Models\DraftBiodataPaten;
 use App\Models\SubmissionPaten;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -196,6 +197,11 @@ class BiodataPatenController extends Controller
                 'biodata_status' => 'pending',
                 'biodata_submitted_at' => now(),
             ]);
+
+            // Delete draft after successful submission
+            DraftBiodataPaten::where('submission_paten_id', $submissionPaten->id)
+                ->where('user_id', Auth::id())
+                ->delete();
 
             DB::commit();
 
@@ -1049,5 +1055,82 @@ class BiodataPatenController extends Controller
         $fileName = ucfirst($type) . '_Paten_' . $biodataPaten->id . '.pdf';
         
         return response()->download($fullPath, $fileName);
+    }
+
+    /**
+     * Save draft biodata paten
+     */
+    public function saveDraft(Request $request, SubmissionPaten $submissionPaten)
+    {
+        try {
+            // Check if user owns the submission
+            if ($submissionPaten->user_id !== Auth::id()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
+
+            // Get or create draft
+            $draft = DraftBiodataPaten::getOrCreateDraft($submissionPaten->id, Auth::id());
+
+            // Update draft data
+            $draft->inventor_count = $request->input('inventor_count', 0);
+            $draft->leader_data = $request->input('leader');
+            $draft->inventors_data = $request->input('inventors', []);
+            $draft->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Draft berhasil disimpan',
+                'timestamp' => $draft->updated_at->format('d M Y H:i:s')
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error saving draft biodata paten: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan draft: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Load draft biodata paten
+     */
+    public function loadDraft(SubmissionPaten $submissionPaten)
+    {
+        try {
+            // Check if user owns the submission
+            if ($submissionPaten->user_id !== Auth::id()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
+
+            // Get draft
+            $draft = DraftBiodataPaten::where('submission_paten_id', $submissionPaten->id)
+                ->where('user_id', Auth::id())
+                ->first();
+
+            if (!$draft) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Draft tidak ditemukan'
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'inventor_count' => $draft->inventor_count ?? 0,
+                    'leader' => $draft->leader_data,
+                    'inventors' => $draft->inventors_data ?? [],
+                ],
+                'timestamp' => $draft->updated_at->format('d M Y H:i:s')
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error loading draft biodata paten: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat draft: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
