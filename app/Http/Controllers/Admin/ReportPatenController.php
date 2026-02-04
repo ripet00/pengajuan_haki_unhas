@@ -210,4 +210,84 @@ class ReportPatenController extends Controller
             return back()->with('error', 'Terjadi kesalahan saat mengunggah dokumen: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Show patent documents page with 4 PDFs
+     */
+    public function showPatentDocuments(BiodataPaten $biodataPaten)
+    {
+        $admin = $this->getCurrentAdmin();
+        
+        if (!$admin) {
+            abort(403, 'Admin session tidak valid');
+        }
+
+        // Load relationships
+        $biodataPaten->load(['submissionPaten', 'user', 'inventors']);
+
+        return view('admin.reports-paten.show-patent-documents', compact('biodataPaten'));
+    }
+
+    /**
+     * Download specific patent document PDF
+     */
+    public function downloadPatentDocument(BiodataPaten $biodataPaten, $type)
+    {
+        $admin = $this->getCurrentAdmin();
+        
+        if (!$admin) {
+            abort(403, 'Admin session tidak valid');
+        }
+
+        // Validate type
+        $allowedTypes = ['deskripsi', 'klaim', 'abstrak', 'gambar'];
+        if (!in_array($type, $allowedTypes)) {
+            abort(404, 'Tipe dokumen tidak valid');
+        }
+
+        $fieldName = $type . '_pdf';
+        $filePath = $biodataPaten->$fieldName;
+
+        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
+            return back()->with('error', 'File tidak ditemukan');
+        }
+
+        $fullPath = storage_path('app/public/' . $filePath);
+        $fileName = ucfirst($type) . '_Paten_' . $biodataPaten->id . '.pdf';
+
+        return response()->download($fullPath, $fileName);
+    }
+
+    /**
+     * View patent document PDF in browser (inline)
+     */
+    public function viewPatentDocument(BiodataPaten $biodataPaten, $type)
+    {
+        $admin = $this->getCurrentAdmin();
+        
+        if (!$admin) {
+            abort(403, 'Admin session tidak valid');
+        }
+
+        // Validate type
+        $allowedTypes = ['deskripsi', 'klaim', 'abstrak', 'gambar'];
+        if (!in_array($type, $allowedTypes)) {
+            abort(404, 'Tipe dokumen tidak valid');
+        }
+
+        $fieldName = $type . '_pdf';
+        $filePath = $biodataPaten->$fieldName;
+
+        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
+            abort(404, 'File tidak ditemukan');
+        }
+
+        $fullPath = storage_path('app/public/' . $filePath);
+        $fileName = ucfirst($type) . '_Paten_' . $biodataPaten->id . '.pdf';
+
+        return response()->file($fullPath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $fileName . '"'
+        ]);
+    }
 }
