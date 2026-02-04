@@ -28,6 +28,7 @@ class SubmissionPaten extends Model
         'creator_country_code',
         'file_path',
         'file_name',
+        'original_filename',
         'file_size',
         'status',
         'reviewed_at',
