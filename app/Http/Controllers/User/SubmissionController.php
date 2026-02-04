@@ -7,6 +7,7 @@ use App\Http\Requests\StoreSubmissionRequest;
 use App\Http\Requests\ResubmitSubmissionRequest;
 use App\Models\Submission;
 use App\Models\JenisKarya;
+use App\Helpers\FileUploadHelper;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -44,7 +45,7 @@ class SubmissionController extends Controller
             $fileName = null;
             $fileSize = null;
             
-            // For PDF: handle file upload
+            // For PDF: handle file upload with secure FileUploadHelper
             if ($request->input('file_type') === 'pdf' && $request->hasFile('document')) {
                 $file = $request->file('document');
                 $fileSize = $file->getSize();
@@ -58,7 +59,7 @@ class SubmissionController extends Controller
                 }
                 
                 // Check available disk space
-                $availableSpace = disk_free_space(storage_path('app/public'));
+                $availableSpace = disk_free_space(storage_path('app/private'));
                 
                 if ($availableSpace < ($fileSize * 2)) { // Need double space for safety
                     return back()->withErrors([
@@ -66,14 +67,17 @@ class SubmissionController extends Controller
                     ])->withInput();
                 }
 
-                // Generate unique filename with original extension
-                $originalName = $file->getClientOriginalName();
-                $extension = $file->getClientOriginalExtension();
-                $fileNamePart = pathinfo($originalName, PATHINFO_FILENAME);
-                $uniqueFileName = $fileNamePart . '_' . time() . '.' . $extension;
+                // Use secure upload helper
+                $uploadResult = FileUploadHelper::uploadSecure($file, 'submissions', ['pdf']);
                 
-                $path = $file->storeAs('submissions', $uniqueFileName, 'public');
-                $fileName = $file->getClientOriginalName();
+                if (!$uploadResult['success']) {
+                    return back()->withErrors([
+                        'document' => $uploadResult['error']
+                    ])->withInput();
+                }
+                
+                $path = $uploadResult['path'];
+                $fileName = $uploadResult['hashed_name'];
                 $fileSize = $file->getSize();
             }
             // For Video: no file upload, only store link
@@ -90,6 +94,7 @@ class SubmissionController extends Controller
                 'creator_country_code' => $request->input('creator_country_code'),
                 'file_path' => $path, // null for video
                 'file_name' => $fileName, // null for video
+                'original_filename' => $request->input('file_type') === 'pdf' && isset($uploadResult) ? $uploadResult['original_name'] : null,
                 'file_size' => $fileSize, // null for video
                 'status' => 'pending',
                 'revisi' => false,
@@ -148,7 +153,7 @@ class SubmissionController extends Controller
             $fileName = $submission->file_name;
             $fileSize = $submission->file_size;
             
-            // For PDF: handle file upload
+            // For PDF: handle file upload with secure FileUploadHelper
             if ($request->input('file_type') === 'pdf' && $request->hasFile('document')) {
                 $file = $request->file('document');
                 $uploadFileSize = $file->getSize();
@@ -162,7 +167,7 @@ class SubmissionController extends Controller
                 }
                 
                 // Check available disk space
-                $availableSpace = disk_free_space(storage_path('app/public'));
+                $availableSpace = disk_free_space(storage_path('app/private'));
                 
                 if ($availableSpace < ($uploadFileSize * 2)) { // Need double space for safety
                     return back()->withErrors([
@@ -171,25 +176,28 @@ class SubmissionController extends Controller
                 }
 
                 // Delete old file if exists
-                if ($submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
-                    Storage::disk('public')->delete($submission->file_path);
+                if ($submission->file_path) {
+                    FileUploadHelper::deleteSecure($submission->file_path);
                 }
 
-                // Generate unique filename with original extension
-                $originalName = $file->getClientOriginalName();
-                $extension = $file->getClientOriginalExtension();
-                $fileNamePart = pathinfo($originalName, PATHINFO_FILENAME);
-                $uniqueFileName = $fileNamePart . '_' . time() . '.' . $extension;
+                // Use secure upload helper
+                $uploadResult = FileUploadHelper::uploadSecure($file, 'submissions', ['pdf']);
                 
-                $path = $file->storeAs('submissions', $uniqueFileName, 'public');
-                $fileName = $file->getClientOriginalName();
+                if (!$uploadResult['success']) {
+                    return back()->withErrors([
+                        'document' => $uploadResult['error']
+                    ])->withInput();
+                }
+                
+                $path = $uploadResult['path'];
+                $fileName = $uploadResult['hashed_name'];
                 $fileSize = $file->getSize();
             }
             // For Video: if changing to video type, delete old file
             elseif ($request->input('file_type') === 'video') {
                 // Delete old file if exists
-                if ($submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
-                    Storage::disk('public')->delete($submission->file_path);
+                if ($submission->file_path) {
+                    FileUploadHelper::deleteSecure($submission->file_path);
                 }
                 $path = null;
                 $fileName = null;
@@ -207,6 +215,7 @@ class SubmissionController extends Controller
                 'creator_country_code' => $request->input('creator_country_code'),
                 'file_path' => $path,
                 'file_name' => $fileName,
+                'original_filename' => isset($uploadResult) ? $uploadResult['original_name'] : $submission->original_filename,
                 'file_size' => $fileSize,
                 'status' => 'pending',
                 'revisi' => true,
@@ -245,12 +254,16 @@ class SubmissionController extends Controller
         // Ensure user can only download their own submissions
         $this->authorizeOwnership($submission);
         
-        $filePath = storage_path('app/public/' . $submission->file_path);
-        
-        if (!file_exists($filePath)) {
+        // Check if file exists using FileUploadHelper
+        if (!$submission->file_path || !FileUploadHelper::exists($submission->file_path)) {
             abort(404, 'File tidak ditemukan.');
         }
 
-        return response()->download($filePath, $submission->file_name);
+        $filePath = storage_path('app/private/' . $submission->file_path);
+        
+        // Use original filename if available, fallback to file_name
+        $downloadName = $submission->original_filename ?? $submission->file_name ?? 'document.pdf';
+
+        return response()->download($filePath, $downloadName);
     }
 }

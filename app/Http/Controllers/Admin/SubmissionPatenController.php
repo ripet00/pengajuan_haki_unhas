@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SubmissionPaten;
 use App\Models\SubmissionPatenHistory;
+use App\Helpers\FileUploadHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -61,13 +62,18 @@ class SubmissionPatenController extends Controller
      */
     public function download(SubmissionPaten $submissionPaten)
     {
-        $filePath = storage_path('app/public/' . $submissionPaten->file_path);
+        $filePath = storage_path('app/private/' . $submissionPaten->file_path);
         
         if (!file_exists($filePath)) {
             return back()->with('error', 'File tidak ditemukan.');
         }
 
-        return response()->download($filePath, $submissionPaten->file_name);
+        $downloadName = $submissionPaten->original_filename ?? $submissionPaten->file_name ?? 'document.docx';
+
+        return response()->file($filePath, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'Content-Disposition' => 'inline; filename="' . $downloadName . '"',
+        ]);
     }
 
     /**
@@ -116,17 +122,18 @@ class SubmissionPatenController extends Controller
         // Handle file upload
         if ($request->hasFile('file_review')) {
             // Delete old file if exists
-            if ($submissionPaten->file_review_path && Storage::disk('public')->exists($submissionPaten->file_review_path)) {
-                Storage::disk('public')->delete($submissionPaten->file_review_path);
+            if ($submissionPaten->file_review_path) {
+                FileUploadHelper::deleteSecure($submissionPaten->file_review_path);
             }
 
             $file = $request->file('file_review');
-            $fileName = 'review_' . $submissionPaten->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('review_files/paten', $fileName, 'public');
-
-            $updateData['file_review_path'] = $filePath;
-            $updateData['file_review_name'] = $file->getClientOriginalName();
-            $updateData['file_review_uploaded_at'] = now();
+            $uploadResult = FileUploadHelper::uploadSecure($file, 'review_files/paten', ['pdf', 'docx', 'doc']);
+            
+            if ($uploadResult['success']) {
+                $updateData['file_review_path'] = $uploadResult['path'];
+                $updateData['file_review_name'] = $uploadResult['hashed_name'];
+                $updateData['file_review_uploaded_at'] = now();
+            }
         }
 
         $submissionPaten->update($updateData);
@@ -201,17 +208,18 @@ class SubmissionPatenController extends Controller
         // Handle file upload
         if ($request->hasFile('file_review')) {
             // Delete old file if exists
-            if ($submissionPaten->file_review_path && Storage::disk('public')->exists($submissionPaten->file_review_path)) {
-                Storage::disk('public')->delete($submissionPaten->file_review_path);
+            if ($submissionPaten->file_review_path) {
+                FileUploadHelper::deleteSecure($submissionPaten->file_review_path);
             }
 
             $file = $request->file('file_review');
-            $fileName = 'review_' . $submissionPaten->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('review_files/paten', $fileName, 'public');
-
-            $updateData['file_review_path'] = $filePath;
-            $updateData['file_review_name'] = $file->getClientOriginalName();
-            $updateData['file_review_uploaded_at'] = now();
+            $uploadResult = FileUploadHelper::uploadSecure($file, 'review_files/paten', ['pdf', 'docx', 'doc']);
+            
+            if ($uploadResult['success']) {
+                $updateData['file_review_path'] = $uploadResult['path'];
+                $updateData['file_review_name'] = $uploadResult['hashed_name'];
+                $updateData['file_review_uploaded_at'] = now();
+            }
         }
 
         $submissionPaten->update($updateData);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\SubmissionPaten;
+use App\Helpers\FileUploadHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -73,7 +74,7 @@ class SubmissionPatenController extends Controller
             }
             
             // Check available disk space
-            $availableSpace = disk_free_space(storage_path('app/public'));
+            $availableSpace = disk_free_space(storage_path('app/private'));
             $fileSize = $request->file('document')->getSize();
             
             if ($availableSpace < ($fileSize * 2)) { // Need double space for safety
@@ -85,13 +86,20 @@ class SubmissionPatenController extends Controller
             $user = Auth::user();
             $file = $request->file('document');
 
-            // Generate unique filename with original extension
-            $originalName = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $fileName = pathinfo($originalName, PATHINFO_FILENAME);
-            $uniqueFileName = $fileName . '_' . time() . '.' . $extension;
+            // Use secure upload helper
+            $uploadResult = FileUploadHelper::uploadSecure($file, 'submissions_paten', ['docx']);
             
-            $path = $file->storeAs('submissions_paten', $uniqueFileName, 'public');
+            if (!$uploadResult['success']) {
+                Log::info('File upload rejected', [
+                    'user_id' => Auth::id(),
+                    'filename' => $file->getClientOriginalName(),
+                    'error' => $uploadResult['error']
+                ]);
+                
+                return back()->withErrors([
+                    'document' => $uploadResult['error']
+                ])->withInput();
+            }
             
             $submission = SubmissionPaten::create([
                 'user_id' => $user->id,
@@ -100,8 +108,9 @@ class SubmissionPatenController extends Controller
                 'creator_name' => $validated['creator_name'],
                 'creator_whatsapp' => $validated['creator_whatsapp'],
                 'creator_country_code' => $validated['creator_country_code'],
-                'file_path' => $path,
-                'file_name' => $file->getClientOriginalName(),
+                'file_path' => $uploadResult['path'],
+                'file_name' => $uploadResult['hashed_name'],
+                'original_filename' => $uploadResult['original_name'],
                 'file_size' => $file->getSize(),
                 'status' => SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW,
                 'revisi' => false,
@@ -151,13 +160,17 @@ class SubmissionPatenController extends Controller
             abort(403, 'Unauthorized access to this submission.');
         }
 
-        $filePath = storage_path('app/public/' . $submissionPaten->file_path);
-        
-        if (!file_exists($filePath)) {
+        // Check if file exists using FileUploadHelper
+        if (!$submissionPaten->file_path || !FileUploadHelper::exists($submissionPaten->file_path)) {
             return back()->with('error', 'File tidak ditemukan.');
         }
 
-        return response()->download($filePath, $submissionPaten->file_name);
+        $filePath = storage_path('app/private/' . $submissionPaten->file_path);
+        
+        // Use original filename if available, fallback to file_name
+        $downloadName = $submissionPaten->original_filename ?? $submissionPaten->file_name ?? 'document.docx';
+
+        return response()->download($filePath, $downloadName);
     }
 
     /**
@@ -197,17 +210,18 @@ class SubmissionPatenController extends Controller
             $file = $request->file('document');
 
             // Delete old file
-            if (Storage::disk('public')->exists($submissionPaten->file_path)) {
-                Storage::disk('public')->delete($submissionPaten->file_path);
+            if ($submissionPaten->file_path) {
+                FileUploadHelper::deleteSecure($submissionPaten->file_path);
             }
 
-            // Generate unique filename
-            $originalName = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $fileName = pathinfo($originalName, PATHINFO_FILENAME);
-            $uniqueFileName = $fileName . '_' . time() . '.' . $extension;
+            // Use secure upload helper
+            $uploadResult = FileUploadHelper::uploadSecure($file, 'submissions_paten', ['docx']);
             
-            $path = $file->storeAs('submissions_paten', $uniqueFileName, 'public');
+            if (!$uploadResult['success']) {
+                return back()->withErrors([
+                    'document' => $uploadResult['error']
+                ])->withInput();
+            }
 
             // Update submission
             $submissionPaten->update([
@@ -216,8 +230,9 @@ class SubmissionPatenController extends Controller
                 'creator_name' => $validated['creator_name'],
                 'creator_whatsapp' => $validated['creator_whatsapp'],
                 'creator_country_code' => $validated['creator_country_code'],
-                'file_path' => $path,
-                'file_name' => $file->getClientOriginalName(),
+                'file_path' => $uploadResult['path'],
+                'file_name' => $uploadResult['hashed_name'],
+                'original_filename' => $uploadResult['original_name'],
                 'file_size' => $file->getSize(),
                 'status' => SubmissionPaten::STATUS_PENDING_FORMAT_REVIEW,
                 'rejection_reason' => null,
@@ -274,17 +289,18 @@ class SubmissionPatenController extends Controller
             $file = $request->file('file_paten');
 
             // Delete old file
-            if (Storage::disk('public')->exists($submissionPaten->file_path)) {
-                Storage::disk('public')->delete($submissionPaten->file_path);
+            if ($submissionPaten->file_path) {
+                FileUploadHelper::deleteSecure($submissionPaten->file_path);
             }
 
-            // Generate unique filename
-            $originalName = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $fileName = pathinfo($originalName, PATHINFO_FILENAME);
-            $uniqueFileName = $fileName . '_' . time() . '.' . $extension;
+            // Use secure upload helper
+            $uploadResult = FileUploadHelper::uploadSecure($file, 'submissions_paten', ['docx']);
             
-            $path = $file->storeAs('submissions_paten', $uniqueFileName, 'public');
+            if (!$uploadResult['success']) {
+                return back()->withErrors([
+                    'file_paten' => $uploadResult['error']
+                ])->withInput();
+            }
 
             // Update submission - reset to pending substance review
             $submissionPaten->update([
@@ -293,8 +309,9 @@ class SubmissionPatenController extends Controller
                 'creator_name' => $validated['creator_name'],
                 'creator_whatsapp' => $validated['creator_whatsapp'],
                 'creator_country_code' => $validated['creator_country_code'],
-                'file_path' => $path,
-                'file_name' => $file->getClientOriginalName(),
+                'file_path' => $uploadResult['path'],
+                'file_name' => $uploadResult['hashed_name'],
+                'original_filename' => $uploadResult['original_name'],
                 'file_size' => $file->getSize(),
                 'status' => SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW,
                 'substance_review_notes' => null,
@@ -353,57 +370,65 @@ class SubmissionPatenController extends Controller
             // Upload Deskripsi PDF
             if ($request->hasFile('deskripsi_pdf')) {
                 // Delete old file if exists
-                if ($biodataPaten->deskripsi_pdf && Storage::disk('public')->exists($biodataPaten->deskripsi_pdf)) {
-                    Storage::disk('public')->delete($biodataPaten->deskripsi_pdf);
+                if ($biodataPaten->deskripsi_pdf) {
+                    FileUploadHelper::deleteSecure($biodataPaten->deskripsi_pdf);
                 }
                 
                 $file = $request->file('deskripsi_pdf');
-                $fileName = 'deskripsi_' . $biodataPaten->id . '_' . time() . '.pdf';
-                $path = $file->storeAs('patent_documents/deskripsi', $fileName, 'public');
-                $biodataPaten->deskripsi_pdf = $path;
-                $uploadedFiles[] = 'Deskripsi';
+                $uploadResult = FileUploadHelper::uploadSecure($file, 'patent_documents/deskripsi', ['pdf']);
+                
+                if ($uploadResult['success']) {
+                    $biodataPaten->deskripsi_pdf = $uploadResult['path'];
+                    $uploadedFiles[] = 'Deskripsi';
+                }
             }
             
             // Upload Klaim PDF
             if ($request->hasFile('klaim_pdf')) {
                 // Delete old file if exists
-                if ($biodataPaten->klaim_pdf && Storage::disk('public')->exists($biodataPaten->klaim_pdf)) {
-                    Storage::disk('public')->delete($biodataPaten->klaim_pdf);
+                if ($biodataPaten->klaim_pdf) {
+                    FileUploadHelper::deleteSecure($biodataPaten->klaim_pdf);
                 }
                 
                 $file = $request->file('klaim_pdf');
-                $fileName = 'klaim_' . $biodataPaten->id . '_' . time() . '.pdf';
-                $path = $file->storeAs('patent_documents/klaim', $fileName, 'public');
-                $biodataPaten->klaim_pdf = $path;
-                $uploadedFiles[] = 'Klaim';
+                $uploadResult = FileUploadHelper::uploadSecure($file, 'patent_documents/klaim', ['pdf']);
+                
+                if ($uploadResult['success']) {
+                    $biodataPaten->klaim_pdf = $uploadResult['path'];
+                    $uploadedFiles[] = 'Klaim';
+                }
             }
             
             // Upload Abstrak PDF
             if ($request->hasFile('abstrak_pdf')) {
                 // Delete old file if exists
-                if ($biodataPaten->abstrak_pdf && Storage::disk('public')->exists($biodataPaten->abstrak_pdf)) {
-                    Storage::disk('public')->delete($biodataPaten->abstrak_pdf);
+                if ($biodataPaten->abstrak_pdf) {
+                    FileUploadHelper::deleteSecure($biodataPaten->abstrak_pdf);
                 }
                 
                 $file = $request->file('abstrak_pdf');
-                $fileName = 'abstrak_' . $biodataPaten->id . '_' . time() . '.pdf';
-                $path = $file->storeAs('patent_documents/abstrak', $fileName, 'public');
-                $biodataPaten->abstrak_pdf = $path;
-                $uploadedFiles[] = 'Abstrak';
+                $uploadResult = FileUploadHelper::uploadSecure($file, 'patent_documents/abstrak', ['pdf']);
+                
+                if ($uploadResult['success']) {
+                    $biodataPaten->abstrak_pdf = $uploadResult['path'];
+                    $uploadedFiles[] = 'Abstrak';
+                }
             }
             
             // Upload Gambar PDF (Optional)
             if ($request->hasFile('gambar_pdf')) {
                 // Delete old file if exists
-                if ($biodataPaten->gambar_pdf && Storage::disk('public')->exists($biodataPaten->gambar_pdf)) {
-                    Storage::disk('public')->delete($biodataPaten->gambar_pdf);
+                if ($biodataPaten->gambar_pdf) {
+                    FileUploadHelper::deleteSecure($biodataPaten->gambar_pdf);
                 }
                 
                 $file = $request->file('gambar_pdf');
-                $fileName = 'gambar_' . $biodataPaten->id . '_' . time() . '.pdf';
-                $path = $file->storeAs('patent_documents/gambar', $fileName, 'public');
-                $biodataPaten->gambar_pdf = $path;
-                $uploadedFiles[] = 'Gambar';
+                $uploadResult = FileUploadHelper::uploadSecure($file, 'patent_documents/gambar', ['pdf']);
+                
+                if ($uploadResult['success']) {
+                    $biodataPaten->gambar_pdf = $uploadResult['path'];
+                    $uploadedFiles[] = 'Gambar';
+                }
             }
             
             // Update timestamp if at least one file uploaded
@@ -452,11 +477,11 @@ class SubmissionPatenController extends Controller
         $fieldName = $type . '_pdf';
         $filePath = $biodataPaten->$fieldName;
         
-        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
+        if (!$filePath || !FileUploadHelper::exists($filePath)) {
             return back()->with('error', 'File tidak ditemukan');
         }
         
-        $fullPath = storage_path('app/public/' . $filePath);
+        $fullPath = storage_path('app/private/' . $filePath);
         $fileName = ucfirst($type) . '_Paten_' . $biodataPaten->id . '.pdf';
         
         return response()->download($fullPath, $fileName);

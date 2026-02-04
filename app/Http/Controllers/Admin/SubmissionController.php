@@ -128,13 +128,18 @@ class SubmissionController extends Controller
     // download file - force download instead of opening in browser
     public function download(Submission $submission)
     {
-        $filePath = storage_path('app/public/' . $submission->file_path);
+        $filePath = storage_path('app/private/' . $submission->file_path);
         
         if (!file_exists($filePath)) {
             abort(404, 'File tidak ditemukan.');
         }
 
-        return response()->download($filePath, $submission->file_name);
+        $downloadName = $submission->original_filename ?? $submission->file_name ?? 'document.pdf';
+
+        return response()->file($filePath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $downloadName . '"',
+        ]);
     }
 
     // destroy submission (only pending or rejected)

@@ -126,13 +126,18 @@ class PendampingPatenController extends Controller
             abort(403, 'Anda tidak memiliki akses ke file ini.');
         }
 
-        $filePath = storage_path('app/public/' . $submissionPaten->file_path);
+        $filePath = storage_path('app/private/' . $submissionPaten->file_path);
         
         if (!file_exists($filePath)) {
             return back()->with('error', 'File tidak ditemukan.');
         }
 
-        return response()->download($filePath, $submissionPaten->file_name);
+        $downloadName = $submissionPaten->original_filename ?? $submissionPaten->file_name ?? 'document.docx';
+
+        return response()->file($filePath, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'Content-Disposition' => 'inline; filename="' . $downloadName . '"',
+        ]);
     }
 
     /**
