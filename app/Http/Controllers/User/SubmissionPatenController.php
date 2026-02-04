@@ -353,8 +353,8 @@ class SubmissionPatenController extends Controller
             // Upload Deskripsi PDF
             if ($request->hasFile('deskripsi_pdf')) {
                 // Delete old file if exists
-                if ($biodataPaten->deskripsi_pdf && \Storage::disk('public')->exists($biodataPaten->deskripsi_pdf)) {
-                    \Storage::disk('public')->delete($biodataPaten->deskripsi_pdf);
+                if ($biodataPaten->deskripsi_pdf && Storage::disk('public')->exists($biodataPaten->deskripsi_pdf)) {
+                    Storage::disk('public')->delete($biodataPaten->deskripsi_pdf);
                 }
                 
                 $file = $request->file('deskripsi_pdf');
@@ -367,8 +367,8 @@ class SubmissionPatenController extends Controller
             // Upload Klaim PDF
             if ($request->hasFile('klaim_pdf')) {
                 // Delete old file if exists
-                if ($biodataPaten->klaim_pdf && \Storage::disk('public')->exists($biodataPaten->klaim_pdf)) {
-                    \Storage::disk('public')->delete($biodataPaten->klaim_pdf);
+                if ($biodataPaten->klaim_pdf && Storage::disk('public')->exists($biodataPaten->klaim_pdf)) {
+                    Storage::disk('public')->delete($biodataPaten->klaim_pdf);
                 }
                 
                 $file = $request->file('klaim_pdf');
@@ -381,8 +381,8 @@ class SubmissionPatenController extends Controller
             // Upload Abstrak PDF
             if ($request->hasFile('abstrak_pdf')) {
                 // Delete old file if exists
-                if ($biodataPaten->abstrak_pdf && \Storage::disk('public')->exists($biodataPaten->abstrak_pdf)) {
-                    \Storage::disk('public')->delete($biodataPaten->abstrak_pdf);
+                if ($biodataPaten->abstrak_pdf && Storage::disk('public')->exists($biodataPaten->abstrak_pdf)) {
+                    Storage::disk('public')->delete($biodataPaten->abstrak_pdf);
                 }
                 
                 $file = $request->file('abstrak_pdf');
@@ -395,8 +395,8 @@ class SubmissionPatenController extends Controller
             // Upload Gambar PDF (Optional)
             if ($request->hasFile('gambar_pdf')) {
                 // Delete old file if exists
-                if ($biodataPaten->gambar_pdf && \Storage::disk('public')->exists($biodataPaten->gambar_pdf)) {
-                    \Storage::disk('public')->delete($biodataPaten->gambar_pdf);
+                if ($biodataPaten->gambar_pdf && Storage::disk('public')->exists($biodataPaten->gambar_pdf)) {
+                    Storage::disk('public')->delete($biodataPaten->gambar_pdf);
                 }
                 
                 $file = $request->file('gambar_pdf');
@@ -452,7 +452,7 @@ class SubmissionPatenController extends Controller
         $fieldName = $type . '_pdf';
         $filePath = $biodataPaten->$fieldName;
         
-        if (!$filePath || !\Storage::disk('public')->exists($filePath)) {
+        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
             return back()->with('error', 'File tidak ditemukan');
         }
         

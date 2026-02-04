@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class BiodataPatenController extends Controller
@@ -313,14 +314,48 @@ class BiodataPatenController extends Controller
                 foreach ($allInventors as $index => $inventor) {
                     $num = $index + 1;
                     
-                    $alamatLengkap = collect([
-                        $inventor->alamat,
-                        $inventor->kelurahan,
-                        'Kec. ' . $inventor->kecamatan,
-                        $inventor->kota_kabupaten,
-                        $inventor->provinsi,
-                        $inventor->kode_pos
-                    ])->filter()->implode(', ');
+                    // Susun alamat lengkap dengan format singkat
+                    $alamatParts = [];
+                    
+                    if ($inventor->alamat) {
+                        $alamatParts[] = $inventor->alamat;
+                    }
+                    
+                    if ($inventor->kelurahan) {
+                        // Cek apakah "Desa" atau "Kelurahan"
+                        $kelurahan = $inventor->kelurahan;
+                        if (stripos($kelurahan, 'DESA') === 0) {
+                            // Jika Desa, tetap gunakan "Desa"
+                            $alamatParts[] = $kelurahan;
+                        } else {
+                            // Jika Kelurahan, singkat jadi "Kel."
+                            $kelurahan = preg_replace('/^KELURAHAN\s+/i', '', $kelurahan);
+                            $alamatParts[] = 'Kel. ' . $kelurahan;
+                        }
+                    }
+                    
+                    if ($inventor->kecamatan) {
+                        $alamatParts[] = 'Kec. ' . $inventor->kecamatan;
+                    }
+                    
+                    if ($inventor->kota_kabupaten) {
+                        // Singkat Kabupaten jadi Kab.
+                        $kotaKab = $inventor->kota_kabupaten;
+                        $kotaKab = preg_replace('/^KABUPATEN\s+/i', 'Kab. ', $kotaKab);
+                        $alamatParts[] = $kotaKab;
+                    }
+                    
+                    // Tidak sertakan kata "Provinsi", langsung nama provinsinya
+                    if ($inventor->provinsi) {
+                        $provinsi = preg_replace('/^PROVINSI\s+/i', '', $inventor->provinsi);
+                        $alamatParts[] = $provinsi;
+                    }
+                    
+                    if ($inventor->kode_pos) {
+                        $alamatParts[] = $inventor->kode_pos;
+                    }
+                    
+                    $alamatLengkap = implode(', ', $alamatParts);
                     
                     // Set with numbering
                     $templateProcessor->setValue("inventor_no#$num", $num . ')');
@@ -490,19 +525,17 @@ class BiodataPatenController extends Controller
                     }
                     
                     if ($inventor->kelurahan) {
-                        // Format kelurahan/desa dengan prefix yang jelas
+                        // Format kelurahan/desa dengan singkatan
                         $kelurahan = $inventor->kelurahan;
                         
-                        // Cek apakah sudah ada prefix KELURAHAN atau DESA di awal nama
-                        if (stripos($kelurahan, 'KELURAHAN') === 0) {
-                            // Jika sudah ada prefix KELURAHAN, gunakan langsung
-                            $alamatParts[] = $kelurahan;
-                        } elseif (stripos($kelurahan, 'DESA') === 0) {
-                            // Jika sudah ada prefix DESA, gunakan langsung
+                        // Cek apakah "Desa" atau "Kelurahan"
+                        if (stripos($kelurahan, 'DESA') === 0) {
+                            // Jika Desa, tetap gunakan "Desa"
                             $alamatParts[] = $kelurahan;
                         } else {
-                            // Jika tidak ada prefix, tambahkan 'Kelurahan' sebagai default
-                            $alamatParts[] = 'Kelurahan ' . $kelurahan;
+                            // Jika Kelurahan, singkat jadi "Kel."
+                            $kelurahan = preg_replace('/^KELURAHAN\\s+/i', '', $kelurahan);
+                            $alamatParts[] = 'Kel. ' . $kelurahan;
                         }
                     }
                     
@@ -511,11 +544,16 @@ class BiodataPatenController extends Controller
                     }
                     
                     if ($inventor->kota_kabupaten) {
-                        $alamatParts[] = $inventor->kota_kabupaten;
+                        // Singkat Kabupaten jadi Kab.
+                        $kotaKab = $inventor->kota_kabupaten;
+                        $kotaKab = preg_replace('/^KABUPATEN\\s+/i', 'Kab. ', $kotaKab);
+                        $alamatParts[] = $kotaKab;
                     }
                     
+                    // Tidak sertakan kata "Provinsi", langsung nama provinsinya
                     if ($inventor->provinsi) {
-                        $alamatParts[] = 'Provinsi ' . $inventor->provinsi;
+                        $provinsi = preg_replace('/^PROVINSI\\s+/i', '', $inventor->provinsi);
+                        $alamatParts[] = $provinsi;
                     }
                     
                     $alamatLengkap = implode(', ', $alamatParts);
@@ -911,8 +949,8 @@ class BiodataPatenController extends Controller
             // Upload Deskripsi PDF
             if ($request->hasFile('deskripsi_pdf')) {
                 // Delete old file if exists
-                if ($biodataPaten->deskripsi_pdf && \Storage::disk('public')->exists($biodataPaten->deskripsi_pdf)) {
-                    \Storage::disk('public')->delete($biodataPaten->deskripsi_pdf);
+                if ($biodataPaten->deskripsi_pdf && Storage::disk('public')->exists($biodataPaten->deskripsi_pdf)) {
+                    Storage::disk('public')->delete($biodataPaten->deskripsi_pdf);
                 }
                 
                 $file = $request->file('deskripsi_pdf');
@@ -925,8 +963,8 @@ class BiodataPatenController extends Controller
             // Upload Klaim PDF
             if ($request->hasFile('klaim_pdf')) {
                 // Delete old file if exists
-                if ($biodataPaten->klaim_pdf && \Storage::disk('public')->exists($biodataPaten->klaim_pdf)) {
-                    \Storage::disk('public')->delete($biodataPaten->klaim_pdf);
+                if ($biodataPaten->klaim_pdf && Storage::disk('public')->exists($biodataPaten->klaim_pdf)) {
+                    Storage::disk('public')->delete($biodataPaten->klaim_pdf);
                 }
                 
                 $file = $request->file('klaim_pdf');
@@ -939,8 +977,8 @@ class BiodataPatenController extends Controller
             // Upload Abstrak PDF
             if ($request->hasFile('abstrak_pdf')) {
                 // Delete old file if exists
-                if ($biodataPaten->abstrak_pdf && \Storage::disk('public')->exists($biodataPaten->abstrak_pdf)) {
-                    \Storage::disk('public')->delete($biodataPaten->abstrak_pdf);
+                if ($biodataPaten->abstrak_pdf && Storage::disk('public')->exists($biodataPaten->abstrak_pdf)) {
+                    Storage::disk('public')->delete($biodataPaten->abstrak_pdf);
                 }
                 
                 $file = $request->file('abstrak_pdf');
@@ -953,8 +991,8 @@ class BiodataPatenController extends Controller
             // Upload Gambar PDF (Optional)
             if ($request->hasFile('gambar_pdf')) {
                 // Delete old file if exists
-                if ($biodataPaten->gambar_pdf && \Storage::disk('public')->exists($biodataPaten->gambar_pdf)) {
-                    \Storage::disk('public')->delete($biodataPaten->gambar_pdf);
+                if ($biodataPaten->gambar_pdf && Storage::disk('public')->exists($biodataPaten->gambar_pdf)) {
+                    Storage::disk('public')->delete($biodataPaten->gambar_pdf);
                 }
                 
                 $file = $request->file('gambar_pdf');
@@ -1003,7 +1041,7 @@ class BiodataPatenController extends Controller
         $fieldName = $type . '_pdf';
         $filePath = $biodataPaten->$fieldName;
         
-        if (!$filePath || !\Storage::disk('public')->exists($filePath)) {
+        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
             return back()->with('error', 'File tidak ditemukan');
         }
         
