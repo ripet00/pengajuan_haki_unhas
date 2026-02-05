@@ -140,10 +140,10 @@ use Illuminate\Support\Facades\Storage;
                     
                     // Calculate progress percentage for 7 steps (0%, 16.67%, 33.33%, 50%, 66.67%, 83.33%, 100%)
                     $progressWidth = '16.67%'; // Default: Upload done
-                    if ($patentDocsUploaded) {
-                        $progressWidth = '100%'; // Step 7: Dokumen paten PDF uploaded
-                    } elseif ($documentIssued) {
-                        $progressWidth = '83.33%'; // Step 6: Dokumen permohonan terbit
+                    if ($documentIssued) {
+                        $progressWidth = '100%'; // Step 7: Dokumen permohonan terbit (TERAKHIR)
+                    } elseif ($patentDocsUploaded) {
+                        $progressWidth = '83.33%'; // Step 6: Dokumen paten PDF uploaded (3 wajib)
                     } elseif ($docSubmitted) {
                         $progressWidth = '66.67%'; // Step 5: Berkas disetor
                     } elseif ($bStatus == 'approved') {
@@ -265,46 +265,52 @@ use Illuminate\Support\Facades\Storage;
                     </span>
                 </div>
 
-                <!-- Step 6: Dokumen Permohonan Terbit -->
+                <!-- Step 6: Upload Dokumen Paten (PDF) - SEKARANG SEBELUM DOKUMEN TERBIT -->
                 <div class="relative z-10 flex flex-col items-center">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $documentIssued ? 'bg-green-500 border-green-500' : 'bg-gray-200 border-gray-300' }}">
-                        <i class="fas fa-file-pdf {{ $documentIssued ? 'text-white' : 'text-gray-400' }}"></i>
-                    </div>
-                    <span class="mt-2 text-xs text-center font-medium {{ $documentIssued ? 'text-green-600' : 'text-gray-400' }}">
-                        Dokumen<br>Terbit
-                    </span>
-                </div>
-
-                <!-- Step 7: Upload Dokumen Paten (PDF) -->
-                <div class="relative z-10 flex flex-col items-center">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $patentDocsUploaded ? 'bg-green-500 border-green-500' : ($documentIssued ? 'bg-purple-500 border-purple-500' : 'bg-gray-200 border-gray-300') }}">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $patentDocsUploaded ? 'bg-green-500 border-green-500' : ($docSubmitted ? 'bg-blue-500 border-blue-500' : 'bg-gray-200 border-gray-300') }}">
                         @if($patentDocsUploaded)
                             <i class="fas fa-check text-white"></i>
-                        @elseif($documentIssued)
+                        @elseif($docSubmitted)
                             <i class="fas fa-cloud-upload-alt text-white"></i>
                         @else
                             <i class="fas fa-cloud-upload-alt text-gray-400"></i>
                         @endif
                     </div>
-                    <span class="mt-2 text-xs text-center font-medium {{ $patentDocsUploaded ? 'text-green-600' : ($documentIssued ? 'text-purple-600' : 'text-gray-400') }}">
+                    <span class="mt-2 text-xs text-center font-medium {{ $patentDocsUploaded ? 'text-green-600' : ($docSubmitted ? 'text-blue-600' : 'text-gray-400') }}">
                         Upload<br>Dok. Paten
+                    </span>
+                </div>
+
+                <!-- Step 7: Dokumen Permohonan Terbit - SEKARANG TERAKHIR -->
+                <div class="relative z-10 flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center border-4 {{ $documentIssued ? 'bg-green-500 border-green-500' : ($patentDocsUploaded ? 'bg-purple-500 border-purple-500' : 'bg-gray-200 border-gray-300') }}">
+                        @if($documentIssued)
+                            <i class="fas fa-check text-white"></i>
+                        @elseif($patentDocsUploaded)
+                            <i class="fas fa-file-pdf text-white"></i>
+                        @else
+                            <i class="fas fa-file-pdf text-gray-400"></i>
+                        @endif
+                    </div>
+                    <span class="mt-2 text-xs text-center font-medium {{ $documentIssued ? 'text-green-600' : ($patentDocsUploaded ? 'text-purple-600' : 'text-gray-400') }}">
+                        Dokumen<br>Terbit
                     </span>
                 </div>
             </div>
 
             <!-- Progress Description -->
             <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-                @if($patentDocsUploaded)
+                @if($documentIssued)
                     <p class="text-sm text-green-700 font-medium">
-                        <i class="fas fa-check-double mr-2"></i>Semua tahapan selesai! Dokumen paten PDF (Deskripsi, Klaim, Abstrak) telah diupload.
+                        <i class="fas fa-check-double mr-2"></i>Semua tahapan selesai! Dokumen permohonan paten sudah terbit.
                     </p>
-                @elseif($documentIssued)
+                @elseif($patentDocsUploaded)
                     <p class="text-sm text-purple-700 font-medium">
-                        <i class="fas fa-arrow-right mr-2"></i>Dokumen permohonan sudah terbit. Silakan upload dokumen paten (PDF) untuk menyelesaikan proses.
+                        <i class="fas fa-clock mr-2"></i>Dokumen paten (Deskripsi, Klaim, Abstrak) sudah diupload. Menunggu admin menerbitkan dokumen permohonan paten.
                     </p>
                 @elseif($docSubmitted)
                     <p class="text-sm text-blue-700 font-medium">
-                        <i class="fas fa-clock mr-2"></i>Berkas sudah disetor. Menunggu dokumen permohonan paten terbit.
+                        <i class="fas fa-arrow-right mr-2"></i>Berkas sudah disetor. Silakan upload 3 dokumen paten wajib (Deskripsi, Klaim, Abstrak) untuk melanjutkan proses.
                     </p>
                 @elseif($bStatus == 'approved')
                     <p class="text-sm text-blue-700 font-medium">
@@ -764,30 +770,10 @@ use Illuminate\Support\Facades\Storage;
                                 {{-- Show different messages based on biodata status --}}
                                 @if($biodataPaten->status == 'approved')
                                     {{-- Biodata approved - check document submission status --}}
-                                    @if($biodataPaten->application_document)
-                                        {{-- Document issued - show upload patent documents section --}}
-                                        <div class="bg-green-50 border-2 border-green-300 rounded-lg p-4 mb-6">
-                                            <div class="flex items-start">
-                                                <div class="flex-shrink-0">
-                                                    <i class="fas fa-file-pdf text-3xl text-green-600"></i>
-                                                </div>
-                                                <div class="ml-4 flex-1">
-                                                    <h5 class="font-semibold text-green-800 mb-2">
-                                                        <i class="fas fa-check-double mr-1"></i>Dokumen Permohonan Paten Sudah Terbit
-                                                    </h5>
-                                                    <p class="text-sm text-green-700 mb-3">
-                                                        Selamat! Dokumen permohonan paten Anda sudah terbit pada <strong>{{ $biodataPaten->document_issued_at->translatedFormat('d F Y, H:i') }} WITA</strong>.
-                                                    </p>
-                                                    <a href="{{ Storage::url($biodataPaten->application_document) }}" 
-                                                       target="_blank"
-                                                       class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 shadow-sm hover:shadow-md">
-                                                        <i class="fas fa-download mr-2"></i>Download Dokumen Permohonan (PDF)
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {{-- TAHAP TERAKHIR: Upload Dokumen Paten (Deskripsi, Klaim, Abstrak, Gambar) --}}
+                                    @if($biodataPaten->document_submitted)
+                                        {{-- Document submitted - show upload patent documents section FIRST --}}
+                                        
+                                        {{-- TAHAP PERTAMA: Upload Dokumen Paten (Deskripsi, Klaim, Abstrak, Gambar) --}}
                                         <div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-6">
                                             <div class="flex items-center mb-4">
                                                 <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mr-4">
@@ -795,10 +781,10 @@ use Illuminate\Support\Facades\Storage;
                                                 </div>
                                                 <div>
                                                     <h4 class="text-lg font-bold text-purple-900">
-                                                        Tahap Terakhir: Upload Dokumen Paten
+                                                        Tahap Pertama: Upload Dokumen Paten
                                                     </h4>
                                                     <p class="text-sm text-purple-700">
-                                                        Upload 4 file PDF: Deskripsi, Klaim, Abstrak, dan Gambar (opsional)
+                                                        Upload 4 file PDF: Deskripsi, Klaim, Abstrak (wajib), dan Gambar (opsional)
                                                     </p>
                                                 </div>
                                             </div>
@@ -983,38 +969,57 @@ use Illuminate\Support\Facades\Storage;
                                             </div>
                                             @endif
                                         </div>
-                                    @elseif($biodataPaten->document_submitted)
-                                        {{-- Document submitted, waiting for document issued --}}
-                                        <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
-                                            <div class="flex items-start">
-                                                <div class="flex-shrink-0">
-                                                    <i class="fas fa-hourglass-half text-2xl text-blue-600"></i>
-                                                </div>
-                                                <div class="ml-4">
-                                                    <h5 class="font-semibold text-blue-800 mb-3">
-                                                        <i class="fas fa-check-circle mr-1"></i>Terima Kasih Telah Mengumpulkan Berkas HKI
-                                                    </h5>
-                                                    <p class="text-sm text-blue-700 mb-3">
-                                                        Berkas HKI Anda telah diterima pada <strong>{{ $biodataPaten->document_submitted_at->translatedFormat('d F Y') }}</strong>.
-                                                    </p>
-                                                    
-                                                    <div class="bg-blue-100 border border-blue-200 rounded-lg p-3 mb-3">
-                                                        <p class="text-sm text-blue-800 font-medium mb-2">
-                                                            <i class="fas fa-info-circle mr-1"></i>Informasi Penting:
-                                                        </p>
-                                                        <ul class="text-sm text-blue-700 space-y-2 ml-5 list-disc">
-                                                            <li>Menunggu <strong>dokumen permohonan paten terbit</strong> dari admin</li>
-                                                            <li>Admin akan menghubungi <strong>inventor pertama</strong> lewat <strong>WhatsApp</strong></li>
-                                                        </ul>
+
+                                        {{-- TAHAP TERAKHIR: Dokumen Permohonan Paten Terbit (after 3 required docs uploaded) --}}
+                                        @if($biodataPaten->application_document)
+                                            <div class="bg-green-50 border-2 border-green-300 rounded-lg p-4 mt-6">
+                                                <div class="flex items-start">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="fas fa-file-pdf text-3xl text-green-600"></i>
                                                     </div>
-                                                    
-                                                    <p class="text-sm text-blue-600 italic">
-                                                        <i class="fas fa-mouse-pointer mr-1"></i>
-                                                        Klik <strong>"Lihat Detail"</strong> untuk informasi lebih lanjut.
-                                                    </p>
+                                                    <div class="ml-4 flex-1">
+                                                        <h5 class="font-semibold text-green-800 mb-2">
+                                                            <i class="fas fa-check-double mr-1"></i>Dokumen Permohonan Paten Sudah Terbit
+                                                        </h5>
+                                                        <p class="text-sm text-green-700 mb-3">
+                                                            Selamat! Dokumen permohonan paten Anda sudah terbit pada <strong>{{ $biodataPaten->document_issued_at->translatedFormat('d F Y, H:i') }} WITA</strong>.
+                                                        </p>
+                                                        <a href="{{ Storage::url($biodataPaten->application_document) }}" 
+                                                           target="_blank"
+                                                           class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 shadow-sm hover:shadow-md">
+                                                            <i class="fas fa-download mr-2"></i>Download Dokumen Permohonan (PDF)
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        @elseif($biodataPaten->deskripsi_pdf && $biodataPaten->klaim_pdf && $biodataPaten->abstrak_pdf)
+                                            {{-- 3 required docs uploaded, waiting for admin to issue document --}}
+                                            <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mt-6">
+                                                <div class="flex items-start">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="fas fa-hourglass-half text-2xl text-blue-600"></i>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <h5 class="font-semibold text-blue-800 mb-3">
+                                                            <i class="fas fa-check-circle mr-1"></i>Menunggu Dokumen Permohonan Terbit
+                                                        </h5>
+                                                        <p class="text-sm text-blue-700 mb-3">
+                                                            Anda telah mengupload 3 dokumen paten wajib (Deskripsi, Klaim, Abstrak).
+                                                        </p>
+                                                        <div class="bg-blue-100 border border-blue-200 rounded-lg p-3">
+                                                            <p class="text-sm text-blue-800 font-medium mb-2">
+                                                                <i class="fas fa-info-circle mr-1"></i>Langkah Selanjutnya:
+                                                            </p>
+                                                            <ul class="text-sm text-blue-700 space-y-1 ml-5 list-disc">
+                                                                <li>Admin akan mereview dokumen paten Anda</li>
+                                                                <li>Admin akan menerbitkan <strong>dokumen permohonan paten</strong></li>
+                                                                <li>Anda akan dihubungi melalui WhatsApp jika sudah terbit</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     @else
                                         {{-- Biodata approved but document not submitted yet --}}
                                         <div class="bg-orange-50 border-2 border-orange-300 rounded-lg p-4">

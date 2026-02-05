@@ -411,23 +411,43 @@
                                                                 $certDeadline = $biodataPaten->getSigningDeadline();
                                                                 $certDays = $biodataPaten->getDaysUntilSigningDeadline();
                                                                 $isCertOverdue = $biodataPaten->isSigningOverdue();
+                                                                // Check if 3 required patent documents are uploaded
+                                                                $hasRequiredDocs = $biodataPaten->deskripsi_pdf && $biodataPaten->klaim_pdf && $biodataPaten->abstrak_pdf;
                                                             @endphp
                                                             
-                                                            @if($isCertOverdue)
-                                                                <div class="bg-orange-100 border border-orange-300 rounded p-2 mb-2">
-                                                                    <p class="text-xs font-semibold text-orange-900">
+                                                            @if(!$hasRequiredDocs)
+                                                                {{-- Show warning: User must upload 3 required patent documents first --}}
+                                                                <div class="bg-yellow-50 border-2 border-yellow-400 rounded p-2 mb-2">
+                                                                    <p class="text-xs font-semibold text-yellow-900 mb-1">
                                                                         <i class="fas fa-exclamation-triangle mr-1"></i>
-                                                                        TERLAMBAT {{ abs($certDays) }} hari!
+                                                                        User Harus Upload Dokumen Paten Dulu
+                                                                    </p>
+                                                                    <p class="text-xs text-yellow-800">
+                                                                        3 dokumen wajib: Deskripsi, Klaim, Abstrak
                                                                     </p>
                                                                 </div>
+                                                                <button type="button" 
+                                                                        disabled
+                                                                        class="w-full bg-gray-400 text-white text-xs font-semibold py-2 px-3 rounded cursor-not-allowed">
+                                                                    <i class="fas fa-lock mr-1"></i>Menunggu Upload User
+                                                                </button>
                                                             @else
-                                                                <div class="bg-blue-50 border border-blue-200 rounded p-2 mb-2">
-                                                                    <p class="text-xs text-blue-800">
-                                                                        <i class="fas fa-hourglass-half mr-1"></i>
-                                                                        Sisa {{ $certDays }} hari
-                                                                    </p>
-                                                                </div>
-                                                            @endif
+                                                                {{-- User has uploaded 3 required docs, admin can now upload application document --}}
+                                                                @if($isCertOverdue)
+                                                                    <div class="bg-orange-100 border border-orange-300 rounded p-2 mb-2">
+                                                                        <p class="text-xs font-semibold text-orange-900">
+                                                                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                                                                            TERLAMBAT {{ abs($certDays) }} hari!
+                                                                        </p>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="bg-blue-50 border border-blue-200 rounded p-2 mb-2">
+                                                                        <p class="text-xs text-blue-800">
+                                                                            <i class="fas fa-hourglass-half mr-1"></i>
+                                                                            Sisa {{ $certDays }} hari
+                                                                        </p>
+                                                                    </div>
+                                                                @endif
 
                                                             <form method="POST" 
                                                                   action="{{ route('admin.reports-paten.upload-application-document', $biodataPaten) }}"
@@ -452,6 +472,7 @@
                                                                 </div>
                                                                 <small class="text-gray-500 text-xs mt-1 block">PDF, Max 20MB</small>
                                                             </form>
+                                                            @endif
                                                             
                                                             <script>
                                                                 function validateFile{{ $biodataPaten->id }}(input) {
@@ -597,8 +618,8 @@
                                                                     @endif
                                                                 @else
                                                                     <p class="text-xs text-gray-500 text-center py-2">
-                                                                        <i class="fas fa-hourglass-half mr-1"></i>
-                                                                        User belum upload dokumen PDF
+                                                                        <i class="fas fa-info-circle mr-1"></i>
+                                                                        User belum mengupload dokumen paten
                                                                     </p>
                                                                 @endif
                                                             </div>

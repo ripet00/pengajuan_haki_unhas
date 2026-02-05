@@ -176,6 +176,11 @@ class ReportPatenController extends Controller
             return back()->with('error', 'Berkas harus disetor terlebih dahulu sebelum dapat mengunggah dokumen permohonan.');
         }
 
+        // NEW: Check if 3 required patent documents are uploaded first
+        if (!$biodataPaten->deskripsi_pdf || !$biodataPaten->klaim_pdf || !$biodataPaten->abstrak_pdf) {
+            return back()->with('error', 'User harus mengupload 3 dokumen paten wajib terlebih dahulu (Deskripsi, Klaim, Abstrak) sebelum dokumen permohonan dapat diterbitkan.');
+        }
+
         if ($biodataPaten->application_document) {
             return back()->with('error', 'Dokumen permohonan sudah diunggah sebelumnya.');
         }
