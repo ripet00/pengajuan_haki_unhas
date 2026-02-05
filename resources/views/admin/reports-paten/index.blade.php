@@ -349,9 +349,31 @@
                                                                 <i class="fas fa-check-circle mr-1"></i>
                                                                 <span class="text-xs font-medium">Sudah Disetor</span>
                                                             </div>
-                                                            <p class="text-xs text-gray-600">
+                                                            <p class="text-xs text-gray-600 mb-3">
                                                                 {{ $biodataPaten->document_submitted_at->diffForHumans() }}
                                                             </p>
+
+                                                            {{-- Cancel Button - Only if patent docs not uploaded yet AND application doc not issued --}}
+                                                            @php
+                                                                $hasPatentDocs = $biodataPaten->deskripsi_pdf || $biodataPaten->klaim_pdf || $biodataPaten->abstrak_pdf || $biodataPaten->gambar_pdf;
+                                                                $canCancel = !$hasPatentDocs && !$biodataPaten->application_document;
+                                                            @endphp
+                                                            
+                                                            @if($canCancel)
+                                                                <form method="POST" action="{{ route('admin.biodata-paten.cancel-document-submitted', $biodataPaten) }}" 
+                                                                      onsubmit="return confirm('⚠️ PERHATIAN!\n\nApakah Anda yakin ingin membatalkan status \'Berkas Disetor\'?\n\nTindakan ini akan:\n✓ Menghapus tandai berkas disetor\n✓ Mengembalikan status ke tahap sebelumnya\n\nLanjutkan?')">
+                                                                    @csrf
+                                                                    <button type="submit" 
+                                                                            class="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-semibold py-2 px-3 rounded transition duration-200">
+                                                                        <i class="fas fa-times-circle mr-1"></i>Batalkan Setor Berkas
+                                                                    </button>
+                                                                </form>
+                                                            @else
+                                                                <p class="text-xs text-gray-500 italic mt-2">
+                                                                    <i class="fas fa-info-circle mr-1"></i>
+                                                                    Tidak dapat dibatalkan (dokumen sudah diupload/terbit)
+                                                                </p>
+                                                            @endif
                                                         @else
                                                             @php
                                                                 $deadline = $biodataPaten->getDocumentDeadline();

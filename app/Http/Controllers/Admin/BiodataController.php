@@ -251,6 +251,36 @@ class BiodataController extends Controller
     }
 
     /**
+     * Cancel document submitted (only if certificate not yet issued)
+     */
+    public function cancelDocumentSubmitted(Biodata $biodata)
+    {
+        $admin = $this->getCurrentAdmin();
+        
+        if (!$admin) {
+            return back()->with('error', 'Admin session tidak valid.');
+        }
+
+        // Check if document was submitted
+        if (!$biodata->document_submitted) {
+            return back()->with('error', 'Berkas belum pernah ditandai sebagai disetor.');
+        }
+
+        // CRITICAL: Can only cancel if certificate NOT YET ISSUED (tahap selanjutnya belum selesai)
+        if ($biodata->certificate_issued) {
+            return back()->with('error', 'Tidak dapat membatalkan karena sertifikat sudah terbit. Tahap selanjutnya sudah selesai.');
+        }
+
+        // Reset document submission
+        $biodata->update([
+            'document_submitted' => false,
+            'document_submitted_at' => null,
+        ]);
+
+        return back()->with('success', 'Status "Berkas Disetor" berhasil dibatalkan. Biodata kembali ke tahap sebelumnya.');
+    }
+
+    /**
      * Mark biodata certificate as issued
      */
     public function markCertificateIssued(Biodata $biodata)

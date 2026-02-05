@@ -240,6 +240,46 @@ class BiodataPatenController extends Controller
     }
 
     /**
+     * Cancel document submitted (only if patent documents not uploaded AND application document not issued)
+     */
+    public function cancelDocumentSubmitted(BiodataPaten $biodataPaten)
+    {
+        $admin = $this->getCurrentAdmin();
+        
+        if (!$admin) {
+            return back()->with('error', 'Admin session tidak valid.');
+        }
+
+        // Check if document was submitted
+        if (!$biodataPaten->document_submitted) {
+            return back()->with('error', 'Berkas belum pernah ditandai sebagai disetor.');
+        }
+
+        // CRITICAL: Can only cancel if:
+        // 1. Patent documents (3 required) NOT YET UPLOADED, OR
+        // 2. Application document NOT YET ISSUED
+        // (tahap selanjutnya belum selesai)
+        
+        $hasPatentDocs = $biodataPaten->deskripsi_pdf || $biodataPaten->klaim_pdf || $biodataPaten->abstrak_pdf || $biodataPaten->gambar_pdf;
+        
+        if ($hasPatentDocs) {
+            return back()->with('error', 'Tidak dapat membatalkan karena user sudah mengupload dokumen paten. Tahap selanjutnya sudah dimulai.');
+        }
+        
+        if ($biodataPaten->application_document) {
+            return back()->with('error', 'Tidak dapat membatalkan karena dokumen permohonan paten sudah terbit. Tahap selanjutnya sudah selesai.');
+        }
+
+        // Reset document submission
+        $biodataPaten->update([
+            'document_submitted' => false,
+            'document_submitted_at' => null,
+        ]);
+
+        return back()->with('success', 'Status "Berkas Disetor" berhasil dibatalkan. Biodata kembali ke tahap sebelumnya.');
+    }
+
+    /**
      * Mark biodata paten document as ready for signing by leadership
      */
     public function markReadyForSigning(BiodataPaten $biodataPaten)

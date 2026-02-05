@@ -620,6 +620,27 @@
                                             {{ $biodataPaten->document_submitted_at->diffForHumans() }}
                                         </p>
                                     </div>
+                                    
+                                    {{-- Cancel Document Submitted Button (only if patent docs not uploaded AND application document not issued) --}}
+                                    @php
+                                        $hasAnyPatentDoc = $biodataPaten->deskripsi_pdf || $biodataPaten->klaim_pdf || $biodataPaten->abstrak_pdf || $biodataPaten->gambar_pdf;
+                                        $canCancel = !$hasAnyPatentDoc && !$biodataPaten->application_document;
+                                    @endphp
+                                    
+                                    @if($canCancel)
+                                        <form method="POST" action="{{ route('admin.biodata-paten.cancel-document-submitted', $biodataPaten) }}" class="mt-3">
+                                            @csrf
+                                            <button type="submit" 
+                                                    onclick="return confirm('⚠️ PERINGATAN!\n\nApakah Anda yakin ingin MEMBATALKAN status \'Berkas Disetor\'?\n\nBiodata akan kembali ke tahap sebelumnya.\n\nLanjutkan pembatalan?')"
+                                                    class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 text-sm">
+                                                <i class="fas fa-times-circle mr-2"></i>Batalkan "Berkas Disetor"
+                                            </button>
+                                        </form>
+                                        <p class="text-xs text-gray-600 mt-2 text-center">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Gunakan jika admin salah klik. Hanya bisa dibatalkan jika dokumen paten belum diupload dan dokumen permohonan belum terbit.
+                                        </p>
+                                    @endif
                                 @else
                                     @php
                                         $deadline = $biodataPaten->getDocumentDeadline();

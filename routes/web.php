@@ -164,6 +164,7 @@ Route::prefix('admin')->group(function () {
             Route::post('biodata/{biodata}/review', [\App\Http\Controllers\Admin\BiodataController::class, 'review'])->name('admin.biodata.review');
             Route::post('biodata/{biodata}/update-errors', [\App\Http\Controllers\Admin\BiodataController::class, 'updateErrorFlags'])->name('admin.biodata.update-errors');
             Route::post('biodata/{biodata}/mark-document-submitted', [\App\Http\Controllers\Admin\BiodataController::class, 'markDocumentSubmitted'])->name('admin.biodata.mark-document-submitted');
+            Route::post('biodata/{biodata}/cancel-document-submitted', [\App\Http\Controllers\Admin\BiodataController::class, 'cancelDocumentSubmitted'])->name('admin.biodata.cancel-document-submitted');
             Route::post('biodata/{biodata}/mark-certificate-issued', [\App\Http\Controllers\Admin\BiodataController::class, 'markCertificateIssued'])->name('admin.biodata.mark-certificate-issued');
             
             // Admin reports routes
@@ -204,6 +205,7 @@ Route::prefix('admin')->group(function () {
             Route::post('biodata-paten/{biodataPaten}/review', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'review'])->name('admin.biodata-paten.review');
             Route::post('biodata-paten/{biodataPaten}/update-errors', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'updateErrorFlags'])->name('admin.biodata-paten.update-errors');
             Route::post('biodata-paten/{biodataPaten}/mark-document-submitted', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'markDocumentSubmitted'])->name('admin.biodata-paten.mark-document-submitted');
+            Route::post('biodata-paten/{biodataPaten}/cancel-document-submitted', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'cancelDocumentSubmitted'])->name('admin.biodata-paten.cancel-document-submitted');
             Route::post('biodata-paten/{biodataPaten}/mark-certificate-issued', [\App\Http\Controllers\Admin\BiodataPatenController::class, 'markCertificateIssued'])->name('admin.biodata-paten.mark-certificate-issued');
             
             // Admin reports paten routes
