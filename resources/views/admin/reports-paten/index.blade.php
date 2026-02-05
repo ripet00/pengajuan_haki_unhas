@@ -423,7 +423,7 @@
                                                             <p class="text-xs text-gray-600 mb-2">
                                                                 {{ $biodataPaten->document_issued_at->diffForHumans() }}
                                                             </p>
-                                                            <a href="{{ Storage::url($biodataPaten->application_document) }}" 
+                                                            <a href="{{ route('files.application-document.download', $biodataPaten->id) }}" 
                                                                target="_blank"
                                                                class="block text-center w-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold py-2 px-3 rounded transition duration-200">
                                                                 <i class="fas fa-download mr-1"></i>Lihat Dokumen
