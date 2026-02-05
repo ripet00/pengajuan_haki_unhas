@@ -481,6 +481,7 @@ class SubmissionPatenController extends Controller
             return back()->with('error', 'File tidak ditemukan');
         }
         
+        // Use private storage (local disk) - FileUploadHelper stores in storage/app/private/
         $fullPath = storage_path('app/private/' . $filePath);
         $fileName = ucfirst($type) . '_Paten_' . $biodataPaten->id . '.pdf';
         

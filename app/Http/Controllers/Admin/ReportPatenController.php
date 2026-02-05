@@ -248,11 +248,12 @@ class ReportPatenController extends Controller
         $fieldName = $type . '_pdf';
         $filePath = $biodataPaten->$fieldName;
 
-        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
+        // Use private storage (local disk) - sesuai security update
+        if (!$filePath || !Storage::disk('local')->exists($filePath)) {
             return back()->with('error', 'File tidak ditemukan');
         }
 
-        $fullPath = storage_path('app/public/' . $filePath);
+        $fullPath = storage_path('app/private/' . $filePath);
         $fileName = ucfirst($type) . '_Paten_' . $biodataPaten->id . '.pdf';
 
         return response()->download($fullPath, $fileName);
@@ -278,11 +279,12 @@ class ReportPatenController extends Controller
         $fieldName = $type . '_pdf';
         $filePath = $biodataPaten->$fieldName;
 
-        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
+        // Use private storage (local disk) - sesuai security update
+        if (!$filePath || !Storage::disk('local')->exists($filePath)) {
             abort(404, 'File tidak ditemukan');
         }
 
-        $fullPath = storage_path('app/public/' . $filePath);
+        $fullPath = storage_path('app/private/' . $filePath);
         $fileName = ucfirst($type) . '_Paten_' . $biodataPaten->id . '.pdf';
 
         return response()->file($fullPath, [
