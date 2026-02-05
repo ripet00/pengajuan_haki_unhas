@@ -709,14 +709,59 @@
                                         </div>
                                     </div>
                                 @else
-                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
-                                        <p class="text-sm text-blue-800">
-                                            <i class="fas fa-info-circle mr-1"></i>
-                                            Upload dokumen permohonan paten yang sudah ditandatangani pimpinan (PDF, Max 20MB)
-                                        </p>
-                                    </div>
+                                    {{-- Check if 3 required patent documents are uploaded first --}}
+                                    @php
+                                        $hasRequiredPatentDocs = $biodataPaten->deskripsi_pdf && $biodataPaten->klaim_pdf && $biodataPaten->abstrak_pdf;
+                                    @endphp
+                                    
+                                    @if(!$hasRequiredPatentDocs)
+                                        {{-- User hasn't uploaded 3 required patent documents yet --}}
+                                        <div class="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-3">
+                                            <div class="flex items-start">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-exclamation-triangle text-2xl text-yellow-600"></i>
+                                                </div>
+                                                <div class="ml-3">
+                                                    <h5 class="text-sm font-semibold text-yellow-900 mb-2">
+                                                        <i class="fas fa-lock mr-1"></i>User Harus Upload Dokumen Paten Terlebih Dahulu
+                                                    </h5>
+                                                    <p class="text-sm text-yellow-800 mb-3">
+                                                        Dokumen permohonan paten hanya dapat diupload setelah user mengupload 3 dokumen paten wajib:
+                                                    </p>
+                                                    <ul class="text-sm text-yellow-800 space-y-1 ml-5 list-disc">
+                                                        <li class="{{ $biodataPaten->deskripsi_pdf ? 'text-green-700 font-semibold' : '' }}">
+                                                            {{ $biodataPaten->deskripsi_pdf ? '✓' : '✗' }} Deskripsi (PDF)
+                                                        </li>
+                                                        <li class="{{ $biodataPaten->klaim_pdf ? 'text-green-700 font-semibold' : '' }}">
+                                                            {{ $biodataPaten->klaim_pdf ? '✓' : '✗' }} Klaim (PDF)
+                                                        </li>
+                                                        <li class="{{ $biodataPaten->abstrak_pdf ? 'text-green-700 font-semibold' : '' }}">
+                                                            {{ $biodataPaten->abstrak_pdf ? '✓' : '✗' }} Abstrak (PDF)
+                                                        </li>
+                                                    </ul>
+                                                    <p class="text-xs text-yellow-700 mt-3">
+                                                        <i class="fas fa-info-circle mr-1"></i>
+                                                        Hubungi user untuk segera mengupload dokumen paten yang kurang.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="button" 
+                                                disabled
+                                                class="w-full bg-gray-400 text-white text-sm font-semibold py-3 px-4 rounded-lg cursor-not-allowed">
+                                            <i class="fas fa-lock mr-2"></i>Menunggu User Upload 3 Dokumen Paten Wajib
+                                        </button>
+                                    @else
+                                        {{-- User has uploaded 3 required docs, admin can now upload application document --}}
+                                        <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
+                                            <p class="text-sm text-green-800">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                User telah mengupload 3 dokumen paten wajib. Silakan upload dokumen permohonan paten yang sudah ditandatangani pimpinan (PDF, Max 20MB)
+                                            </p>
+                                        </div>
 
-                                    <!-- Upload Form -->
+                                        <!-- Upload Form -->
                                     <form method="POST" 
                                           action="{{ route('admin.reports-paten.upload-application-document', $biodataPaten) }}"
                                           enctype="multipart/form-data"
@@ -814,9 +859,89 @@
                                             return confirm(confirmMessage);
                                         }
                                     </script>
+                                    @endif
                                 @endif
                             </div>
                             @endif
+
+                            <!-- Patent Documents (4 PDFs) Section -->
+                            <div class="mb-6 pb-6 border-b border-gray-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-semibold text-gray-800">
+                                        <i class="fas fa-file-pdf mr-2 text-indigo-500"></i>Dokumen Paten (PDF)
+                                    </h4>
+                                    @php
+                                        $hasRequiredDocs = $biodataPaten->deskripsi_pdf && $biodataPaten->klaim_pdf && $biodataPaten->abstrak_pdf;
+                                        $hasAnyDoc = $biodataPaten->deskripsi_pdf || $biodataPaten->klaim_pdf || $biodataPaten->abstrak_pdf || $biodataPaten->gambar_pdf;
+                                    @endphp
+                                    @if($hasRequiredDocs)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check-double mr-1"></i>3 Dokumen Wajib Lengkap
+                                        </span>
+                                    @elseif($hasAnyDoc)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            <i class="fas fa-clock mr-1"></i>Sebagian Terupload
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                            <i class="fas fa-info-circle mr-1"></i>Belum Upload
+                                        </span>
+                                    @endif
+                                </div>
+
+                                @if($hasAnyDoc)
+                                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-3">
+                                        <div class="grid grid-cols-2 gap-3 mb-3">
+                                            <!-- Deskripsi PDF -->
+                                            <div class="flex items-center {{ $biodataPaten->deskripsi_pdf ? 'text-green-700' : 'text-gray-400' }}">
+                                                <i class="fas {{ $biodataPaten->deskripsi_pdf ? 'fa-check-circle' : 'fa-circle' }} mr-2"></i>
+                                                <span class="text-sm font-medium">Deskripsi (Wajib)</span>
+                                            </div>
+                                            
+                                            <!-- Klaim PDF -->
+                                            <div class="flex items-center {{ $biodataPaten->klaim_pdf ? 'text-green-700' : 'text-gray-400' }}">
+                                                <i class="fas {{ $biodataPaten->klaim_pdf ? 'fa-check-circle' : 'fa-circle' }} mr-2"></i>
+                                                <span class="text-sm font-medium">Klaim (Wajib)</span>
+                                            </div>
+                                            
+                                            <!-- Abstrak PDF -->
+                                            <div class="flex items-center {{ $biodataPaten->abstrak_pdf ? 'text-green-700' : 'text-gray-400' }}">
+                                                <i class="fas {{ $biodataPaten->abstrak_pdf ? 'fa-check-circle' : 'fa-circle' }} mr-2"></i>
+                                                <span class="text-sm font-medium">Abstrak (Wajib)</span>
+                                            </div>
+                                            
+                                            <!-- Gambar PDF -->
+                                            <div class="flex items-center {{ $biodataPaten->gambar_pdf ? 'text-blue-700' : 'text-gray-400' }}">
+                                                <i class="fas {{ $biodataPaten->gambar_pdf ? 'fa-check-circle' : 'fa-circle' }} mr-2"></i>
+                                                <span class="text-sm font-medium">Gambar (Opsional)</span>
+                                            </div>
+                                        </div>
+
+                                        @if($biodataPaten->patent_documents_uploaded_at)
+                                            <p class="text-xs text-indigo-700 mb-3">
+                                                <i class="fas fa-calendar-check mr-1"></i>
+                                                Terakhir diupdate: <strong>{{ $biodataPaten->patent_documents_uploaded_at->translatedFormat('d F Y, H:i') }} WITA</strong>
+                                                ({{ $biodataPaten->patent_documents_uploaded_at->diffForHumans() }})
+                                            </p>
+                                        @endif
+                                        
+                                        <div class="mt-3">
+                                            <a href="{{ route('admin.reports-paten.show-patent-documents', $biodataPaten) }}" 
+                                               target="_blank"
+                                               class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm font-semibold rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                                                <i class="fas fa-eye mr-2"></i>Lihat & Download 4 Dokumen PDF
+                                            </a>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                        <p class="text-sm text-gray-600 text-center">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            User belum mengupload dokumen paten
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                         @endif
 
