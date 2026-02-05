@@ -7,6 +7,7 @@ use App\Models\SubmissionPaten;
 use App\Models\SubmissionPatenHistory;
 use App\Helpers\FileUploadHelper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
@@ -14,7 +15,7 @@ class SubmissionPatenController extends Controller
 {
     protected function getCurrentAdmin()
     {
-        return \App\Models\Admin::find(session('admin_id'));
+        return Auth::guard('admin')->user();
     }
 
     /**
@@ -127,16 +128,38 @@ class SubmissionPatenController extends Controller
             }
 
             $file = $request->file('file_review');
+            Log::info('File review upload attempt', [
+                'original_name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+                'mime' => $file->getMimeType(),
+            ]);
+            
             $uploadResult = FileUploadHelper::uploadSecure($file, 'review_files/paten', ['pdf', 'docx', 'doc']);
+            
+            Log::info('Upload result', $uploadResult);
             
             if ($uploadResult['success']) {
                 $updateData['file_review_path'] = $uploadResult['path'];
                 $updateData['file_review_name'] = $uploadResult['hashed_name'];
+                $updateData['original_file_review_filename'] = $uploadResult['original_name'];
                 $updateData['file_review_uploaded_at'] = now();
+                
+                Log::info('File review data prepared', $updateData);
+            } else {
+                Log::error('File upload failed', ['error' => $uploadResult['error']]);
+                return back()->withErrors(['file_review' => $uploadResult['error']])->withInput();
             }
+        } else {
+            Log::info('No file review uploaded in request');
         }
 
         $submissionPaten->update($updateData);
+        
+        Log::info('Submission updated', [
+            'id' => $submissionPaten->id,
+            'file_review_path' => $submissionPaten->file_review_path,
+            'original_file_review_filename' => $submissionPaten->original_file_review_filename,
+        ]);
 
         // Save history for format review
         SubmissionPatenHistory::create([
@@ -206,6 +229,7 @@ class SubmissionPatenController extends Controller
         }
 
         // Handle file upload
+        // Handle file upload
         if ($request->hasFile('file_review')) {
             // Delete old file if exists
             if ($submissionPaten->file_review_path) {
@@ -218,7 +242,10 @@ class SubmissionPatenController extends Controller
             if ($uploadResult['success']) {
                 $updateData['file_review_path'] = $uploadResult['path'];
                 $updateData['file_review_name'] = $uploadResult['hashed_name'];
+                $updateData['original_file_review_filename'] = $uploadResult['original_name'];
                 $updateData['file_review_uploaded_at'] = now();
+            } else {
+                return back()->withErrors(['file_review' => $uploadResult['error']])->withInput();
             }
         }
 
