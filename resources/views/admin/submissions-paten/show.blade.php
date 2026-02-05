@@ -344,17 +344,27 @@ use Illuminate\Support\Facades\Storage;
                                 <div>
                                     <label for="file_review" class="block text-sm font-medium text-gray-700 mb-1">
                                         <i class="fas fa-file-word text-blue-600 mr-1"></i>File Koreksi untuk Pengusul:
-                                        <small class="text-gray-500">(Opsional - Format: DOCX)</small>
+                                        <small class="text-gray-500">(Opsional - Format: DOCX/PDF)</small>
                                     </label>
+                                    
+                                    @error('file_review')
+                                    <div class="mb-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>
+                                            <span class="text-sm text-red-800 font-medium">{{ $message }}</span>
+                                        </div>
+                                    </div>
+                                    @enderror
+                                    
                                     <div class="mt-1">
                                         <input 
                                             type="file" 
                                             id="file_review" 
                                             name="file_review" 
-                                            accept=".docx,.doc"
+                                            accept=".docx,.doc,.pdf"
                                             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                         <p class="mt-1 text-xs text-gray-500">
-                                            <i class="fas fa-info-circle mr-1"></i>Upload file DOCX berisi koreksi/catatan untuk pengusul (bila diperlukan)
+                                            <i class="fas fa-info-circle mr-1"></i>Upload file DOCX/PDF berisi koreksi/catatan untuk pengusul (bila diperlukan)
                                         </p>
                                     </div>
                                 </div>
@@ -399,14 +409,14 @@ use Illuminate\Support\Facades\Storage;
                                         <div class="flex items-center">
                                             <i class="fas fa-file-word text-blue-600 text-lg mr-2"></i>
                                             <div>
-                                                <p class="text-xs font-medium text-blue-900">{{ $submissionPaten->file_review_name ?? 'File Koreksi.docx' }}</p>
+                                                <p class="text-xs font-medium text-blue-900">{{ $submissionPaten->original_file_review_filename ?? $submissionPaten->file_review_name ?? 'File Koreksi.docx' }}</p>
                                                 <p class="text-xs text-blue-700">File koreksi ter-upload</p>
                                             </div>
                                         </div>
-                                        <a href="{{ Storage::disk('public')->url($submissionPaten->file_review_path) }}" 
+                                        <a href="{{ route('files.format-review.download', $submissionPaten) }}" 
                                            target="_blank"
                                            class="inline-flex items-center px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition duration-200">
-                                            <i class="fas fa-eye mr-1"></i>Lihat
+                                            <i class="fas fa-download mr-1"></i>Download
                                         </a>
                                     </div>
                                 </div>
@@ -516,17 +526,27 @@ use Illuminate\Support\Facades\Storage;
                                                     <i class="fas fa-file-word text-blue-600 mr-1"></i>File Koreksi untuk Pengusul:
                                                     <small class="text-gray-500">(Opsional - Format: DOCX)</small>
                                                 </label>
+                                                
+                                                @error('file_review')
+                                                <div class="mb-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>
+                                                        <span class="text-sm text-red-800 font-medium">{{ $message }}</span>
+                                                    </div>
+                                                </div>
+                                                @enderror
+                                                
                                                 @if($submissionPaten->file_review_path)
                                                 <div class="mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
                                                     <div class="flex items-center justify-between">
                                                         <div class="flex items-center">
                                                             <i class="fas fa-file-word text-blue-600 mr-2"></i>
-                                                            <span class="text-xs text-blue-900">{{ $submissionPaten->file_review_name ?? 'File Koreksi.docx' }}</span>
+                                                            <span class="text-xs text-blue-900">{{ $submissionPaten->original_file_review_filename ?? $submissionPaten->file_review_name ?? 'File Koreksi.docx' }}</span>
                                                         </div>
-                                                        <a href="{{ Storage::disk('public')->url($submissionPaten->file_review_path) }}" 
+                                                        <a href="{{ route('files.format-review.download', $submissionPaten) }}" 
                                                            target="_blank"
                                                            class="text-xs text-blue-600 hover:text-blue-800">
-                                                            <i class="fas fa-eye mr-1"></i>Lihat
+                                                            <i class="fas fa-download mr-1"></i>Download
                                                         </a>
                                                     </div>
                                                     <p class="text-xs text-blue-700 mt-1">Upload file baru untuk mengganti file lama</p>
@@ -537,10 +557,10 @@ use Illuminate\Support\Facades\Storage;
                                                         type="file" 
                                                         id="file_review_edit" 
                                                         name="file_review" 
-                                                        accept=".docx,.doc"
+                                                        accept=".docx,.doc,.pdf"
                                                         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                                     <p class="mt-1 text-xs text-gray-500">
-                                                        <i class="fas fa-info-circle mr-1"></i>Upload file DOCX berisi koreksi/catatan untuk pengusul (bila diperlukan)
+                                                        <i class="fas fa-info-circle mr-1"></i>Upload file DOCX/PDF berisi koreksi/catatan untuk pengusul (bila diperlukan)
                                                     </p>
                                                 </div>
                                             </div>
