@@ -518,24 +518,33 @@ use Illuminate\Support\Facades\Storage;
                                     <p class="text-sm text-gray-800 whitespace-pre-line">{{ $submissionPaten->rejection_reason }}</p>
                                 </div>
                                 
-                                @if($submissionPaten->file_review_path)
-                                    <div class="bg-white border border-red-200 rounded-lg p-3">
+                                <!-- File Review Download Section - ALWAYS SHOW -->
+                                <div class="bg-white border border-red-200 rounded-lg p-3 mb-4">
+                                    @if($submissionPaten->file_review_path)
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center">
                                                 <i class="fas fa-file-word text-blue-600 text-xl mr-3"></i>
                                                 <div>
-                                                    <p class="text-sm font-medium text-gray-900">File Review dari Admin Paten</p>
-                                                    <p class="text-xs text-gray-600">Catatan koreksi format - {{ $submissionPaten->file_review_name ?? 'File Koreksi.docx' }}</p>
+                                                    <p class="text-sm font-medium text-gray-900">📄 File Koreksi Format dari Admin Paten</p>
+                                                    <p class="text-xs text-gray-600">{{ $submissionPaten->original_file_review_filename ?? $submissionPaten->file_review_name ?? 'File Koreksi.docx' }}</p>
                                                 </div>
                                             </div>
-                                            <a href="{{ Storage::disk('public')->url($submissionPaten->file_review_path) }}" 
+                                            <a href="{{ route('files.format-review.download', $submissionPaten) }}" 
                                                download
                                                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200 shadow-sm hover:shadow-md">
-                                                <i class="fas fa-download mr-2"></i>Download
+                                                <i class="fas fa-download mr-2"></i>Download File
                                             </a>
                                         </div>
-                                    </div>
-                                @endif
+                                    @else
+                                        <div class="flex items-center">
+                                            <i class="fas fa-info-circle text-gray-400 text-xl mr-3"></i>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-700">Tidak ada file koreksi yang diupload</p>
+                                                <p class="text-xs text-gray-600">Admin hanya memberikan catatan tertulis untuk perbaikan</p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
 
                                 <div class="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg">
                                     <p class="text-sm text-red-800">
@@ -565,24 +574,33 @@ use Illuminate\Support\Facades\Storage;
                                     <p class="text-sm text-gray-800 whitespace-pre-line">{{ $submissionPaten->substance_review_notes }}</p>
                                 </div>
                                 
-                                @if($submissionPaten->substance_review_file)
-                                    <div class="bg-white border border-orange-200 rounded-lg p-3">
+                                <!-- File Review Download Section - ALWAYS SHOW -->
+                                <div class="bg-white border border-orange-200 rounded-lg p-3 mb-4">
+                                    @if($submissionPaten->substance_review_file)
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center">
                                                 <i class="fas fa-file-word text-blue-600 text-xl mr-3"></i>
                                                 <div>
-                                                    <p class="text-sm font-medium text-gray-900">File Review dari Pendamping Paten</p>
-                                                    <p class="text-xs text-gray-600">Catatan koreksi substansi</p>
+                                                    <p class="text-sm font-medium text-gray-900">📄 File Koreksi Substansi dari Pendamping Paten</p>
+                                                    <p class="text-xs text-gray-600">{{ $submissionPaten->original_substance_review_filename ?? 'File Koreksi Substansi.pdf' }}</p>
                                                 </div>
                                             </div>
-                                            <a href="{{ Storage::disk('public')->url($submissionPaten->substance_review_file) }}" 
+                                            <a href="{{ route('files.substance-review.download', $submissionPaten->id) }}" 
                                                download
                                                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-200 shadow-sm hover:shadow-md">
-                                                <i class="fas fa-download mr-2"></i>Download
+                                                <i class="fas fa-download mr-2"></i>Download File
                                             </a>
                                         </div>
-                                    </div>
-                                @endif
+                                    @else
+                                        <div class="flex items-center">
+                                            <i class="fas fa-info-circle text-gray-400 text-xl mr-3"></i>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-700">Tidak ada file koreksi yang diupload</p>
+                                                <p class="text-xs text-gray-600">Pendamping Paten hanya memberikan catatan tertulis untuk perbaikan</p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
 
                                 <div class="mt-4 p-3 bg-orange-100 border border-orange-300 rounded-lg">
                                     <p class="text-sm text-orange-800">
@@ -984,7 +1002,7 @@ use Illuminate\Support\Facades\Storage;
                                                         <p class="text-sm text-green-700 mb-3">
                                                             Selamat! Dokumen permohonan paten Anda sudah terbit pada <strong>{{ $biodataPaten->document_issued_at->translatedFormat('d F Y, H:i') }} WITA</strong>.
                                                         </p>
-                                                        <a href="{{ Storage::url($biodataPaten->application_document) }}" 
+                                                        <a href="{{ route('files.application-document.download', $biodataPaten->id) }}" 
                                                            target="_blank"
                                                            class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 shadow-sm hover:shadow-md">
                                                             <i class="fas fa-download mr-2"></i>Download Dokumen Permohonan (PDF)

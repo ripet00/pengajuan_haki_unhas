@@ -21,6 +21,7 @@ class BiodataPaten extends Model
         'document_submitted',
         'document_submitted_at',
         'application_document',
+        'original_filename',
         'document_issued_at',
         'deskripsi_pdf',
         'klaim_pdf',

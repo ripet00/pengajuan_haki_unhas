@@ -22,8 +22,7 @@
     <!-- Navigation - Scrollable Area -->
     <nav class="flex-1 overflow-y-auto py-4">
         @php
-            $adminId = session('admin_id');
-            $admin = $adminId ? \App\Models\Admin::find($adminId) : null;
+            $admin = Auth::guard('admin')->user();
         @endphp
         <ul class="space-y-2 px-4 pb-4">
             <!-- Dashboard - Show for all except Pendamping Paten -->
@@ -49,7 +48,7 @@
                     <i class="fas fa-microscope mr-3 {{ Request::routeIs('admin.pendamping-paten.index') || Request::routeIs('admin.pendamping-paten.show') ? 'text-purple-600' : 'text-gray-500' }}"></i>
                     <span class="sidebar-text transition-opacity duration-300">Review Substansi Paten</span>
                     @php
-                        $pendingSubstanceCount = \App\Models\SubmissionPaten::where('pendamping_paten_id', $adminId)
+                        $pendingSubstanceCount = \App\Models\SubmissionPaten::where('pendamping_paten_id', $admin->id)
                             ->where('status', \App\Models\SubmissionPaten::STATUS_PENDING_SUBSTANCE_REVIEW)
                             ->count();
                     @endphp

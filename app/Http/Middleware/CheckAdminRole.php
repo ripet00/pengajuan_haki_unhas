@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Admin;
 
@@ -16,14 +17,8 @@ class CheckAdminRole
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // Get admin from database using session admin_id
-        $adminId = session('admin_id');
-        
-        if (!$adminId) {
-            return redirect()->route('admin.login')->with('error', 'Anda harus login terlebih dahulu.');
-        }
-        
-        $admin = Admin::find($adminId);
+        // Get admin from Laravel Auth guard
+        $admin = Auth::guard('admin')->user();
         
         if (!$admin) {
             return redirect()->route('admin.login')->with('error', 'Anda harus login terlebih dahulu.');
@@ -31,7 +26,7 @@ class CheckAdminRole
 
         // Check if admin is active
         if (!$admin->is_active) {
-            session()->forget('admin_id');
+            Auth::guard('admin')->logout();
             return redirect()->route('admin.login')->with('error', 'Akun Anda telah dinonaktifkan. Silakan hubungi Super Admin.');
         }
 

@@ -171,7 +171,7 @@
                                                         </div>
                                                         <div class="ml-3 md:ml-4">
                                                             <div class="text-sm font-medium text-gray-900">{{ $adminItem->name }}</div>
-                                                            @if($adminItem->id === session('admin_id'))
+                                                            @if($adminItem->id === Auth::guard('admin')->id())
                                                                 <div class="text-xs text-indigo-600 font-medium">(Anda)</div>
                                                             @endif
                                                             <div class="text-xs text-gray-500 md:hidden">{{ $adminItem->nip_nidn_nidk_nim }}</div>
@@ -221,7 +221,7 @@
                                                     @endif
                                                 </td>
                                                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm">
-                                                    @if($adminItem->id !== session('admin_id'))
+                                                    @if($adminItem->id !== Auth::guard('admin')->id())
                                                         <div class="flex items-center gap-2">
                                                             <!-- Edit Button -->
                                                             <a href="{{ route('admin.admins.edit', $adminItem) }}" 
@@ -377,7 +377,7 @@
                                                         <i class="fas fa-edit mr-1"></i>Edit
                                                     </a>
                                                     
-                                                    @if($pendamping->id !== session('admin_id'))
+                                                    @if($pendamping->id !== Auth::guard('admin')->id())
                                                         <form action="{{ route('admin.admins.update-status', $pendamping) }}" 
                                                               method="POST" 
                                                               class="inline-block"

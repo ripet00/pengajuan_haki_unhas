@@ -722,7 +722,7 @@
                                             {{ $biodataPaten->document_issued_at->diffForHumans() }}
                                         </p>
                                         <div class="mt-3">
-                                            <a href="{{ Storage::url($biodataPaten->application_document) }}" 
+                                            <a href="{{ route('files.application-document.download', $biodataPaten->id) }}" 
                                                target="_blank"
                                                class="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded transition duration-200">
                                                 <i class="fas fa-download mr-2"></i>Download Dokumen Permohonan

@@ -4,20 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Submission;
 use App\Models\SubmissionPaten;
-use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FileDownloadController extends Controller
 {
     /**
-     * Check if current session is admin
+     * Check if current user is admin
      */
     private function isAdmin(): bool
     {
-        $adminId = session('admin_id');
-        return $adminId && Admin::find($adminId);
+        return Auth::guard('admin')->check();
     }
 
     /**
@@ -167,6 +166,102 @@ class FileDownloadController extends Controller
 
         return response()->file($fullPath, [
             'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $downloadName . '"',
+        ]);
+    }
+
+    /**
+     * Download application document (admin uploaded file)
+     */
+    public function downloadApplicationDocument(Request $request, $biodataPatenId): BinaryFileResponse
+    {
+        $user = $request->user();
+        $isAdmin = $this->isAdmin();
+
+        // Find biodata paten
+        $biodataPaten = \App\Models\BiodataPaten::findOrFail($biodataPatenId);
+        
+        // Get submission to check ownership
+        $submission = $biodataPaten->submissionPaten;
+
+        // Authorization check
+        if (!$isAdmin && (!$user || $submission->user_id !== $user->id)) {
+            abort(403, 'Unauthorized to download this file');
+        }
+
+        // Check if file exists
+        if (!$biodataPaten->application_document || !Storage::disk('local')->exists($biodataPaten->application_document)) {
+            abort(404, 'Application document not found');
+        }
+
+        // Get full path from private storage
+        $filePath = Storage::disk('local')->path($biodataPaten->application_document);
+
+        // Use original filename or generate one
+        $downloadName = $biodataPaten->original_filename ?? 'dokumen_permohonan_paten_' . $biodataPaten->id . '.pdf';
+
+        return response()->file($filePath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $downloadName . '"',
+        ]);
+    }
+
+    /**
+     * Download substance review file (pendamping paten uploaded file)
+     */
+    public function downloadSubstanceReviewFile(Request $request, SubmissionPaten $submissionPaten): BinaryFileResponse
+    {
+        $user = $request->user();
+        $isAdmin = $this->isAdmin();
+
+        // Authorization check
+        if (!$isAdmin && (!$user || $submissionPaten->user_id !== $user->id)) {
+            abort(403, 'Unauthorized to download this file');
+        }
+
+        // Check if file exists
+        if (!$submissionPaten->substance_review_file || !Storage::disk('local')->exists($submissionPaten->substance_review_file)) {
+            abort(404, 'Substance review file not found');
+        }
+
+        // Get full path from private storage
+        $filePath = Storage::disk('local')->path($submissionPaten->substance_review_file);
+
+        // Use original filename or generate one
+        $downloadName = $submissionPaten->original_substance_review_filename ?? 'substance_review_' . $submissionPaten->id . '.pdf';
+
+        return response()->file($filePath, [
+            'Content-Type' => Storage::mimeType($submissionPaten->substance_review_file),
+            'Content-Disposition' => 'inline; filename="' . $downloadName . '"',
+        ]);
+    }
+
+    /**
+     * Download format review file (admin paten uploaded file)
+     */
+    public function downloadFormatReviewFile(Request $request, SubmissionPaten $submissionPaten): BinaryFileResponse
+    {
+        $user = $request->user();
+        $isAdmin = $this->isAdmin();
+
+        // Authorization check
+        if (!$isAdmin && (!$user || $submissionPaten->user_id !== $user->id)) {
+            abort(403, 'Unauthorized to download this file');
+        }
+
+        // Check if file exists
+        if (!$submissionPaten->file_review_path || !Storage::disk('local')->exists($submissionPaten->file_review_path)) {
+            abort(404, 'Format review file not found');
+        }
+
+        // Get full path from private storage
+        $filePath = Storage::disk('local')->path($submissionPaten->file_review_path);
+
+        // Use original filename or generate one
+        $downloadName = $submissionPaten->original_file_review_filename ?? 'format_review_' . $submissionPaten->id . '.docx';
+
+        return response()->file($filePath, [
+            'Content-Type' => Storage::mimeType($submissionPaten->file_review_path),
             'Content-Disposition' => 'inline; filename="' . $downloadName . '"',
         ]);
     }
