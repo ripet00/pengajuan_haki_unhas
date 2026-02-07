@@ -254,4 +254,32 @@ class SubmissionPaten extends Model
         $statuses = self::getStatuses();
         return $statuses[$this->status] ?? 'Unknown';
     }
+
+    /**
+     * Find submissions with similar titles (case-insensitive)
+     * @param string $title - Judul paten yang akan dicari
+     * @param int|null $excludeId - ID submission yang akan dikecualikan dari pencarian
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function findSimilarTitles($title, $excludeId = null)
+    {
+        $query = self::with(['user'])
+            ->whereRaw('LOWER(judul_paten) = ?', [strtolower($title)])
+            ->orderBy('created_at', 'asc'); // Urutkan berdasarkan tanggal pengajuan
+        
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+        
+        return $query->get();
+    }
+
+    /**
+     * Check if current submission has similar titles with previous submissions
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getSimilarTitles()
+    {
+        return self::findSimilarTitles($this->judul_paten, $this->id);
+    }
 }

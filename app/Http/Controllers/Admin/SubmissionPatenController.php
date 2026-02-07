@@ -54,7 +54,10 @@ class SubmissionPatenController extends Controller
     {
         $submissionPaten->load(['user', 'reviewedByAdmin', 'biodataReviewedByAdmin', 'biodataPaten.inventors', 'histories.admin', 'pendampingPaten']);
         
-        return view('admin.submissions-paten.show', compact('submissionPaten'));
+        // Get submissions with similar titles (case-insensitive)
+        $similarTitles = $submissionPaten->getSimilarTitles();
+        
+        return view('admin.submissions-paten.show', compact('submissionPaten', 'similarTitles'));
     }
 
     /**

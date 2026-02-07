@@ -90,6 +90,75 @@ use Illuminate\Support\Facades\Storage;
             </h2>
         </div>
         
+        <!-- Similar Titles Warning -->
+        @if($similarTitles && $similarTitles->count() > 0)
+        <div class="mx-6 mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg shadow-sm">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 text-lg"></i>
+                </div>
+                <div class="ml-3 flex-1">
+                    <h3 class="text-sm font-semibold text-yellow-800 mb-2">
+                        ⚠️ Peringatan: Judul Serupa Ditemukan
+                    </h3>
+                    <p class="text-sm text-yellow-700 mb-3">
+                        Terdapat <strong>{{ $similarTitles->count() }}</strong> pengajuan paten dengan judul yang sama atau serupa. Harap periksa untuk memastikan tidak ada duplikasi invensi:
+                    </p>
+                    <div class="space-y-3 max-h-60 overflow-y-auto">
+                        @foreach($similarTitles as $similar)
+                        <div class="bg-white p-3 rounded-lg border border-yellow-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-start flex-wrap gap-2 mb-2">
+                                        <h4 class="text-sm font-medium text-gray-900 flex-1 min-w-0">
+                                            "{{ $similar->judul_paten }}"
+                                        </h4>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0
+                                            {{ in_array($similar->status, [\App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT, \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE]) ? 'bg-green-100 text-green-800' : 
+                                               (in_array($similar->status, [\App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW, \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW]) ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
+                                            <i class="fas fa-{{ in_array($similar->status, [\App\Models\SubmissionPaten::STATUS_APPROVED_FORMAT, \App\Models\SubmissionPaten::STATUS_APPROVED_SUBSTANCE]) ? 'check' : 
+                                               (in_array($similar->status, [\App\Models\SubmissionPaten::STATUS_REJECTED_FORMAT_REVIEW, \App\Models\SubmissionPaten::STATUS_REJECTED_SUBSTANCE_REVIEW]) ? 'times' : 'clock') }} mr-1"></i>
+                                            {{ $similar->status_name }}
+                                        </span>
+                                    </div>
+                                    <div class="text-xs text-gray-600 space-y-1">
+                                        <div class="flex items-center space-x-4">
+                                            <span><i class="fas fa-user text-gray-400 mr-1"></i><strong>Pengusul:</strong> {{ $similar->user->name }}</span>
+                                            <span><i class="fas fa-calendar text-gray-400 mr-1"></i><strong>Tanggal:</strong> {{ $similar->created_at->translatedFormat('d M Y, H:i') }} WITA</span>
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <span><i class="fas fa-hashtag text-gray-400 mr-1"></i><strong>ID Pengajuan:</strong> #{{ $similar->id }}</span>
+                                            <span><i class="fas fa-tag text-gray-400 mr-1"></i><strong>Kategori:</strong> {{ $similar->kategori_paten }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex-shrink-0 ml-3">
+                                    <a href="{{ route('admin.submissions-paten.show', $similar->id) }}" 
+                                       class="inline-flex items-center px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition duration-200 font-medium"
+                                       target="_blank">
+                                        <i class="fas fa-external-link-alt mr-1"></i>Lihat Detail
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    <div class="mt-4 p-3 bg-yellow-100 rounded-lg">
+                        <div class="text-xs text-yellow-800 flex items-start">
+                            <i class="fas fa-lightbulb text-yellow-600 mr-2 mt-0.5 flex-shrink-0"></i>
+                            <div>
+                                <strong>Panduan Review:</strong><br>
+                                • Periksa konten file untuk memastikan tidak ada duplikasi invensi<br>
+                                • Verifikasi bahwa paten ini adalah invensi yang berbeda meskipun judulnya sama<br>
+                                • Hubungi pengusul jika diperlukan klarifikasi lebih lanjut
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+        
         <div class="p-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Submission Details -->
