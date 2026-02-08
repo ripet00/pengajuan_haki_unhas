@@ -593,7 +593,7 @@
                     </div>
 
                     <!-- 8. Selesai -->
-                    <div class="text-center p-3 bg-purple-50 rounded-lg col-span-2">
+                    <div class="text-center p-3 bg-purple-50 rounded-lg">
                         <div class="flex items-center justify-center mb-2">
                             <i class="fas fa-award text-purple-600 mr-2"></i>
                             <div class="text-xl font-bold text-purple-700">
