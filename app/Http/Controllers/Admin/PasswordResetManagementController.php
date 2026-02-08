@@ -7,23 +7,23 @@ use App\Models\PasswordResetRequest;
 use App\Models\User;
 use App\Models\Admin as AdminModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class PasswordResetManagementController extends Controller
 {
+    protected function getCurrentAdmin()
+    {
+        return Auth::guard('admin')->user();
+    }
+    
     /**
      * Display list of password reset requests
      */
     public function index(Request $request)
     {
-        $adminId = session('admin_id');
-        
-        if (!$adminId) {
-            return redirect('/admin/login');
-        }
-
-        $admin = AdminModel::find($adminId);
+        $admin = $this->getCurrentAdmin();
         
         if (!$admin) {
             return redirect('/admin/login');
@@ -67,17 +67,7 @@ class PasswordResetManagementController extends Controller
      */
     public function show($id)
     {
-        $adminId = session('admin_id');
-        
-        if (!$adminId) {
-            return redirect('/admin/login');
-        }
-
-        $admin = AdminModel::find($adminId);
-        
-        if (!$admin) {
-            return redirect('/admin/login');
-        }
+        $admin = $this->getCurrentAdmin();
 
         $request = PasswordResetRequest::with(['user', 'admin', 'approvedBy', 'rejectedBy'])
             ->findOrFail($id);
@@ -117,13 +107,7 @@ class PasswordResetManagementController extends Controller
      */
     public function approve(Request $request, $id)
     {
-        $adminId = session('admin_id');
-        
-        if (!$adminId) {
-            return redirect('/admin/login');
-        }
-
-        $admin = AdminModel::find($adminId);
+        $admin = $this->getCurrentAdmin();
         
         if (!$admin) {
             return redirect('/admin/login');
@@ -178,13 +162,7 @@ class PasswordResetManagementController extends Controller
      */
     public function reject(Request $request, $id)
     {
-        $adminId = session('admin_id');
-        
-        if (!$adminId) {
-            return redirect('/admin/login');
-        }
-
-        $admin = AdminModel::find($adminId);
+        $admin = $this->getCurrentAdmin();
         
         if (!$admin) {
             return redirect('/admin/login');
@@ -223,13 +201,7 @@ class PasswordResetManagementController extends Controller
      */
     public function destroy($id)
     {
-        $adminId = session('admin_id');
-        
-        if (!$adminId) {
-            return redirect('/admin/login');
-        }
-
-        $admin = AdminModel::find($adminId);
+        $admin = $this->getCurrentAdmin();
         
         if (!$admin) {
             return redirect('/admin/login');

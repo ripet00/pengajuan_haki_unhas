@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BiodataPaten;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,7 +13,7 @@ class ReportPatenController extends Controller
 {
     protected function getCurrentAdmin()
     {
-        return \App\Models\Admin::find(session('admin_id'));
+        return Auth::guard('admin')->user();
     }
 
     /**
@@ -201,11 +202,22 @@ class ReportPatenController extends Controller
 
         try {
             $file = $request->file('application_document');
-            $filename = 'dokumen_permohonan_paten_' . $biodataPaten->id . '_' . time() . '.pdf';
-            $path = $file->storeAs('application_documents', $filename, 'public');
+            
+            // Delete old file if exists
+            if ($biodataPaten->application_document) {
+                \App\Helpers\FileUploadHelper::deleteSecure($biodataPaten->application_document);
+            }
+            
+            // Upload to private storage with security validation
+            $result = \App\Helpers\FileUploadHelper::uploadSecure(
+                $file,
+                'application_documents',
+                ['pdf']
+            );
 
             $biodataPaten->update([
-                'application_document' => $path,
+                'application_document' => $result['path'],
+                'original_filename' => $result['original_filename'],
                 'document_issued_at' => now(),
             ]);
 

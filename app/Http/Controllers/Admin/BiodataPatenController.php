@@ -13,7 +13,7 @@ class BiodataPatenController extends Controller
 {
     protected function getCurrentAdmin()
     {
-        return \App\Models\Admin::find(session('admin_id'));
+        return Auth::guard('admin')->user();
     }
 
     public function index(Request $request)
