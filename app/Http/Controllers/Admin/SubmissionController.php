@@ -13,7 +13,7 @@ class SubmissionController extends Controller
 {
     protected function getCurrentAdmin()
     {
-        return Auth::guard('admin')->user();
+        return \App\Models\Admin::find(session('admin_id'));
     }
 
     // list submissions (filter optional)
@@ -71,11 +71,11 @@ class SubmissionController extends Controller
         }
 
         $validatedData = $request->validated();
-        $admin = Auth::guard('admin')->user();
+        $adminId = session('admin_id');
         
         $submission->status = $validatedData['status'];
         $submission->reviewed_at = now();
-        $submission->reviewed_by_admin_id = $admin->id;
+        $submission->reviewed_by_admin_id = $adminId; // Use session admin_id
         $submission->rejection_reason = $validatedData['rejection_reason'] ?? null;
         $submission->revisi = false; // after admin review, reset revisi flag
         $submission->save();
@@ -106,18 +106,18 @@ class SubmissionController extends Controller
         }
 
         $validatedData = $request->validated();
-        $admin = Auth::guard('admin')->user();
+        $adminId = session('admin_id');
         
         $submission->status = $validatedData['status'];
         $submission->reviewed_at = now();
-        $submission->reviewed_by_admin_id = $admin->id;
+        $submission->reviewed_by_admin_id = $adminId;
         $submission->rejection_reason = $validatedData['rejection_reason'] ?? null;
         $submission->save();
 
         // Save history
         SubmissionHistory::create([
             'submission_id' => $submission->id,
-            'admin_id' => $admin->id,
+            'admin_id' => $adminId,
             'action' => $validatedData['status'] === 'approved' ? 'approved' : 'rejected',
             'notes' => $validatedData['rejection_reason'] ?? null,
         ]);

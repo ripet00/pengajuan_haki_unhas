@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminGuestMiddleware
@@ -16,8 +15,7 @@ class AdminGuestMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if admin is already authenticated
-        if (Auth::guard('admin')->check()) {
+        if (session('admin_id')) {
             return redirect()->route('admin.dashboard');
         }
 

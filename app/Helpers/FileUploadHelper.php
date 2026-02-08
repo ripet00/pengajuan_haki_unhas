@@ -40,23 +40,11 @@ class FileUploadHelper
         
         // Additional check FIRST: Ensure filename doesn't have double extensions
         $originalName = $file->getClientOriginalName();
+        $dotCount = substr_count($originalName, '.');
         
-        // More intelligent double extension check:
-        // Only reject if there's a dangerous double extension pattern
-        // Examples to REJECT: file.php.pdf, document.exe.docx, malware.js.pdf
-        // Examples to ALLOW: 0. Format Penilaian.docx, file.draft.v2.docx
-        
-        // Get filename without the final extension
-        $nameWithoutExtension = pathinfo($originalName, PATHINFO_FILENAME);
-        
-        // List of dangerous extensions that should never appear before the final extension
-        $dangerousExtensions = ['php', 'exe', 'bat', 'cmd', 'sh', 'js', 'jar', 'com', 'pif', 'scr', 'vbs', 'ps1'];
-        
-        // Check if any dangerous extension appears in the filename before the final extension
-        foreach ($dangerousExtensions as $dangerousExt) {
-            if (preg_match('/\.' . preg_quote($dangerousExt, '/') . '$/i', $nameWithoutExtension)) {
-                return false; // Reject files like "malware.php.docx"
-            }
+        // Reject if more than one dot (e.g., file.php.pdf is NOT OK)
+        if ($dotCount > 1) {
+            return false;
         }
 
         // Check if extension is in allowed list
@@ -158,25 +146,14 @@ class FileUploadHelper
             $extension = strtolower($file->getClientOriginalExtension());
             
             // Provide specific error message
-            $nameWithoutExtension = pathinfo($originalName, PATHINFO_FILENAME);
-            $dangerousExtensions = ['php', 'exe', 'bat', 'cmd', 'sh', 'js', 'jar', 'com', 'pif', 'scr', 'vbs', 'ps1'];
-            
-            // Check if dangerous double extension
-            $isDangerousDouble = false;
-            foreach ($dangerousExtensions as $dangerousExt) {
-                if (preg_match('/\.' . preg_quote($dangerousExt, '/') . '$/i', $nameWithoutExtension)) {
-                    $isDangerousDouble = true;
-                    break;
-                }
-            }
-            
-            if ($isDangerousDouble) {
+            $dotCount = substr_count($originalName, '.');
+            if ($dotCount > 1) {
                 return [
                     'success' => false,
                     'path' => null,
                     'original_name' => null,
                     'hashed_name' => null,
-                    'error' => 'File ditolak: File "' . $originalName . '" terdeteksi sebagai file berbahaya (double extension). Ekstensi berbahaya tidak diizinkan.',
+                    'error' => 'File ditolak: Nama file tidak boleh mengandung lebih dari satu titik. File "' . $originalName . '" terdeteksi sebagai file berbahaya (double extension).',
                 ];
             }
             

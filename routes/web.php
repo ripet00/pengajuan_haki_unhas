@@ -18,8 +18,8 @@ Route::get('/', function () {
     if (Auth::check()) {
         return redirect('/users/dashboard');
     }
-    if (Auth::guard('admin')->check()) {
-        $admin = Auth::guard('admin')->user();
+    if (session('admin_id')) {
+        $admin = \App\Models\Admin::find(session('admin_id'));
         if ($admin && $admin->role === \App\Models\Admin::ROLE_PENDAMPING_PATEN) {
             return redirect()->route('admin.pendamping-paten.dashboard');
         }
@@ -56,22 +56,17 @@ Route::prefix('users')->middleware(['auth', 'check.user.status'])->group(functio
     // User submission routes
     Route::get('submissions', [UserSubmissionController::class, 'index'])->name('user.submissions.index');
     Route::get('submissions/create', [UserSubmissionController::class, 'create'])->name('user.submissions.create');
-    Route::post('submissions', [UserSubmissionController::class, 'store'])->middleware(['file.upload', 'throttle:10,1'])->name('user.submissions.store');
+    Route::post('submissions', [UserSubmissionController::class, 'store'])->middleware('file.upload')->name('user.submissions.store');
     Route::get('submissions/{submission}', [UserSubmissionController::class, 'show'])->name('user.submissions.show');
     
-    // Secure file download routes with authentication and rate limiting
-    Route::middleware(['throttle:50,1'])->group(function () {
-        Route::get('files/submissions/{submission}/download', [App\Http\Controllers\FileDownloadController::class, 'downloadSubmission'])->name('files.submissions.download');
-        Route::get('files/submissions-paten/{submissionPaten}/download', [App\Http\Controllers\FileDownloadController::class, 'downloadSubmissionPaten'])->name('files.submissions-paten.download');
-        Route::get('files/review/{type}/{id}/download', [App\Http\Controllers\FileDownloadController::class, 'downloadReviewFile'])->name('files.review.download');
-        Route::get('files/patent-documents/{submissionPaten}/{documentType}', [App\Http\Controllers\FileDownloadController::class, 'downloadPatentDocument'])->name('files.patent-documents.download');
-        Route::get('files/application-document/{biodataPaten}', [App\Http\Controllers\FileDownloadController::class, 'downloadApplicationDocument'])->name('files.application-document.download');
-        Route::get('files/substance-review/{submissionPaten}', [App\Http\Controllers\FileDownloadController::class, 'downloadSubstanceReviewFile'])->name('files.substance-review.download');
-        Route::get('files/format-review/{submissionPaten}', [App\Http\Controllers\FileDownloadController::class, 'downloadFormatReviewFile'])->name('files.format-review.download');
-    });
+    // Secure file download routes with authentication
+    Route::get('files/submissions/{submission}/download', [App\Http\Controllers\FileDownloadController::class, 'downloadSubmission'])->name('files.submissions.download');
+    Route::get('files/submissions-paten/{submissionPaten}/download', [App\Http\Controllers\FileDownloadController::class, 'downloadSubmissionPaten'])->name('files.submissions-paten.download');
+    Route::get('files/review/{type}/{id}/download', [App\Http\Controllers\FileDownloadController::class, 'downloadReviewFile'])->name('files.review.download');
+    Route::get('files/patent-documents/{submissionPaten}/{documentType}', [App\Http\Controllers\FileDownloadController::class, 'downloadPatentDocument'])->name('files.patent-documents.download');
     
     Route::get('submissions/{submission}/download', [UserSubmissionController::class, 'download'])->name('user.submissions.download');
-    Route::post('submissions/{submission}/resubmit', [UserSubmissionController::class, 'resubmit'])->middleware(['file.upload', 'throttle:10,1'])->name('user.submissions.resubmit');
+    Route::post('submissions/{submission}/resubmit', [UserSubmissionController::class, 'resubmit'])->middleware('file.upload')->name('user.submissions.resubmit');
     
     // Biodata routes
     Route::get('submissions/{submission}/biodata/create', [App\Http\Controllers\User\BiodataController::class, 'create'])->name('user.biodata.create');
@@ -86,14 +81,14 @@ Route::prefix('users')->middleware(['auth', 'check.user.status'])->group(functio
     // Paten submission routes
     Route::get('submissions-paten', [UserSubmissionPatenController::class, 'index'])->name('user.submissions-paten.index');
     Route::get('submissions-paten/create', [UserSubmissionPatenController::class, 'create'])->name('user.submissions-paten.create');
-    Route::post('submissions-paten', [UserSubmissionPatenController::class, 'store'])->middleware(['file.upload', 'throttle:10,1'])->name('user.submissions-paten.store');
+    Route::post('submissions-paten', [UserSubmissionPatenController::class, 'store'])->middleware('file.upload')->name('user.submissions-paten.store');
     Route::get('submissions-paten/{submissionPaten}', [UserSubmissionPatenController::class, 'show'])->name('user.submissions-paten.show');
     Route::get('submissions-paten/{submissionPaten}/download', [UserSubmissionPatenController::class, 'download'])->name('user.submissions-paten.download');
-    Route::post('submissions-paten/{submissionPaten}/resubmit', [UserSubmissionPatenController::class, 'resubmit'])->middleware(['file.upload', 'throttle:10,1'])->name('user.submissions-paten.resubmit');
-    Route::post('submissions-paten/{submissionPaten}/resubmit-substance', [UserSubmissionPatenController::class, 'resubmitSubstance'])->middleware(['file.upload', 'throttle:10,1'])->name('user.submissions-paten.resubmit-substance');
+    Route::post('submissions-paten/{submissionPaten}/resubmit', [UserSubmissionPatenController::class, 'resubmit'])->middleware('file.upload')->name('user.submissions-paten.resubmit');
+    Route::post('submissions-paten/{submissionPaten}/resubmit-substance', [UserSubmissionPatenController::class, 'resubmitSubstance'])->middleware('file.upload')->name('user.submissions-paten.resubmit-substance');
     
     // Patent Documents Upload routes (moved from biodata-paten)
-    Route::post('submissions-paten/{submissionPaten}/upload-patent-documents', [UserSubmissionPatenController::class, 'uploadPatentDocuments'])->middleware('throttle:10,1')->name('user.submissions-paten.upload-patent-documents');
+    Route::post('submissions-paten/{submissionPaten}/upload-patent-documents', [UserSubmissionPatenController::class, 'uploadPatentDocuments'])->name('user.submissions-paten.upload-patent-documents');
     Route::get('submissions-paten/{submissionPaten}/download-patent-document/{type}', [UserSubmissionPatenController::class, 'downloadPatentDocument'])->name('user.submissions-paten.download-patent-document');
     
     // Biodata Paten routes

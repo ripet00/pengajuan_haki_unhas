@@ -15,7 +15,8 @@
             </div>
             <div class="flex items-center space-x-2 md:space-x-4">
                 @php
-                    $admin = Auth::guard('admin')->user();
+                    $adminId = session('admin_id');
+                    $admin = $adminId ? \App\Models\Admin::find($adminId) : null;
                 @endphp
                 @if($admin)
                     <div class="flex items-center">

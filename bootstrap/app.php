@@ -11,11 +11,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Add CSRF protection to web middleware group
-        $middleware->web(append: [
-            \App\Http\Middleware\VerifyCsrfToken::class,
-        ]);
-        
         $middleware->alias([
             'admin.auth' => \App\Http\Middleware\AdminAuthMiddleware::class,
             'admin.guest' => \App\Http\Middleware\AdminGuestMiddleware::class,

@@ -21,7 +21,7 @@
                     <!-- Welcome Banner -->
                     <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg shadow-lg p-6 mb-6 text-white">
                         <h1 class="text-3xl font-bold flex items-center">
-                            <i class="fas fa-user-tie mr-3"></i>Selamat Datang, {{ Auth::guard('admin')->user()->name }}!
+                            <i class="fas fa-user-tie mr-3"></i>Selamat Datang, {{ session('admin_name') }}!
                         </h1>
                         <p class="mt-2 text-purple-100">Dashboard Pendamping Paten - Review Substansi Pengajuan Paten</p>
                     </div>

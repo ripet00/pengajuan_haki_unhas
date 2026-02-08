@@ -3,14 +3,13 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class ReviewSubmissionRequest extends FormRequest
 {
     public function authorize(): bool
     {
         // Check if admin is logged in via session
-        return Auth::guard('admin')->check();
+        return session('admin_id') !== null;
     }
 
     public function rules(): array

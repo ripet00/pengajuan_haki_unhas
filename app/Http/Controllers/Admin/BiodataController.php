@@ -12,7 +12,7 @@ class BiodataController extends Controller
 {
     protected function getCurrentAdmin()
     {
-        return Auth::guard('admin')->user();
+        return \App\Models\Admin::find(session('admin_id'));
     }
 
     public function index(Request $request)

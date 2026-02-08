@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Biodata;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Illuminate\Support\Facades\Log;
 
@@ -13,7 +12,7 @@ class ReportController extends Controller
 {
     protected function getCurrentAdmin()
     {
-        return Auth::guard('admin')->user();
+        return \App\Models\Admin::find(session('admin_id'));
     }
 
     /**

@@ -7,7 +7,6 @@ use App\Models\SubmissionPaten;
 use App\Models\SubmissionPatenHistory;
 use App\Models\Admin;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +15,7 @@ class PendampingPatenController extends Controller
 {
     protected function getCurrentPendampingPaten()
     {
-        return Auth::guard('admin')->user();
+        return Admin::find(session('admin_id'));
     }
 
     /**
@@ -174,24 +173,15 @@ class PendampingPatenController extends Controller
         // Handle file upload
         if ($request->hasFile('substance_review_file')) {
             // Delete old file if exists
-            if ($submissionPaten->substance_review_file) {
-                \App\Helpers\FileUploadHelper::deleteSecure($submissionPaten->substance_review_file);
+            if ($submissionPaten->substance_review_file && Storage::disk('public')->exists($submissionPaten->substance_review_file)) {
+                Storage::disk('public')->delete($submissionPaten->substance_review_file);
             }
 
-            // Upload to private storage with security validation
             $file = $request->file('substance_review_file');
-            $result = \App\Helpers\FileUploadHelper::uploadSecure(
-                $file,
-                'substance_review_files/paten',
-                ['pdf', 'docx', 'doc']
-            );
+            $fileName = 'substance_review_' . $submissionPaten->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('substance_review_files/paten', $fileName, 'public');
 
-            if ($result['success']) {
-                $updateData['substance_review_file'] = $result['path'];
-                $updateData['original_substance_review_filename'] = $result['original_name'];
-            } else {
-                return back()->withErrors(['substance_review_file' => $result['error']])->withInput();
-            }
+            $updateData['substance_review_file'] = $filePath;
         }
 
         $submissionPaten->update($updateData);
