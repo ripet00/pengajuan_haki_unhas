@@ -26,6 +26,15 @@
                         <p class="mt-2 text-purple-100">Dashboard Pendamping Paten - Review Substansi Pengajuan Paten</p>
                     </div>
 
+                    <!-- Edit Password Button -->
+                    <div class="mb-6">
+                        <a href="{{ route('admin.profile.edit-password') }}" 
+                           class="inline-flex items-center px-5 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition duration-200 shadow-md hover:shadow-lg">
+                            <i class="fas fa-key mr-2"></i>
+                            Edit Password
+                        </a>
+                    </div>
+
                     <!-- Statistics Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                         <div class="bg-white rounded-lg shadow p-6">

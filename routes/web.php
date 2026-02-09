@@ -127,6 +127,10 @@ Route::prefix('admin')->group(function () {
     Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         
+        // Admin Profile & Password Management Routes
+        Route::get('/profile/edit-password', [AdminController::class, 'editPassword'])->name('admin.profile.edit-password');
+        Route::post('/profile/update-password', [AdminController::class, 'updatePassword'])->name('admin.profile.update-password');
+        
         // Password Reset Management Routes
         Route::prefix('password-reset')->group(function () {
             Route::get('/', [PasswordResetManagementController::class, 'index'])->name('admin.password-reset.index');

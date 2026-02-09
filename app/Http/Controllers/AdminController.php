@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
@@ -261,5 +262,54 @@ class AdminController extends Controller
 
         // 3. Redirect dengan pesan sukses
         return redirect()->route('admin.admins.index')->with('success', 'Data admin berhasil diperbarui!');
+    }
+
+    /**
+     * Show edit password form for current logged-in admin
+     */
+    public function editPassword()
+    {
+        $admin = Auth::guard('admin')->user();
+        
+        if (!$admin) {
+            return redirect()->route('admin.login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        return view('admin.profile.edit-password', compact('admin'));
+    }
+
+    /**
+     * Update password for current logged-in admin
+     */
+    public function updatePassword(Request $request)
+    {
+        $admin = Auth::guard('admin')->user();
+        
+        if (!$admin) {
+            return redirect()->route('admin.login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        // Validate the request
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed',
+        ], [
+            'current_password.required' => 'Password lama wajib diisi.',
+            'new_password.required' => 'Password baru wajib diisi.',
+            'new_password.min' => 'Password baru minimal 6 karakter.',
+            'new_password.confirmed' => 'Konfirmasi password tidak cocok.',
+        ]);
+
+        // Check if current password is correct
+        if (!Hash::check($request->current_password, $admin->password)) {
+            return back()->withErrors(['current_password' => 'Password lama tidak sesuai.'])->withInput();
+        }
+
+        // Update password
+        $admin->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return redirect()->route('admin.profile.edit-password')->with('success', 'Password berhasil diperbarui!');
     }
 }

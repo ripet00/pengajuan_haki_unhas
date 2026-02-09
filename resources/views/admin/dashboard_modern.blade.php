@@ -31,6 +31,15 @@
                         </div>
                     @endif
 
+                    <!-- Edit Password Button -->
+                    <div class="mb-6">
+                        <a href="{{ route('admin.profile.edit-password') }}" 
+                           class="inline-flex items-center px-5 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition duration-200 shadow-md hover:shadow-lg">
+                            <i class="fas fa-key mr-2"></i>
+                            Edit Password
+                        </a>
+                    </div>
+
                     <!-- Stats Cards -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
                         <div class="bg-white overflow-hidden shadow rounded-lg">
